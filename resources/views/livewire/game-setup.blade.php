@@ -10,7 +10,7 @@
     {{-- Teams --}}
     <div class="grid gap-4 md:grid-cols-2">
         @foreach (['a' => ['teamA', 'selectedA'], 'b' => ['teamB', 'selectedB']] as $team => [$nameProp, $selProp])
-            @php($active = $picking === $team)
+            @php $active = $picking === $team; @endphp
             <div wire:click="pickFor('{{ $team }}')"
                  @class([
                      'cursor-pointer rounded-3xl border-2 p-5 transition',
@@ -67,8 +67,8 @@
     @else
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             @foreach ($this->categories as $category)
-                @php($inA = in_array($category->id, $selectedA, true))
-                @php($inB = in_array($category->id, $selectedB, true))
+                @php $inA = in_array($category->id, $selectedA, true); @endphp
+                @php $inB = in_array($category->id, $selectedB, true); @endphp
                 <button type="button" wire:click="toggle({{ $category->id }})" wire:key="cat-{{ $category->id }}"
                         @class([
                             'group relative flex aspect-[4/3] flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border-2 p-3 text-center transition',

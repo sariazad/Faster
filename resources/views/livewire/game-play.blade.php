@@ -8,7 +8,7 @@
     {{-- ============ Scoreboard ============ --}}
     <header class="grid grid-cols-[1fr_auto_1fr] items-stretch gap-3">
         @foreach (['a', 'b'] as $team)
-            @php($isTurn = ! $finished && $turn === $team)
+            @php $isTurn = ! $finished && $turn === $team; @endphp
             <section @class([
                 'relative rounded-3xl border-2 p-3 transition sm:p-4',
                 'order-1' => $team === 'a',
@@ -43,7 +43,7 @@
 
                 <div class="mt-2 flex gap-1.5">
                     @foreach ($helpers as $key => $helper)
-                        @php($available = $game->helperAvailable($team, $key))
+                        @php $available = $game->helperAvailable($team, $key); @endphp
                         <span title="{{ $helper['label'] }} — {{ $helper['hint'] }}"
                               @class([
                                   'flex h-8 min-w-8 items-center justify-center rounded-lg px-1.5 text-sm font-black',
@@ -78,7 +78,7 @@
     {{-- ============ Board ============ --}}
     <section class="mt-4 grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
         @foreach ($columns as $category)
-            @php($columnCells = ($cells[$category->id] ?? collect())->sortBy([['points', 'asc'], ['slot', 'asc']]))
+            @php $columnCells = ($cells[$category->id] ?? collect())->sortBy([['points', 'asc'], ['slot', 'asc']]); @endphp
             <div class="flex flex-col gap-2" wire:key="col-{{ $category->id }}">
                 <div class="relative flex min-h-24 flex-col items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-night-700 p-3 text-center">
                     @if ($category->imageUrl())
@@ -96,7 +96,7 @@
                 @foreach ($levels as $points)
                     <div class="grid flex-1 grid-cols-2 gap-2">
                         @foreach ($columnCells->where('points', $points) as $cell)
-                            @php($pending = $cell->status === 'pending')
+                            @php $pending = $cell->status === 'pending'; @endphp
                             <button type="button"
                                     wire:key="cell-{{ $cell->id }}"
                                     @if ($pending && ! $finished) wire:click="open({{ $cell->id }})" @else disabled @endif
@@ -206,8 +206,8 @@
                 @unless ($revealed)
                     <div class="mb-6 flex flex-wrap justify-center gap-2">
                         @foreach ($helpers as $key => $helper)
-                            @php($applied = $current->hasEffect($key))
-                            @php($available = $game->helperAvailable($opener, $key))
+                            @php $applied = $current->hasEffect($key); @endphp
+                            @php $available = $game->helperAvailable($opener, $key); @endphp
                             <button type="button"
                                     @if ($available) wire:click="useHelper('{{ $key }}')" @else disabled @endif
                                     title="{{ $helper['hint'] }}"
@@ -239,7 +239,7 @@
                         <div class="text-white/60">مين جاوب صح؟</div>
                         <div class="grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
                             @foreach (['a', 'b'] as $team)
-                                @php($blocked = $locked && $team !== $opener)
+                                @php $blocked = $locked && $team !== $opener; @endphp
                                 <button type="button"
                                         @if ($blocked) disabled title="السؤال مقفول" @else wire:click="award('{{ $team }}')" @endif
                                         @class([
@@ -264,7 +264,7 @@
 
     {{-- ============ Results ============ --}}
     @if ($finished)
-        @php($winner = $game->winner())
+        @php $winner = $game->winner(); @endphp
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-night/90 p-4 backdrop-blur">
             <div class="w-full max-w-xl animate-pop rounded-3xl border border-lantern/40 bg-night-800 p-8 text-center shadow-2xl">
                 <div class="text-6xl">{{ $winner === 'tie' ? '🤝' : '🏆' }}</div>
