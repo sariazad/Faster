@@ -41,7 +41,14 @@ class QuestionsRelationManager extends RelationManager
                     ->searchable(),
                 Tables\Columns\TextColumn::make('answer')
                     ->label('الإجابة')
+                    ->placeholder('—')
                     ->limit(40),
+                Tables\Columns\TextColumn::make('media')
+                    ->label('وسائط')
+                    ->state(fn ($record) => implode(' ', array_filter([
+                        $record->image || $record->answer_image ? '🖼️' : null,
+                        $record->audio || $record->answer_audio ? '🔊' : null,
+                    ])) ?: '—'),
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('مفعّل'),
             ])
@@ -51,10 +58,10 @@ class QuestionsRelationManager extends RelationManager
                     ->options(QuestionResource::pointOptions()),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()->createAnother(true),
+                Tables\Actions\CreateAction::make()->createAnother(true)->modalWidth('4xl'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()->modalWidth('4xl'),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

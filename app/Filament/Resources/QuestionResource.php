@@ -28,53 +28,91 @@ class QuestionResource extends Resource
         return collect(Game::LEVELS)->mapWithKeys(fn ($p) => [$p => (string) $p])->all();
     }
 
+    private static function imageUpload(string $field, string $label): Forms\Components\FileUpload
+    {
+        return Forms\Components\FileUpload::make($field)
+            ->label($label)
+            ->image()
+            ->imageEditor()
+            ->disk('public')
+            ->directory('questions')
+            ->maxSize(10240);
+    }
+
+    private static function audioUpload(string $field, string $label): Forms\Components\FileUpload
+    {
+        return Forms\Components\FileUpload::make($field)
+            ->label($label)
+            ->acceptedFileTypes(['audio/*'])
+            ->disk('public')
+            ->directory('questions/audio')
+            ->maxSize(20480)
+            ->helperText('mp3 أو m4a أو wav — حتى ٢٠ ميغا');
+    }
+
     /**
      * Shared with the category's questions relation manager.
      */
     public static function questionFields(bool $withCategory = true): array
     {
-        return array_values(array_filter([
-            $withCategory ? Forms\Components\Select::make('category_id')
-                ->label('الفئة')
-                ->relationship('category', 'name')
-                ->searchable()
-                ->preload()
-                ->required() : null,
-            Forms\Components\ToggleButtons::make('points')
-                ->label('النقاط')
-                ->options(self::pointOptions())
-                ->inline()
-                ->required()
-                ->default(Game::LEVELS[0]),
-            Forms\Components\Textarea::make('body')
-                ->label('السؤال')
-                ->required()
-                ->rows(3)
+        return [
+            Forms\Components\Grid::make(2)
+                ->schema(array_values(array_filter([
+                    $withCategory ? Forms\Components\Select::make('category_id')
+                        ->label('الفئة')
+                        ->relationship('category', 'name')
+                        ->searchable()
+                        ->preload()
+                        ->required() : null,
+                    Forms\Components\ToggleButtons::make('points')
+                        ->label('النقاط')
+                        ->options(self::pointOptions())
+                        ->inline()
+                        ->required()
+                        ->default(Game::LEVELS[0]),
+                ])))
                 ->columnSpanFull(),
-            Forms\Components\TextInput::make('answer')
-                ->label('الإجابة')
-                ->required()
-                ->maxLength(500)
+
+            Forms\Components\Section::make('السؤال')
+                ->description('النص مطلوب، والصورة والصوت اختياريين: مثلاً «مين صاحب هالصوت؟» مع ملف صوتي.')
+                ->icon('heroicon-o-question-mark-circle')
+                ->schema([
+                    Forms\Components\Textarea::make('body')
+                        ->label('نص السؤال')
+                        ->required()
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    self::imageUpload('image', 'صورة السؤال'),
+                    self::audioUpload('audio', 'صوت السؤال'),
+                ])
+                ->columns(2)
                 ->columnSpanFull(),
-            Forms\Components\FileUpload::make('image')
-                ->label('صورة (اختياري)')
-                ->image()
-                ->disk('public')
-                ->directory('questions')
+
+            Forms\Components\Section::make('الإجابة')
+                ->description('تنعرض بعد ما يضغط المقدّم «إظهار الإجابة». لازم يكون فيها نص أو صورة أو صوت.')
+                ->icon('heroicon-o-check-circle')
+                ->schema([
+                    Forms\Components\TextInput::make('answer')
+                        ->label('نص الإجابة')
+                        ->maxLength(500)
+                        ->requiredWithoutAll(['answer_image', 'answer_audio'])
+                        ->validationMessages(['required_without_all' => 'اكتب الإجابة أو أضف صورة أو صوت.'])
+                        ->columnSpanFull(),
+                    self::imageUpload('answer_image', 'صورة الإجابة'),
+                    self::audioUpload('answer_audio', 'صوت الإجابة'),
+                ])
+                ->columns(2)
                 ->columnSpanFull(),
+
             Forms\Components\Toggle::make('is_active')
                 ->label('مفعّل')
                 ->default(true),
-        ]));
+        ];
     }
 
     public static function form(Form $form): Form
     {
-        return $form->schema([
-            Forms\Components\Section::make()
-                ->schema(self::questionFields())
-                ->columns(2),
-        ]);
+        return $form->schema(self::questionFields())->columns(2);
     }
 
     public static function table(Table $table): Table
@@ -102,7 +140,16 @@ class QuestionResource extends Resource
                 Tables\Columns\TextColumn::make('answer')
                     ->label('الإجابة')
                     ->limit(40)
+                    ->placeholder('—')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('media')
+                    ->label('وسائط')
+                    ->state(fn (Question $record) => implode(' ', array_filter([
+                        $record->image ? '🖼️' : null,
+                        $record->audio ? '🔊' : null,
+                        $record->hasAnswerMedia() ? '✅'.($record->answer_image ? '🖼️' : '').($record->answer_audio ? '🔊' : '') : null,
+                    ])) ?: '—')
+                    ->tooltip('🖼️ صورة · 🔊 صوت · ✅ وسائط بالإجابة'),
                 Tables\Columns\ImageColumn::make('image')
                     ->label('صورة')
                     ->disk('public')

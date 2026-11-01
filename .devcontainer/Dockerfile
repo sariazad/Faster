@@ -7,5 +7,7 @@ RUN apt-get update \
     && docker-php-ext-install intl zip \
     && rm -rf /var/lib/apt/lists/*
 
+COPY php-uploads.ini /usr/local/etc/php/conf.d/zz-uploads.ini
+
 # Xdebug is preinstalled in debug mode; it slows Composer and prints connection warnings.
 ENV XDEBUG_MODE=off

@@ -15,6 +15,12 @@ if ! php -m | grep -qi '^intl$'; then
     sudo PHP_INI_DIR="${PHP_INI_DIR:-/usr/local/etc/php}" docker-php-ext-install intl
 fi
 
+# Larger upload limits for question media (for containers built before this was in the image).
+ini_dir="${PHP_INI_DIR:-/usr/local/etc/php}/conf.d"
+if [ -d "$ini_dir" ] && [ ! -f "$ini_dir/zz-uploads.ini" ]; then
+    sudo cp .devcontainer/php-uploads.ini "$ini_dir/zz-uploads.ini" 2>/dev/null || true
+fi
+
 step "إعداد ملف البيئة"
 if [ ! -f .env ]; then
     cp .env.example .env

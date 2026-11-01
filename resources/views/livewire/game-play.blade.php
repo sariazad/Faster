@@ -161,15 +161,38 @@
                 {{-- Body --}}
                 <div class="flex flex-1 flex-col items-center justify-center gap-8 py-8 text-center">
                     @if ($q->imageUrl())
-                        <img src="{{ $q->imageUrl() }}" alt="" class="max-h-[40vh] rounded-2xl object-contain shadow-2xl">
+                        <div x-data="{ zoom: false }" wire:key="qimg-{{ $current->id }}">
+                            <img src="{{ $q->imageUrl() }}" alt="" @click="zoom = true"
+                                 @class([
+                                     'cursor-zoom-in rounded-2xl object-contain shadow-2xl transition-all',
+                                     'max-h-[40vh]' => ! $revealed,
+                                     'max-h-[22vh]' => $revealed,
+                                 ])>
+                            <div x-show="zoom" x-transition.opacity @click="zoom = false" style="display: none"
+                                 class="fixed inset-0 z-[60] flex cursor-zoom-out items-center justify-center bg-night/95 p-6">
+                                <img src="{{ $q->imageUrl() }}" alt="" class="max-h-full max-w-full rounded-2xl object-contain">
+                            </div>
+                        </div>
                     @endif
 
                     <h1 class="text-3xl font-extrabold leading-snug sm:text-5xl sm:leading-snug">{{ $q->body }}</h1>
 
+                    @if ($q->audioUrl())
+                        <x-sound :src="$q->audioUrl()" label="صوت السؤال" />
+                    @endif
+
                     @if ($revealed)
-                        <div class="animate-pop rounded-3xl border-2 border-lantern bg-lantern/10 px-8 py-5">
+                        <div class="flex animate-pop flex-col items-center gap-4 rounded-3xl border-2 border-lantern bg-lantern/10 px-8 py-5">
                             <div class="text-sm font-bold text-lantern">الإجابة</div>
-                            <div class="mt-1 text-3xl font-black sm:text-4xl">{{ $q->answer }}</div>
+                            @if (filled($q->answer))
+                                <div class="text-3xl font-black sm:text-4xl">{{ $q->answer }}</div>
+                            @endif
+                            @if ($q->answerImageUrl())
+                                <img src="{{ $q->answerImageUrl() }}" alt="" class="max-h-[35vh] rounded-2xl object-contain shadow-2xl">
+                            @endif
+                            @if ($q->answerAudioUrl())
+                                <x-sound :src="$q->answerAudioUrl()" label="صوت الإجابة" />
+                            @endif
                         </div>
                     @endif
 

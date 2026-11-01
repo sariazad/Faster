@@ -21,6 +21,8 @@ export default {
                     700: '#251d57',
                     600: '#30266e',
                 },
+                paper: '#f7f2e7',
+                card: '#fff3dc',
                 lantern: {
                     DEFAULT: '#ffaa33',
                     light: '#ffc76b',

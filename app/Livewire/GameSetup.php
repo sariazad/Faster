@@ -26,12 +26,30 @@ class GameSetup extends Component
     /** Which team is picking now: 'a' or 'b'. */
     public string $picking = 'a';
 
+    public string $search = '';
+
     public ?string $notice = null;
 
+    /** All categories that can be played (enough questions in every level). */
     #[Computed]
     public function categories(): Collection
     {
         return Category::playable();
+    }
+
+    /** Categories shown in the grid after the search filter. */
+    #[Computed]
+    public function visibleCategories(): Collection
+    {
+        $term = trim($this->search);
+
+        if ($term === '') {
+            return $this->categories;
+        }
+
+        return $this->categories
+            ->filter(fn (Category $c) => mb_stripos($c->name, $term) !== false)
+            ->values();
     }
 
     public function pickFor(string $team): void
@@ -44,10 +62,9 @@ class GameSetup extends Component
         $this->notice = null;
 
         // Clicking a selected category removes it from its team.
-        foreach (['a' => 'selectedA', 'b' => 'selectedB'] as $team => $prop) {
-            if (in_array($categoryId, $this->{$prop}, true)) {
-                $this->{$prop} = array_values(array_diff($this->{$prop}, [$categoryId]));
-                $this->picking = $team;
+        foreach (['a', 'b'] as $team) {
+            if (in_array($categoryId, $this->selection($team), true)) {
+                $this->remove($team, $categoryId);
 
                 return;
             }
@@ -57,24 +74,35 @@ class GameSetup extends Component
             return;
         }
 
-        $prop = $this->picking === 'a' ? 'selectedA' : 'selectedB';
+        $team = $this->picking;
 
-        if (count($this->{$prop}) >= Game::CATEGORIES_PER_TEAM) {
-            $this->notice = 'كل فريق يختار '.Game::CATEGORIES_PER_TEAM.' فئات بس.';
+        if (count($this->selection($team)) >= Game::CATEGORIES_PER_TEAM) {
+            $other = Game::other($team);
 
-            return;
+            if (count($this->selection($other)) >= Game::CATEGORIES_PER_TEAM) {
+                $this->notice = 'الفريقين اختاروا فئاتهم. شيل فئة إذا بدك تغيّر.';
+
+                return;
+            }
+
+            $team = $this->picking = $other;
         }
 
-        $this->{$prop}[] = $categoryId;
+        $this->setSelection($team, [...$this->selection($team), $categoryId]);
 
         // Move on to the other team once this one is full.
-        if (count($this->{$prop}) === Game::CATEGORIES_PER_TEAM) {
-            $other = Game::other($this->picking);
-            $otherProp = $other === 'a' ? 'selectedA' : 'selectedB';
-            if (count($this->{$otherProp}) < Game::CATEGORIES_PER_TEAM) {
-                $this->picking = $other;
-            }
+        if (count($this->selection($team)) === Game::CATEGORIES_PER_TEAM
+            && count($this->selection(Game::other($team))) < Game::CATEGORIES_PER_TEAM) {
+            $this->picking = Game::other($team);
         }
+    }
+
+    public function remove(string $team, int $categoryId): void
+    {
+        $team = $team === 'b' ? 'b' : 'a';
+        $this->setSelection($team, array_values(array_diff($this->selection($team), [$categoryId])));
+        $this->picking = $team;
+        $this->notice = null;
     }
 
     public function shuffle(): void
@@ -116,12 +144,34 @@ class GameSetup extends Component
         $this->redirectRoute('game.play', $game);
     }
 
+    /** @return array<int> */
+    private function selection(string $team): array
+    {
+        return $team === 'a' ? $this->selectedA : $this->selectedB;
+    }
+
+    /** @param array<int> $ids */
+    private function setSelection(string $team, array $ids): void
+    {
+        if ($team === 'a') {
+            $this->selectedA = $ids;
+        } else {
+            $this->selectedB = $ids;
+        }
+    }
+
     public function render()
     {
+        $byId = $this->categories->keyBy('id');
+
         return view('livewire.game-setup', [
             'perTeam' => Game::CATEGORIES_PER_TEAM,
             'ready' => count($this->selectedA) === Game::CATEGORIES_PER_TEAM
                 && count($this->selectedB) === Game::CATEGORIES_PER_TEAM,
+            'slots' => [
+                'a' => collect($this->selectedA)->map(fn ($id) => $byId->get($id))->filter()->values(),
+                'b' => collect($this->selectedB)->map(fn ($id) => $byId->get($id))->filter()->values(),
+            ],
         ]);
     }
 }

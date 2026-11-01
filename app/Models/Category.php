@@ -91,6 +91,18 @@ class Category extends Model
         return true;
     }
 
+    /** Active questions across all levels (uses withLevelCounts when loaded). */
+    public function playableQuestionsCount(): int
+    {
+        $total = 0;
+
+        foreach (Game::LEVELS as $points) {
+            $total += (int) ($this->getAttribute("q{$points}_count") ?? 0);
+        }
+
+        return $total ?: $this->questions()->where('is_active', true)->count();
+    }
+
     public function imageUrl(): ?string
     {
         return $this->image ? Storage::disk('public')->url($this->image) : null;

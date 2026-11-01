@@ -179,4 +179,26 @@ class GameFlowTest extends TestCase
 
         $this->assertSame(200, $game->fresh()->team_a_score);
     }
+
+    public function test_question_and_answer_media_are_shown(): void
+    {
+        $game = $this->newGame();
+        $cell = $game->gameQuestions()->where('points', 200)->first();
+        $cell->question->update([
+            'image' => 'questions/q.jpg',
+            'audio' => 'questions/audio/q.mp3',
+            'answer' => null,
+            'answer_image' => 'questions/a.jpg',
+            'answer_audio' => 'questions/audio/a.mp3',
+        ]);
+
+        Livewire::test(GamePlay::class, ['game' => $game])
+            ->call('open', $cell->id)
+            ->assertSee('questions/q.jpg')
+            ->assertSee('questions/audio/q.mp3')
+            ->assertDontSee('questions/a.jpg')
+            ->call('reveal')
+            ->assertSee('questions/a.jpg')
+            ->assertSee('questions/audio/a.mp3');
+    }
 }
