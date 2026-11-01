@@ -1,0 +1,26 @@
+{
+    "name": "مين الأسبق",
+    "image": "mcr.microsoft.com/devcontainers/php:8.3",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "22"
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/setup.sh",
+    "forwardPorts": [8000],
+    "portsAttributes": {
+        "8000": {
+            "label": "مين الأسبق",
+            "onAutoForward": "openBrowser"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bmewburn.vscode-intelephense-client",
+                "onecentlab.laravel-blade",
+                "bradlc.vscode-tailwindcss"
+            ]
+        }
+    }
+}
