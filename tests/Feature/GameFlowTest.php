@@ -30,6 +30,15 @@ class GameFlowTest extends TestCase
         return Game::start('الصقور', 'النمور', $ids->slice(0, 3)->all(), $ids->slice(3, 3)->all());
     }
 
+    public function test_question_bank_is_complete_and_reseeding_adds_nothing(): void
+    {
+        $this->assertSame(51, Category::playable()->count());
+        $this->assertSame(612, \App\Models\Question::count());
+
+        $this->seed(QuestionBankSeeder::class);
+        $this->assertSame(612, \App\Models\Question::count());
+    }
+
     public function test_pages_load(): void
     {
         $this->get('/')->assertOk()->assertSee('مين');
