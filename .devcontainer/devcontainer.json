@@ -6,6 +6,9 @@
             "version": "22"
         }
     },
+    "containerEnv": {
+        "XDEBUG_MODE": "off"
+    },
     "postCreateCommand": "bash .devcontainer/setup.sh",
     "forwardPorts": [8000],
     "portsAttributes": {

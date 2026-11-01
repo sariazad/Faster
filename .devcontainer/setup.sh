@@ -2,11 +2,15 @@
 # One-time setup for GitHub Codespaces / Dev Containers.
 set -e
 
+# The base image ships Xdebug in debug mode; keep it quiet and fast here.
+export XDEBUG_MODE=off
+
 # Filament needs the intl extension; the base PHP image doesn't ship it.
 if ! php -m | grep -qi '^intl$'; then
     sudo apt-get update -y
     sudo apt-get install -y libicu-dev
-    sudo docker-php-ext-install intl
+    # sudo drops PHP_INI_DIR, which docker-php-ext-enable needs.
+    sudo PHP_INI_DIR="${PHP_INI_DIR:-/usr/local/etc/php}" docker-php-ext-install intl
 fi
 
 composer install --no-interaction
