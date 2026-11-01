@@ -28,16 +28,21 @@
 - **تصحيح النتيجة** بزيادة أو نقص ١٠٠ نقطة، من أزرار خفيفة على لوحة النتائج.
 - **إيقاف المؤقت وتشغيله** بالضغط على دائرة المؤقت.
 
-## التشغيل (Codespaces أو محلياً)
+## التشغيل
+
+### على GitHub Codespaces (الأسهل)
+
+1. من صفحة الريبو اضغط **Code** ثم **Codespaces** ثم **Create codespace on main**.
+2. انتظر حتى يخلص التجهيز التلقائي (٥ لـ ٨ دقائق أول مرة). الـ Codespace بيبني بيئة PHP 8.3 فيها كل الإضافات، ويثبّت المكتبات، وينشئ قاعدة البيانات مع الأسئلة التجريبية.
+3. بالـ terminal شغّل `php artisan serve`، وافتح البورت **8000** من تبويب **Ports**.
+
+إذا التجهيز ما اشتغل لأي سبب، شغّله يدوياً بـ `bash .devcontainer/setup.sh`.
+
+### على جهازك (PHP 8.2+ مع إضافتي intl و zip، و Composer، و Node 20+)
 
 ```bash
-composer install
-cp .env.example .env
-php artisan key:generate
-touch database/database.sqlite
-php artisan migrate --seed       # ينشئ حساب المشرف + ٨ فئات تجريبية (٤٨ سؤال)
-php artisan storage:link         # لصور الفئات والأسئلة
-npm install && npm run build
+git clone https://github.com/sariazad/Faster.git && cd Faster
+bash .devcontainer/setup.sh
 php artisan serve
 ```
 
@@ -47,7 +52,6 @@ php artisan serve
 | `/play/new` | إعداد لعبة جديدة |
 | `/admin` | لوحة التحكم (`admin@example.com` / `password` — غيّرها من `.env` قبل الـ seed) |
 
-> في Codespaces: إذا ظهرت الصفحة بدون تنسيق أو روابط http، اضبط `APP_URL` على رابط الـ Codespace، وأضف `ASSET_URL` بنفس القيمة.
 
 ## لوحة التحكم
 

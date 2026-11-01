@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
-# One-time setup for GitHub Codespaces / Dev Containers.
+# Project setup for GitHub Codespaces / Dev Containers / local machines.
+# Safe to run more than once.
 set -e
 
-# The base image ships Xdebug in debug mode; keep it quiet and fast here.
 export XDEBUG_MODE=off
 
-# Filament needs the intl extension; the base PHP image doesn't ship it.
+step() { echo; echo "▶ $1"; }
+
+# Fallback for containers built from an older image without intl.
 if ! php -m | grep -qi '^intl$'; then
+    step "تثبيت إضافة intl"
     sudo apt-get update -y
     sudo apt-get install -y libicu-dev
-    # sudo drops PHP_INI_DIR, which docker-php-ext-enable needs.
     sudo PHP_INI_DIR="${PHP_INI_DIR:-/usr/local/etc/php}" docker-php-ext-install intl
 fi
 
-composer install --no-interaction
-
+step "إعداد ملف البيئة"
 if [ ! -f .env ]; then
     cp .env.example .env
 fi
@@ -25,17 +26,23 @@ if [ -n "$CODESPACE_NAME" ]; then
     sed -i "s#^APP_URL=.*#APP_URL=${url}#" .env
 fi
 
+touch database/database.sqlite
+
+step "تثبيت مكتبات PHP (composer)"
+composer install --no-interaction --prefer-dist
+
 if ! grep -q '^APP_KEY=base64' .env; then
     php artisan key:generate --ansi
 fi
 
-touch database/database.sqlite
+step "قاعدة البيانات وبنك الأسئلة"
 php artisan migrate --seed --force
-php artisan storage:link || true
+php artisan storage:link 2>/dev/null || true
 
-npm install
+step "بناء الواجهة (npm)"
+npm install --no-audit --no-fund
 npm run build
 
 echo
 echo "✅ جاهز. شغّل:  php artisan serve"
-echo "   الدخول للوحة التحكم: /admin  (admin@example.com / password)"
+echo "   لوحة التحكم: /admin  (admin@example.com / password)"
