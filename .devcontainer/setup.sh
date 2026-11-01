@@ -29,7 +29,14 @@ fi
 touch database/database.sqlite
 
 step "تثبيت مكتبات PHP (composer)"
-composer install --no-interaction --prefer-dist
+if ! composer install --no-interaction --prefer-dist > /tmp/composer.log 2>&1; then
+    echo "❌ فشل تثبيت المكتبات. السبب:"
+    grep -E "Problem|missing|requires php|affected by security advisories" /tmp/composer.log \
+        | sed -E 's/Go to https.*//' | cut -c1-220 | head -15
+    echo "(السجل الكامل في /tmp/composer.log)"
+    exit 1
+fi
+tail -3 /tmp/composer.log
 
 if ! grep -q '^APP_KEY=base64' .env; then
     php artisan key:generate --ansi
