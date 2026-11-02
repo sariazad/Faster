@@ -212,8 +212,9 @@
         @endphp
 
         <div wire:key="question-{{ $current->id }}"
-             class="fixed inset-0 z-40 overflow-y-auto bg-night/95 backdrop-blur-sm">
-            <div class="mx-auto flex min-h-full max-w-5xl flex-col px-4 py-6 sm:py-10">
+             class="fixed inset-0 z-40 flex flex-col overflow-y-auto bg-night text-white">
+            <div class="checker h-2.5 shrink-0"></div>
+            <div class="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-6 sm:py-10">
 
                 {{-- Header --}}
                 <div class="flex flex-wrap items-center justify-between gap-3">
@@ -367,7 +368,7 @@
     {{-- ============ Results ============ --}}
     @if ($finished)
         @php $winner = $game->winner(); @endphp
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-night/90 p-4 backdrop-blur">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-night/90 p-4 text-white backdrop-blur">
             <div class="w-full max-w-xl animate-pop rounded-3xl border border-lantern/40 bg-night-800 p-8 text-center shadow-2xl">
                 <div class="text-6xl">{{ $winner === 'tie' ? '🤝' : '🏆' }}</div>
                 <h2 class="mt-4 text-4xl font-black">
