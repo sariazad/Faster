@@ -210,4 +210,16 @@ class GameFlowTest extends TestCase
             ->assertSee('questions/a.jpg')
             ->assertSee('questions/audio/a.mp3');
     }
+
+    public function test_host_can_switch_turn_only_between_questions(): void
+    {
+        $game = $this->newGame();
+        $game->switchTurn();
+        $this->assertSame('b', $game->fresh()->current_team);
+
+        $game->refresh();
+        $game->open($game->gameQuestions()->first());
+        $this->expectException(DomainException::class);
+        $game->switchTurn();
+    }
 }

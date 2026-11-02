@@ -3,7 +3,7 @@
     {{-- ============ Top bar ============ --}}
     <header class="sticky top-0 z-30 bg-night text-white shadow-lg shadow-night/20">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
-            <a href="{{ route('home') }}" class="text-2xl font-black">مين <span class="text-lantern">الأسبق</span></a>
+            <a href="{{ route('home') }}" class="text-2xl sm:text-3xl" title="الرئيسية"><x-logo /></a>
 
             <div class="flex items-center gap-2">
                 <button wire:click="shuffle" type="button"
@@ -12,6 +12,7 @@
                 </button>
             </div>
         </div>
+        <div class="checker h-2.5"></div>
     </header>
 
     <main class="mx-auto max-w-7xl px-4 pt-6">

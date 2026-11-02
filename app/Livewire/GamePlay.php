@@ -75,6 +75,11 @@ class GamePlay extends Component
         $this->dispatch('timer-stop');
     }
 
+    public function switchTurn(): void
+    {
+        $this->run(fn () => $this->game->switchTurn());
+    }
+
     public function adjust(string $team, int $delta): void
     {
         $delta = max(-600, min(600, $delta));

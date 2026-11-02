@@ -304,6 +304,18 @@ class Game extends Model
         return $points;
     }
 
+    /** Host override: hand the turn to the other team (only between questions). */
+    public function switchTurn(): void
+    {
+        $this->ensurePlaying();
+
+        if ($this->current_game_question_id) {
+            throw new DomainException('فيه سؤال مفتوح، خلّصوه أول.');
+        }
+
+        $this->update(['current_team' => self::other($this->current_team)]);
+    }
+
     public function adjustScore(string $team, int $delta): void
     {
         if (! in_array($team, ['a', 'b'], true)) {

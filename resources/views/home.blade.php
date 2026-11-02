@@ -5,9 +5,7 @@
             لعبة القعدات والجمعات
         </div>
 
-        <h1 class="text-6xl font-black leading-tight tracking-tight sm:text-8xl">
-            مين <span class="bg-gradient-to-l from-lantern to-lantern-light bg-clip-text text-transparent">الأسبق</span>؟
-        </h1>
+        <h1 class="text-5xl sm:text-8xl"><x-logo /></h1>
 
         <p class="mt-6 max-w-xl text-lg leading-relaxed text-white/70 sm:text-xl">
             فريقين، شاشة وحدة، وست فئات. كل فريق يختار سؤاله ويحاول يجاوب قبل ما يخلص الوقت، وإذا ما عرف، الفريق الثاني يسرق النقاط.

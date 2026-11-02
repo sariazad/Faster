@@ -22,6 +22,11 @@ export default {
                     600: '#30266e',
                 },
                 paper: '#f7f2e7',
+                level: {
+                    200: '#ffd98a',
+                    400: '#ffaa33',
+                    600: '#ef5a1f',
+                },
                 card: '#fff3dc',
                 lantern: {
                     DEFAULT: '#ffaa33',

@@ -3,124 +3,203 @@
     $finished = $game->isFinished();
 @endphp
 
-<main class="mx-auto flex min-h-screen max-w-[1600px] flex-col px-3 py-4 sm:px-6">
+<main class="relative flex min-h-screen flex-col bg-paper text-night lg:h-screen lg:overflow-hidden">
 
-    {{-- ============ Scoreboard ============ --}}
-    <header class="grid grid-cols-[1fr_auto_1fr] items-stretch gap-3">
-        @foreach (['a', 'b'] as $team)
-            @php $isTurn = ! $finished && $turn === $team; @endphp
-            <section @class([
-                'relative rounded-3xl border-2 p-3 transition sm:p-4',
-                'order-1' => $team === 'a',
-                'order-3' => $team === 'b',
-                'border-teamA bg-teamA/10 shadow-[0_0_40px_-10px] shadow-teamA' => $isTurn && $team === 'a',
-                'border-teamB bg-teamB/10 shadow-[0_0_40px_-10px] shadow-teamB' => $isTurn && $team === 'b',
-                'border-white/10 bg-night-800/70' => ! $isTurn,
-            ])>
-                <div class="flex items-center justify-between gap-2">
-                    <h2 class="flex items-center gap-2 truncate text-lg font-extrabold sm:text-2xl">
-                        <span @class(['h-3 w-3 shrink-0 rounded-full', 'bg-teamA' => $team === 'a', 'bg-teamB' => $team === 'b'])></span>
-                        <span class="truncate">{{ $game->teamName($team) }}</span>
-                    </h2>
-                    @if ($isTurn)
-                        <span @class([
-                            'shrink-0 rounded-full px-2.5 py-0.5 text-xs font-black text-night sm:text-sm',
-                            'bg-teamA' => $team === 'a',
-                            'bg-teamB' => $team === 'b',
-                        ])>دورهم</span>
-                    @endif
-                </div>
+    {{-- ============ Header ============ --}}
+    <header class="relative z-10 shrink-0 bg-night text-white shadow-lg shadow-night/25">
+        <div class="mx-auto grid max-w-[1700px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 py-2.5 sm:px-6 sm:py-3">
 
-                <div class="mt-1 flex items-end justify-between gap-2">
-                    <div class="text-4xl font-black tabular-nums sm:text-6xl">{{ $game->score($team) }}</div>
-                    @unless ($finished)
-                        <div class="flex gap-1 opacity-40 transition hover:opacity-100">
-                            <button wire:click="adjust('{{ $team }}', -100)" class="h-8 w-10 rounded-lg bg-white/10 text-sm font-bold hover:bg-white/20" title="تصحيح النتيجة">−١٠٠</button>
-                            <button wire:click="adjust('{{ $team }}', 100)" class="h-8 w-10 rounded-lg bg-white/10 text-sm font-bold hover:bg-white/20" title="تصحيح النتيجة">+١٠٠</button>
-                        </div>
-                    @endunless
-                </div>
+            {{-- Turn --}}
+            <div class="flex items-center justify-start">
+                @unless ($finished)
+                    <div @class([
+                        'flex items-center gap-1 rounded-full py-1 pe-1 ps-4 text-sm font-extrabold ring-2 sm:text-base',
+                        'bg-teamA/15 ring-teamA' => $turn === 'a',
+                        'bg-teamB/15 ring-teamB' => $turn === 'b',
+                    ])>
+                        <span class="hidden text-white/70 sm:inline">الدور:</span>
+                        <span class="max-w-[5rem] truncate sm:max-w-[9rem]">{{ $game->teamName($turn) }}</span>
+                        <button type="button" wire:click="switchTurn" title="تبديل الدور"
+                                class="ms-1 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 transition hover:rotate-180 hover:bg-white/20">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 11V9a2 2 0 0 1 2-2h16"/><path d="M7 21l-4-4 4-4"/><path d="M21 13v2a2 2 0 0 1-2 2H3"/></svg>
+                        </button>
+                    </div>
+                @endunless
+            </div>
 
-                <div class="mt-2 flex gap-1.5">
-                    @foreach ($helpers as $key => $helper)
-                        @php $available = $game->helperAvailable($team, $key); @endphp
-                        <span title="{{ $helper['label'] }} — {{ $helper['hint'] }}"
-                              @class([
-                                  'flex h-8 min-w-8 items-center justify-center rounded-lg px-1.5 text-sm font-black',
-                                  'bg-white/10 text-white' => $available,
-                                  'bg-white/5 text-white/25 line-through' => ! $available,
-                              ])>{{ $helper['icon'] }}</span>
-                    @endforeach
-                </div>
-            </section>
-        @endforeach
+            {{-- Logo --}}
+            <a href="{{ route('home') }}" class="text-xl sm:text-4xl" title="الرئيسية"><x-logo /></a>
 
-        <div class="order-2 flex flex-col items-center justify-center gap-2 px-1">
-            <a href="{{ route('home') }}" class="text-center text-lg font-black leading-tight sm:text-2xl">مين<br><span class="text-lantern">الأسبق</span></a>
-            @unless ($finished)
-                <button wire:click="finish" wire:confirm="متأكد تبي تنهي اللعبة الحين؟"
-                        class="rounded-lg px-2 py-1 text-xs text-white/40 hover:bg-white/5 hover:text-white/80">إنهاء</button>
-            @endunless
+            {{-- Actions --}}
+            <div class="flex items-center justify-end gap-2">
+                @unless ($finished)
+                    <button type="button" wire:click="finish" wire:confirm="متأكد تبي تنهي اللعبة الحين؟"
+                            class="hidden rounded-full border-2 border-white/25 px-4 py-1.5 text-sm font-extrabold transition hover:border-lantern hover:text-lantern sm:block">
+                        إنهاء اللعبة
+                    </button>
+                @endunless
+                <a href="{{ route('game.new') }}"
+                   class="rounded-full bg-white px-4 py-1.5 text-sm font-extrabold text-night transition hover:bg-lantern">
+                    خروج
+                </a>
+            </div>
         </div>
+        <div class="checker h-2.5"></div>
     </header>
 
     {{-- ============ Flash ============ --}}
     @if ($flash)
         <div wire:key="flash-{{ md5($flash.microtime()) }}"
              x-data="{ show: true }" x-init="setTimeout(() => show = false, 2500)" x-show="show" x-transition.opacity.duration.400ms
-             class="pointer-events-none fixed inset-x-0 top-6 z-50 flex justify-center">
-            <div class="animate-pop rounded-2xl border border-lantern/40 bg-night-700/95 px-6 py-3 text-lg font-extrabold text-lantern-light shadow-2xl">
+             class="pointer-events-none fixed inset-x-0 top-24 z-50 flex justify-center">
+            <div class="animate-pop rounded-2xl bg-night px-6 py-3 text-lg font-extrabold text-lantern shadow-2xl ring-2 ring-lantern/50">
                 {{ $flash }}
             </div>
         </div>
     @endif
 
     {{-- ============ Board ============ --}}
-    <section class="mt-4 grid flex-1 grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+    <section class="mx-auto grid w-full max-w-[1700px] flex-1 grid-cols-2 gap-3 px-3 py-4 sm:grid-cols-3 sm:gap-4 sm:px-6 lg:min-h-0 xl:grid-cols-6">
         @foreach ($columns as $category)
             @php $columnCells = ($cells[$category->id] ?? collect())->sortBy([['points', 'asc'], ['slot', 'asc']]); @endphp
-            <div class="flex flex-col gap-2" wire:key="col-{{ $category->id }}">
-                <div class="relative flex min-h-24 flex-col items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-night-700 p-3 text-center">
+            <article wire:key="col-{{ $category->id }}"
+                     class="flex min-h-0 flex-col overflow-hidden rounded-[1.75rem] bg-white shadow-[0_6px_0_0_rgba(18,13,43,0.10)] ring-1 ring-night/10">
+
+                {{-- Picture + name --}}
+                <div class="relative aspect-[4/3] overflow-hidden bg-gradient-to-b from-card to-lantern/30 lg:aspect-auto lg:min-h-[8rem] lg:flex-1">
                     @if ($category->imageUrl())
-                        <img src="{{ $category->imageUrl() }}" alt="" class="absolute inset-0 h-full w-full object-cover opacity-25">
+                        <img src="{{ $category->imageUrl() }}" alt="{{ $category->name }}" class="absolute inset-0 h-full w-full object-cover object-top">
+                    @else
+                        <div class="absolute inset-0 flex items-center justify-center pt-6 text-6xl xl:text-7xl">{{ $category->icon ?: '❓' }}</div>
                     @endif
-                    <span @class([
-                        'absolute right-2 top-2 h-2 w-2 rounded-full',
-                        'bg-teamA' => $category->pivot->team === 'a',
-                        'bg-teamB' => $category->pivot->team === 'b',
-                    ])></span>
-                    <span class="relative text-3xl">{{ $category->icon ?: '❓' }}</span>
-                    <span class="relative mt-1 text-base font-extrabold leading-tight sm:text-lg">{{ $category->name }}</span>
+
+                    <div class="absolute inset-x-2 top-2 flex justify-center">
+                        <span class="max-w-full truncate rounded-full bg-night px-3 py-1 text-xs font-extrabold text-lantern shadow-md sm:text-sm">
+                            {{ $category->name }}
+                        </span>
+                    </div>
+
+                    <span title="اختارها {{ $game->teamName($category->pivot->team) }}"
+                          @class([
+                              'absolute bottom-2 start-2 h-3 w-3 rounded-full ring-2 ring-white',
+                              'bg-teamA' => $category->pivot->team === 'a',
+                              'bg-teamB' => $category->pivot->team === 'b',
+                          ])></span>
                 </div>
 
-                @foreach ($levels as $points)
-                    <div class="grid flex-1 grid-cols-2 gap-2">
-                        @foreach ($columnCells->where('points', $points) as $cell)
-                            @php $pending = $cell->status === 'pending'; @endphp
-                            <button type="button"
-                                    wire:key="cell-{{ $cell->id }}"
-                                    @if ($pending && ! $finished) wire:click="open({{ $cell->id }})" @else disabled @endif
-                                    @class([
-                                        'flex min-h-14 items-center justify-center rounded-xl text-xl font-black tabular-nums transition sm:text-2xl',
-                                        'bg-lantern text-night hover:-translate-y-0.5 hover:bg-lantern-light hover:shadow-lg hover:shadow-lantern/30' => $pending,
-                                        'bg-teamA/20 text-teamA/60' => $cell->answered_by === 'a',
-                                        'bg-teamB/20 text-teamB/60' => $cell->answered_by === 'b',
-                                        'bg-white/5 text-white/20' => $cell->answered_by === 'n',
-                                    ])>
-                                @if ($pending)
-                                    {{ $points }}
-                                @elseif ($cell->answered_by === 'n')
-                                    ✕
-                                @else
-                                    ✓
-                                @endif
-                            </button>
-                        @endforeach
-                    </div>
-                @endforeach
-            </div>
+                {{-- Point tiles --}}
+                <div class="grid shrink-0 gap-[3px] bg-white p-[3px]">
+                    @foreach ($levels as $points)
+                        <div class="grid grid-cols-2 gap-[3px]">
+                            @foreach ($columnCells->where('points', $points) as $cell)
+                                @php $pending = $cell->status === 'pending'; @endphp
+                                <button type="button"
+                                        wire:key="cell-{{ $cell->id }}"
+                                        @if ($pending && ! $finished) wire:click="open({{ $cell->id }})" @else disabled @endif
+                                        @class([
+                                            'flex h-10 items-center justify-center text-base font-black tabular-nums transition sm:h-11 sm:text-lg 2xl:h-14 2xl:text-xl',
+                                            'hover:brightness-110 active:scale-95' => $pending && ! $finished,
+                                            'bg-level-200 text-night' => $pending && $points === 200,
+                                            'bg-level-400 text-night' => $pending && $points === 400,
+                                            'bg-level-600 text-white' => $pending && $points === 600,
+                                            'bg-teamA/15 text-teamA-dark' => $cell->answered_by === 'a',
+                                            'bg-teamB/15 text-teamB-dark' => $cell->answered_by === 'b',
+                                            'bg-night/5 text-night/25' => $cell->answered_by === 'n',
+                                        ])>
+                                    @if ($pending)
+                                        {{ $points }}
+                                    @elseif ($cell->answered_by === 'n')
+                                        ✕
+                                    @else
+                                        ✓ <span class="ms-1 text-xs font-bold opacity-70">{{ $points }}</span>
+                                    @endif
+                                </button>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
+            </article>
         @endforeach
     </section>
+
+    {{-- ============ Bottom bar: scores + helpers ============ --}}
+    @php
+        $allCells = $cells->flatten(1);
+        $answeredCount = $allCells->where('status', 'answered')->count();
+    @endphp
+    <footer class="mx-auto grid w-full max-w-[1700px] shrink-0 grid-cols-2 items-end gap-3 px-3 pb-4 sm:px-6 lg:grid-cols-[minmax(0,20rem)_1fr_minmax(0,20rem)]">
+        @foreach (['a', 'b'] as $team)
+            @php $isTurn = ! $finished && $turn === $team; @endphp
+            <div @class([
+                'rounded-[1.5rem] p-2.5 text-white shadow-xl transition sm:rounded-[2rem] sm:p-4',
+                'order-1' => $team === 'a',
+                'order-2 lg:order-3' => $team === 'b',
+                'bg-teamA-dark shadow-teamA-dark/30' => $team === 'a',
+                'bg-teamB-dark shadow-teamB-dark/30' => $team === 'b',
+                'ring-4 ring-lantern' => $isTurn,
+            ])>
+                <div class="mb-2 flex items-center justify-between gap-2 px-1">
+                    <h2 class="truncate text-base font-black sm:text-xl">{{ $game->teamName($team) }}</h2>
+                    <div class="hidden shrink-0 gap-1 sm:flex">
+                        @foreach ($helpers as $key => $helper)
+                            @php $available = $game->helperAvailable($team, $key); @endphp
+                            <span title="{{ $helper['label'] }} — {{ $available ? 'متاحة' : 'مستخدمة' }}"
+                                  @class([
+                                      'flex h-7 min-w-7 items-center justify-center rounded-lg px-1 text-xs font-black',
+                                      'bg-white/20' => $available,
+                                      'bg-black/15 text-white/35 line-through' => ! $available,
+                                  ])>{{ $helper['icon'] }}</span>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-1.5 rounded-full bg-black/15 p-1 sm:gap-2 sm:p-1.5">
+                    <button type="button" @if (! $finished) wire:click="adjust('{{ $team }}', 100)" @else disabled @endif
+                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15 text-xl font-black sm:h-10 sm:w-10 sm:text-2xl transition hover:bg-white/30 disabled:opacity-30"
+                            title="+١٠٠">+</button>
+                    <div class="min-w-0 flex-1 rounded-full bg-white py-1 text-center text-2xl font-black tabular-nums text-night sm:text-4xl">
+                        {{ $game->score($team) }}
+                    </div>
+                    <button type="button" @if (! $finished) wire:click="adjust('{{ $team }}', -100)" @else disabled @endif
+                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15 text-xl font-black sm:h-10 sm:w-10 sm:text-2xl transition hover:bg-white/30 disabled:opacity-30"
+                            title="−١٠٠">−</button>
+                </div>
+            </div>
+        @endforeach
+
+        {{-- Center: current team's helpers + progress --}}
+        <div class="order-3 col-span-2 flex flex-col items-center gap-3 lg:order-2 lg:col-span-1">
+            @unless ($finished)
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3">
+                    @foreach ($helpers as $key => $helper)
+                        @php $available = $game->helperAvailable($turn, $key); @endphp
+                        <div title="{{ $helper['hint'] }}"
+                             @class([
+                                 'flex items-center gap-2 rounded-2xl px-3 py-2 shadow-sm ring-2 transition sm:px-4',
+                                 'bg-white ring-lantern/60' => $available,
+                                 'bg-night/5 text-night/30 ring-transparent' => ! $available,
+                             ])>
+                            <span @class([
+                                'flex h-9 w-9 items-center justify-center rounded-xl text-sm font-black',
+                                'bg-lantern text-night' => $available,
+                                'bg-night/10' => ! $available,
+                            ])>{{ $helper['icon'] }}</span>
+                            <span class="text-sm font-extrabold">{{ $helper['label'] }}</span>
+                        </div>
+                    @endforeach
+                </div>
+                <p class="text-xs font-bold text-night/45">وسائل {{ $game->teamName($turn) }} — تُستخدم من داخل السؤال</p>
+            @endunless
+
+            <div class="flex w-full max-w-md items-center gap-3">
+                <div class="h-2.5 flex-1 overflow-hidden rounded-full bg-night/10">
+                    <div class="h-full rounded-full bg-gradient-to-l from-level-600 via-level-400 to-level-200 transition-all duration-500"
+                         style="width: {{ $allCells->count() ? round($answeredCount / $allCells->count() * 100) : 0 }}%"></div>
+                </div>
+                <span class="text-sm font-black tabular-nums text-night/60">{{ $answeredCount }}/{{ $allCells->count() }}</span>
+            </div>
+        </div>
+    </footer>
 
     {{-- ============ Question ============ --}}
     @if ($current)
