@@ -4,10 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Services\QuestionCsvImporter;
+use App\Services\QuestionDeduplicator;
 use Illuminate\Database\Seeder;
 
 /**
- * Starter question bank: 60 categories, 799 questions (at least four per level).
+ * Starter question bank: 60 categories, 796 questions (at least four per level).
  *
  * The questions live in database/seeders/data/question-bank.csv — the same
  * format the admin "استيراد CSV" action accepts, so it can be edited in Excel.
@@ -43,6 +44,9 @@ class QuestionBankSeeder extends Seeder
         }
 
         $result = app(QuestionCsvImporter::class)->import("{$dir}/question-bank.csv");
+
+        // Questions dropped from the bank because they repeated another one.
+        app(QuestionDeduplicator::class)->pruneRetiredBankQuestions("{$dir}/removed-questions.csv");
 
         $this->command?->info("بنك الأسئلة: انضاف {$result['created']} سؤال، وتجاهلنا {$result['skipped']} موجود مسبقاً.");
     }

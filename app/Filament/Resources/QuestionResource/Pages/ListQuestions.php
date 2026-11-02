@@ -5,6 +5,7 @@ namespace App\Filament\Resources\QuestionResource\Pages;
 use App\Filament\Resources\QuestionResource;
 use App\Models\Question;
 use App\Services\QuestionCsvImporter;
+use App\Services\QuestionDeduplicator;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Notifications\Notification;
@@ -68,6 +69,35 @@ class ListQuestions extends ListRecords
                         ->success()
                         ->persistent()
                         ->send();
+                }),
+
+            Actions\Action::make('dedupe')
+                ->label('حذف المكرر')
+                ->icon('heroicon-o-document-duplicate')
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalHeading('حذف الأسئلة المكررة')
+                ->modalDescription(function () {
+                    $preview = app(QuestionDeduplicator::class)->run(dryRun: true);
+
+                    return $preview['removed']
+                        ? "لقينا {$preview['removed']} سؤال مكرر. بنحتفظ بنسخة وحدة من كل سؤال (اللي فيها صور أو صوت إن وجدت)، والألعاب السابقة ما بتتأثر."
+                        : 'ما في أسئلة مكررة حالياً. بنشيل بس أسئلة البنك القديمة اللي كانت مكررة المعنى إن وجدت.';
+                })
+                ->action(function () {
+                    $service = app(QuestionDeduplicator::class);
+                    $retired = $service->pruneRetiredBankQuestions(database_path('seeders/data/removed-questions.csv'));
+                    $report = $service->run();
+
+                    $body = "حذفنا {$report['removed']} سؤال مكرر";
+                    if ($retired) {
+                        $body .= " و{$retired} سؤال قديم مكرر المعنى";
+                    }
+                    if ($report['kept_for_playability']) {
+                        $body .= "، وأبقينا {$report['kept_for_playability']} نسخة حتى ما تنقص فئاتها";
+                    }
+
+                    Notification::make()->title('تم التنظيف')->body($body)->success()->send();
                 }),
 
             Actions\Action::make('resetUsage')

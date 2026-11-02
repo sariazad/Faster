@@ -340,4 +340,88 @@ class GameFlowTest extends TestCase
         $this->assertSame(\App\Support\TextKey::make('2000م (1421هـ)'), \App\Support\TextKey::make('٢٠٠٠م'));
         $this->assertNotSame(\App\Support\TextKey::make('طلال مداح'), \App\Support\TextKey::make('محمد عبده'));
     }
+
+    /* ---------------------------------------------------------------
+     | Duplicate clean-up
+     * -------------------------------------------------------------- */
+
+    public function test_starter_bank_has_no_duplicate_question_text(): void
+    {
+        $keys = \App\Models\Question::pluck('body')->map(fn ($b) => \App\Support\TextKey::make($b));
+
+        $this->assertSame($keys->count(), $keys->unique()->count());
+    }
+
+    public function test_dedupe_removes_copies_in_the_same_category_and_keeps_game_history(): void
+    {
+        $category = $this->fixtureCategory('تنظيف');
+        $original = $category->questions()->where('points', 200)->first();
+        $copy = $category->questions()->create([
+            'points' => 200,
+            'body' => '  '.$original->body.'؟؟ ',
+            'answer' => $original->answer,
+            'is_active' => true,
+            'times_used' => 3,
+        ]);
+
+        $ids = collect(['س', 'ش', 'ص', 'ض', 'ع'])->map(fn ($n) => $this->fixtureCategory("فئة {$n}")->id)->all();
+        $game = Game::start('أ', 'ب', [$category->id, $ids[0], $ids[1]], [$ids[2], $ids[3], $ids[4]]);
+        $game->gameQuestions()->where('category_id', $category->id)->where('points', 200)->first()
+            ->update(['question_id' => $copy->id]);
+
+        $before = $game->gameQuestions()->count();
+        $report = app(\App\Services\QuestionDeduplicator::class)->run();
+
+        $this->assertSame(1, $report['removed']);
+        $this->assertNull(\App\Models\Question::find($copy->id));
+        $this->assertNotNull(\App\Models\Question::find($original->id));
+        $this->assertSame($before, $game->gameQuestions()->count());
+        $this->assertTrue($game->gameQuestions()->where('question_id', $original->id)->exists());
+    }
+
+    public function test_dedupe_dry_run_changes_nothing(): void
+    {
+        $category = $this->fixtureCategory('معاينة');
+        $original = $category->questions()->first();
+        $category->questions()->create(['points' => $original->points, 'body' => $original->body, 'answer' => 'x', 'is_active' => true]);
+
+        $count = \App\Models\Question::count();
+        $report = app(\App\Services\QuestionDeduplicator::class)->run(dryRun: true);
+
+        $this->assertSame(1, $report['removed']);
+        $this->assertSame($count, \App\Models\Question::count());
+    }
+
+    public function test_dedupe_keeps_a_cross_category_copy_when_its_category_would_become_too_small(): void
+    {
+        $big = $this->fixtureCategory('كبيرة');
+        $small = $this->fixtureCategory('صغيرة');
+        $small->questions()->where('points', 200)->orderByDesc('id')->limit(1)->get()->each->delete(); // 3 left at 200
+
+        $shared = $big->questions()->where('points', 200)->first();
+        $small->questions()->where('points', 200)->first()->update(['body' => $shared->body]);
+
+        $report = app(\App\Services\QuestionDeduplicator::class)->run();
+
+        $this->assertSame(0, $report['removed']);
+        $this->assertSame(1, $report['kept_for_playability']);
+        $this->assertSame(3, $small->questions()->where('points', 200)->count());
+    }
+
+    public function test_retired_bank_questions_are_pruned(): void
+    {
+        $category = Category::firstOrCreate(['name' => 'عايض']);
+        $retired = $category->questions()->create([
+            'points' => 200,
+            'body' => 'ما أغنية عايض التي اسمها صفة تعني الشخص الذكي سريع الفهم؟',
+            'answer' => 'لماح',
+            'is_active' => true,
+        ]);
+
+        $pruned = app(\App\Services\QuestionDeduplicator::class)
+            ->pruneRetiredBankQuestions(database_path('seeders/data/removed-questions.csv'));
+
+        $this->assertSame(1, $pruned);
+        $this->assertNull(\App\Models\Question::find($retired->id));
+    }
 }
