@@ -32,11 +32,15 @@ class GameFlowTest extends TestCase
 
     public function test_question_bank_is_complete_and_reseeding_adds_nothing(): void
     {
-        $this->assertSame(51, Category::playable()->count());
-        $this->assertSame(612, \App\Models\Question::count());
+        $dir = database_path('seeders/data');
+        $categories = count(json_decode(file_get_contents("{$dir}/categories.json"), true));
+        $questions = count(file("{$dir}/question-bank.csv", FILE_SKIP_EMPTY_LINES)) - 1;
+
+        $this->assertSame($categories, Category::playable()->count());
+        $this->assertSame($questions, \App\Models\Question::count());
 
         $this->seed(QuestionBankSeeder::class);
-        $this->assertSame(612, \App\Models\Question::count());
+        $this->assertSame($questions, \App\Models\Question::count());
     }
 
     public function test_pages_load(): void
