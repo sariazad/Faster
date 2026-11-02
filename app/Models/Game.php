@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\TextKey;
 use DomainException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -137,38 +138,137 @@ class Game extends Model
 
             // Board columns alternate: A1, B1, A2, B2, A3, B3
             $position = 0;
+            $columns = [];
             for ($i = 0; $i < self::CATEGORIES_PER_TEAM; $i++) {
                 foreach (['a' => $teamACategoryIds[$i], 'b' => $teamBCategoryIds[$i]] as $team => $categoryId) {
                     $game->categories()->attach($categoryId, ['team' => $team, 'position' => ++$position]);
-                    $game->drawQuestions($categoryId);
+                    $columns[] = $categoryId;
                 }
             }
+
+            $game->drawQuestions($columns);
 
             return $game;
         });
     }
 
-    protected function drawQuestions(int $categoryId): void
+    /**
+     * Picks the board's questions for all columns at once.
+     *
+     * Rules, in order of priority:
+     *  1. Never the same question twice in a game, even if its text exists in two categories.
+     *  2. Rotate through the bank: least-used questions first, then the ones used longest ago,
+     *     so a question only comes back after the rest of its category/level has been played.
+     *  3. Avoid two questions with the same answer in one game, when there is an alternative.
+     *  4. Random among equally-fresh questions, and random placement on the board.
+     *
+     * @param  array<int>  $categoryIds
+     */
+    protected function drawQuestions(array $categoryIds): void
     {
-        foreach (self::LEVELS as $points) {
-            $questions = Question::query()
-                ->where('category_id', $categoryId)
-                ->where('points', $points)
-                ->where('is_active', true)
-                ->inRandomOrder()
-                ->limit(self::QUESTIONS_PER_LEVEL)
-                ->get();
+        $usedIds = [];
+        $usedBodies = [];
+        $usedAnswers = [];
+        $picked = [];
 
-            foreach ($questions->values() as $index => $question) {
-                $this->gameQuestions()->create([
-                    'question_id' => $question->id,
-                    'category_id' => $categoryId,
-                    'points' => $points,
-                    'slot' => $index + 1,
-                    'status' => GameQuestion::PENDING,
-                ]);
+        // Hardest levels first: they have the fewest alternatives, so they get first claim on answers.
+        foreach (array_reverse(self::LEVELS) as $points) {
+            foreach ($categoryIds as $categoryId) {
+                $candidates = Question::query()
+                    ->where('category_id', $categoryId)
+                    ->where('points', $points)
+                    ->where('is_active', true)
+                    ->get(['id', 'body', 'answer', 'answer_image', 'answer_audio', 'times_used', 'last_used_at'])
+                    ->shuffle()
+                    ->sortBy(fn (Question $q) => [$q->times_used, $q->last_used_at?->getTimestamp() ?? 0])
+                    ->values();
+
+                $chosen = $this->choose($candidates, $usedIds, $usedBodies, $usedAnswers);
+
+                foreach ($chosen as $question) {
+                    $usedIds[$question->id] = true;
+                    $usedBodies[TextKey::make($question->body)] = true;
+                    if ($key = $this->answerKey($question)) {
+                        $usedAnswers[$key] = true;
+                    }
+                }
+
+                $picked[$categoryId][$points] = $chosen->shuffle()->values();
             }
         }
+
+        foreach ($picked as $categoryId => $levels) {
+            foreach ($levels as $points => $questions) {
+                foreach ($questions as $index => $question) {
+                    $this->gameQuestions()->create([
+                        'question_id' => $question->id,
+                        'category_id' => $categoryId,
+                        'points' => $points,
+                        'slot' => $index + 1,
+                        'status' => GameQuestion::PENDING,
+                    ]);
+                }
+            }
+        }
+
+        if ($usedIds) {
+            Question::whereIn('id', array_keys($usedIds))->update([
+                'times_used' => DB::raw('times_used + 1'),
+                'last_used_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection<int, Question>  $candidates  ordered freshest first
+     * @return \Illuminate\Support\Collection<int, Question>
+     */
+    private function choose($candidates, array $usedIds, array $usedBodies, array $usedAnswers)
+    {
+        $chosen = collect();
+        $answers = $usedAnswers;
+        $bodies = $usedBodies;
+
+        // Pass 1: fresh text and fresh answer. Pass 2: allow a repeated answer if nothing else is left.
+        foreach ([true, false] as $strictAnswers) {
+            foreach ($candidates as $question) {
+                if ($chosen->count() >= self::QUESTIONS_PER_LEVEL) {
+                    break 2;
+                }
+
+                $body = TextKey::make($question->body);
+                $answer = $this->answerKey($question);
+
+                if (isset($usedIds[$question->id]) || isset($bodies[$body]) || $chosen->contains('id', $question->id)) {
+                    continue;
+                }
+
+                if ($strictAnswers && $answer && isset($answers[$answer])) {
+                    continue;
+                }
+
+                $chosen->push($question);
+                $bodies[$body] = true;
+                if ($answer) {
+                    $answers[$answer] = true;
+                }
+            }
+        }
+
+        return $chosen;
+    }
+
+    /** Answers too generic to count as "the same answer" (true/false rounds etc.). */
+    private const GENERIC_ANSWERS = ['صح', 'غلط', 'خطا', 'نعم', 'لا'];
+
+    private function answerKey(Question $question): string
+    {
+        // Picture/sound-only answers can't be compared, so they never block each other.
+        $key = TextKey::make($question->answer);
+
+        $first = strtok($key, ' ') ?: '';
+
+        return in_array($first, self::GENERIC_ANSWERS, true) ? '' : $key;
     }
 
     /* ---------------------------------------------------------------

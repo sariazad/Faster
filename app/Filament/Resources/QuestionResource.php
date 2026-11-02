@@ -154,6 +154,12 @@ class QuestionResource extends Resource
                     ->label('صورة')
                     ->disk('public')
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('times_used')
+                    ->label('مرات الظهور')
+                    ->numeric()
+                    ->sortable()
+                    ->tooltip(fn (Question $record) => $record->last_used_at ? 'آخر ظهور '.$record->last_used_at->diffForHumans() : 'ما ظهر بعد')
+                    ->toggleable(),
                 Tables\Columns\ToggleColumn::make('is_active')
                     ->label('مفعّل'),
             ])

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\QuestionResource\Pages;
 
 use App\Filament\Resources\QuestionResource;
+use App\Models\Question;
 use App\Services\QuestionCsvImporter;
 use Filament\Actions;
 use Filament\Forms;
@@ -67,6 +68,17 @@ class ListQuestions extends ListRecords
                         ->success()
                         ->persistent()
                         ->send();
+                }),
+
+            Actions\Action::make('resetUsage')
+                ->label('تصفير عدّاد الظهور')
+                ->icon('heroicon-o-arrow-path')
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalDescription('كل الأسئلة بترجع كأنها ما ظهرت أبداً، وبتدخل الدورة من جديد. استخدمه مثلاً قبل فعالية مع جمهور جديد.')
+                ->action(function () {
+                    Question::query()->update(['times_used' => 0, 'last_used_at' => null]);
+                    Notification::make()->title('تم تصفير عدّاد الظهور')->success()->send();
                 }),
 
             Actions\CreateAction::make(),

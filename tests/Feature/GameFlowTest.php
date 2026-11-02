@@ -226,4 +226,118 @@ class GameFlowTest extends TestCase
         $this->expectException(DomainException::class);
         $game->switchTurn();
     }
+
+    /* ---------------------------------------------------------------
+     | Question selection
+     * -------------------------------------------------------------- */
+
+    /**
+     * A playable category with 4 questions per level.
+     *
+     * @param  array<int, array<int, string>>  $answers  optional answers per level
+     */
+    private function fixtureCategory(string $name, array $answers = [], array $bodies = []): Category
+    {
+        $category = Category::create(['name' => $name, 'is_active' => true]);
+
+        foreach (Game::LEVELS as $points) {
+            for ($i = 1; $i <= 4; $i++) {
+                $category->questions()->create([
+                    'points' => $points,
+                    'body' => $bodies[$points][$i - 1] ?? "{$name} سؤال {$points} رقم {$i}",
+                    'answer' => $answers[$points][$i - 1] ?? "{$name} جواب {$points} رقم {$i}",
+                    'is_active' => true,
+                ]);
+            }
+        }
+
+        return $category;
+    }
+
+    /** @return array<int> */
+    private function fixtureColumns(): array
+    {
+        return collect(['ألف', 'باء', 'جيم', 'دال', 'هاء', 'واو'])
+            ->map(fn ($n) => $this->fixtureCategory("فئة {$n}")->id)
+            ->all();
+    }
+
+    public function test_questions_rotate_and_do_not_return_before_the_rest_are_used(): void
+    {
+        $ids = $this->fixtureColumns();
+
+        $first = Game::start('أ', 'ب', array_slice($ids, 0, 3), array_slice($ids, 3, 3));
+        $second = Game::start('أ', 'ب', array_slice($ids, 0, 3), array_slice($ids, 3, 3));
+
+        $firstIds = $first->gameQuestions()->pluck('question_id')->all();
+        $secondIds = $second->gameQuestions()->pluck('question_id')->all();
+
+        $this->assertCount(36, $firstIds);
+        $this->assertCount(36, $secondIds);
+        $this->assertEmpty(array_intersect($firstIds, $secondIds), 'Second game reused a question before the bank was exhausted.');
+
+        // 4 per level, 2 per game: after two games every fixture question was used exactly once.
+        $usage = \App\Models\Question::whereIn('category_id', $ids)->pluck('times_used')->unique()->all();
+        $this->assertSame([1], array_values($usage));
+    }
+
+    public function test_least_used_questions_are_preferred(): void
+    {
+        $ids = $this->fixtureColumns();
+        \App\Models\Question::whereIn('category_id', $ids)->update(['times_used' => 5]);
+
+        $fresh = \App\Models\Question::whereIn('category_id', $ids)
+            ->get()
+            ->groupBy(fn ($q) => $q->category_id.'-'.$q->points)
+            ->map(fn ($group) => $group->take(2)->pluck('id'))
+            ->flatten();
+        \App\Models\Question::whereIn('id', $fresh)->update(['times_used' => 0]);
+
+        $game = Game::start('أ', 'ب', array_slice($ids, 0, 3), array_slice($ids, 3, 3));
+
+        $this->assertEqualsCanonicalizing($fresh->all(), $game->gameQuestions()->pluck('question_id')->all());
+    }
+
+    public function test_same_text_in_two_categories_is_not_asked_twice_in_one_game(): void
+    {
+        $same = 'ما عاصمة اليابان؟';
+        $a = $this->fixtureCategory('مكرر أ', bodies: [200 => [$same]]);
+        $b = $this->fixtureCategory('مكرر ب', bodies: [200 => ["  ما عاصمة   اليابان ؟ "]]);
+        $others = collect(['ز', 'ح', 'ط', 'ي'])->map(fn ($n) => $this->fixtureCategory("فئة {$n}")->id)->all();
+
+        for ($run = 0; $run < 5; $run++) {
+            \App\Models\Question::query()->update(['times_used' => 0]);
+            $game = Game::start('أ', 'ب', [$a->id, $others[0], $others[1]], [$b->id, $others[2], $others[3]]);
+
+            $bodies = $game->gameQuestions()->with('question')->get()
+                ->map(fn ($gq) => \App\Support\TextKey::make($gq->question->body));
+
+            $this->assertSame($bodies->count(), $bodies->unique()->count());
+        }
+    }
+
+    public function test_two_questions_with_the_same_answer_are_avoided_when_possible(): void
+    {
+        $a = $this->fixtureCategory('جواب أ', answers: [600 => ['لمّاح']]);
+        $b = $this->fixtureCategory('جواب ب', answers: [400 => ['«لماح»']]);
+        $others = collect(['ك', 'ل', 'م', 'ن'])->map(fn ($n) => $this->fixtureCategory("فئة {$n}")->id)->all();
+
+        for ($run = 0; $run < 5; $run++) {
+            \App\Models\Question::query()->update(['times_used' => 0]);
+            $game = Game::start('أ', 'ب', [$a->id, $others[0], $others[1]], [$b->id, $others[2], $others[3]]);
+
+            $answers = $game->gameQuestions()->with('question')->get()
+                ->map(fn ($gq) => \App\Support\TextKey::make($gq->question->answer));
+
+            $this->assertSame($answers->count(), $answers->unique()->count());
+        }
+    }
+
+    public function test_text_key_ignores_harakat_punctuation_and_alef_forms(): void
+    {
+        $this->assertSame(\App\Support\TextKey::make('لمّاح'), \App\Support\TextKey::make('«لماح»'));
+        $this->assertSame(\App\Support\TextKey::make('أبها'), \App\Support\TextKey::make('ابها'));
+        $this->assertSame(\App\Support\TextKey::make('2000م (1421هـ)'), \App\Support\TextKey::make('٢٠٠٠م'));
+        $this->assertNotSame(\App\Support\TextKey::make('طلال مداح'), \App\Support\TextKey::make('محمد عبده'));
+    }
 }

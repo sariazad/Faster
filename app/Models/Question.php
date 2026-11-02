@@ -24,6 +24,8 @@ class Question extends Model
         'answer_image',
         'answer_audio',
         'is_active',
+        'times_used',
+        'last_used_at',
     ];
 
     protected function casts(): array
@@ -31,6 +33,8 @@ class Question extends Model
         return [
             'points' => 'integer',
             'is_active' => 'boolean',
+            'times_used' => 'integer',
+            'last_used_at' => 'datetime',
         ];
     }
 
