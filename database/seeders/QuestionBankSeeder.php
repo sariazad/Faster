@@ -8,7 +8,7 @@ use App\Services\QuestionDeduplicator;
 use Illuminate\Database\Seeder;
 
 /**
- * Starter question bank: 60 categories, 796 questions (at least four per level).
+ * Starter question bank: 60 categories, 845 questions (at least four per level).
  *
  * The questions live in database/seeders/data/question-bank.csv — the same
  * format the admin "استيراد CSV" action accepts, so it can be edited in Excel.
