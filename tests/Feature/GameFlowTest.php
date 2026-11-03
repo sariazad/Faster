@@ -474,4 +474,63 @@ class GameFlowTest extends TestCase
         $this->expectException(DomainException::class);
         Game::start('أ', 'ب', $ids->slice(0, 3)->all(), $ids->slice(3, 3)->all(), 7, 30);
     }
+
+    /* ---------------------------------------------------------------
+     | Picture / sound rounds with the same question text
+     * -------------------------------------------------------------- */
+
+    private function pictureCategory(string $name): Category
+    {
+        $category = Category::create(['name' => $name, 'is_active' => true]);
+
+        foreach (Game::LEVELS as $points) {
+            for ($i = 1; $i <= 2; $i++) {
+                $category->questions()->create([
+                    'points' => $points,
+                    'body' => 'خمن اسم الأكلة',
+                    'image' => "questions/{$name}-{$points}-{$i}.jpg",
+                    'answer' => "أكلة {$points} {$i}",
+                    'is_active' => true,
+                ]);
+            }
+        }
+
+        return $category;
+    }
+
+    public function test_picture_questions_with_the_same_text_fill_the_board(): void
+    {
+        $food = $this->pictureCategory('خمن الأكلة');
+        $ids = Category::where('id', '!=', $food->id)->orderBy('id')->limit(5)->pluck('id')->all();
+
+        $game = Game::start('أ', 'ب', [$food->id, $ids[0], $ids[1]], [$ids[2], $ids[3], $ids[4]]);
+
+        $this->assertSame(36, $game->gameQuestions()->count());
+        $this->assertSame(6, $game->gameQuestions()->where('category_id', $food->id)->count());
+    }
+
+    public function test_dedupe_keeps_picture_questions_that_share_text(): void
+    {
+        $food = $this->pictureCategory('خمن الأكلة 2');
+
+        $report = app(\App\Services\QuestionDeduplicator::class)->run();
+
+        $this->assertSame(0, $report['removed']);
+        $this->assertSame(6, $food->questions()->count());
+    }
+
+    public function test_board_is_full_even_when_a_category_only_has_identical_texts(): void
+    {
+        $same = Category::create(['name' => 'نص واحد', 'is_active' => true]);
+        foreach (Game::LEVELS as $points) {
+            foreach ([1, 2] as $i) {
+                $same->questions()->create(['points' => $points, 'body' => 'سؤال مكرر', 'answer' => "جواب {$points}{$i}", 'is_active' => true]);
+            }
+        }
+        $ids = Category::where('id', '!=', $same->id)->orderBy('id')->limit(5)->pluck('id')->all();
+
+        $game = Game::start('أ', 'ب', [$same->id, $ids[0], $ids[1]], [$ids[2], $ids[3], $ids[4]]);
+
+        $this->assertSame(36, $game->gameQuestions()->count());
+    }
 }

@@ -87,6 +87,17 @@ class Question extends Model
         return $this->mediaUrl('answer_audio');
     }
 
+    /**
+     * What makes two questions "the same question": the text plus the question's own
+     * picture/sound. "خمن اسم الأكلة" with two different photos is two questions.
+     */
+    public function identityKey(): string
+    {
+        $media = array_filter([$this->image, $this->audio]);
+
+        return \App\Support\TextKey::make($this->body).($media ? '|'.implode('|', $media) : '');
+    }
+
     public function hasAnswerMedia(): bool
     {
         return (bool) ($this->answer_image || $this->answer_audio);

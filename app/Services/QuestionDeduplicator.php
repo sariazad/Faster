@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\DB;
  * Removes duplicate questions from the database.
  *
  * Two questions are duplicates when their text is the same after ignoring
- * harakat, hamza forms, punctuation and extra spaces (see TextKey).
+ * harakat, hamza forms, punctuation and extra spaces (see TextKey) AND they
+ * have the same picture/sound. Picture rounds ("خمن اسم الأكلة" + a different
+ * photo each time) are never treated as duplicates.
  *
  *  - Same category: the extra copies are always removed.
  *  - Different categories: the extra copy is removed only if its category/level
@@ -37,7 +39,7 @@ class QuestionDeduplicator
 
         $groups = Question::query()
             ->get(['id', 'category_id', 'points', 'body', 'image', 'audio', 'answer_image', 'answer_audio', 'is_active', 'times_used'])
-            ->groupBy(fn (Question $q) => TextKey::make($q->body))
+            ->groupBy(fn (Question $q) => $q->identityKey())
             ->filter(fn (Collection $group, string $key) => $key !== '' && $group->count() > 1);
 
         // Active questions per category+level, kept up to date as we remove.

@@ -199,7 +199,7 @@ class Game extends Model
                     ->where('category_id', $categoryId)
                     ->where('points', $points)
                     ->where('is_active', true)
-                    ->get(['id', 'body', 'answer', 'answer_image', 'answer_audio', 'times_used', 'last_used_at'])
+                    ->get(['id', 'body', 'image', 'audio', 'answer', 'answer_image', 'answer_audio', 'times_used', 'last_used_at'])
                     ->shuffle()
                     ->sortBy(fn (Question $q) => [$q->times_used, $q->last_used_at?->getTimestamp() ?? 0])
                     ->values();
@@ -208,7 +208,7 @@ class Game extends Model
 
                 foreach ($chosen as $question) {
                     $usedIds[$question->id] = true;
-                    $usedBodies[TextKey::make($question->body)] = true;
+                    $usedBodies[$question->identityKey()] = true;
                     if ($key = $this->answerKey($question)) {
                         $usedAnswers[$key] = true;
                     }
@@ -250,17 +250,22 @@ class Game extends Model
         $answers = $usedAnswers;
         $bodies = $usedBodies;
 
-        // Pass 1: fresh text and fresh answer. Pass 2: allow a repeated answer if nothing else is left.
-        foreach ([true, false] as $strictAnswers) {
+        // Pass 1: fresh question and fresh answer. Pass 2: allow a repeated answer.
+        // Pass 3: allow a repeated question text, so the board is always full.
+        foreach ([[true, true], [false, true], [false, false]] as [$strictAnswers, $strictBodies]) {
             foreach ($candidates as $question) {
                 if ($chosen->count() >= self::QUESTIONS_PER_LEVEL) {
                     break 2;
                 }
 
-                $body = TextKey::make($question->body);
+                $body = $question->identityKey();
                 $answer = $this->answerKey($question);
 
-                if (isset($usedIds[$question->id]) || isset($bodies[$body]) || $chosen->contains('id', $question->id)) {
+                if (isset($usedIds[$question->id]) || $chosen->contains('id', $question->id)) {
+                    continue;
+                }
+
+                if ($strictBodies && isset($bodies[$body])) {
                     continue;
                 }
 

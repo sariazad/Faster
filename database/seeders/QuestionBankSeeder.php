@@ -36,6 +36,11 @@ class QuestionBankSeeder extends Seeder
                 ],
             );
 
+            // Flag emoji render as letters ("SA") on Windows; swap the old default.
+            if ($category->icon === '🇸🇦') {
+                $category->icon = $item['icon'];
+            }
+
             // Fill gaps on categories created before this bank existed, without overwriting admin edits.
             $category->fill(array_filter([
                 'icon' => $category->icon ? null : $item['icon'],

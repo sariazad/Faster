@@ -91,7 +91,12 @@
                 <div class="grid shrink-0 gap-[3px] bg-white p-[3px]">
                     @foreach ($levels as $points)
                         <div class="grid grid-cols-2 gap-[3px]">
-                            @foreach ($columnCells->where('points', $points) as $cell)
+                            @for ($slot = 1; $slot <= $perLevel; $slot++)
+                                @php $cell = $columnCells->first(fn ($c) => $c->points === $points && $c->slot === $slot); @endphp
+                                @if (! $cell)
+                                    <span class="flex h-10 items-center justify-center bg-night/5 text-night/20 sm:h-11 2xl:h-14" title="ما في سؤال كافي بهالمستوى">—</span>
+                                    @continue
+                                @endif
                                 @php $pending = $cell->status === 'pending'; @endphp
                                 <button type="button"
                                         wire:key="cell-{{ $cell->id }}"
@@ -114,7 +119,7 @@
                                         ✓ <span class="ms-1 text-xs font-bold opacity-70">{{ $points }}</span>
                                     @endif
                                 </button>
-                            @endforeach
+                            @endfor
                         </div>
                     @endforeach
                 </div>
