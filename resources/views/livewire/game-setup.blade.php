@@ -171,6 +171,7 @@
                 @endforeach
             </div>
         @endif
+        <x-copyright class="mt-10 text-night/40" />
     </main>
 
     {{-- ============ Bottom bar: team slots + start ============ --}}

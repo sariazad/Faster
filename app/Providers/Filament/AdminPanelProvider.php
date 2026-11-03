@@ -59,6 +59,10 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->renderHook(
+                \Filament\View\PanelsRenderHook::FOOTER,
+                fn (): string => view('components.copyright', ['attributes' => new \Illuminate\View\ComponentAttributeBag(['class' => 'py-4 text-gray-400'])])->render(),
+            )
             ->authMiddleware([
                 Authenticate::class,
             ]);

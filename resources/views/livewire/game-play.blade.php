@@ -206,6 +206,7 @@
             <p class="text-xs font-bold text-night/45">
                 ⏱ الإجابة {{ $game->answer_seconds }} ث · السرقة {{ $game->steal_seconds }} ث
             </p>
+            <x-copyright class="text-[11px] text-night/35" />
         </div>
     </footer>
 
@@ -404,6 +405,7 @@
                     <a href="{{ route('game.new') }}" class="rounded-2xl bg-lantern px-8 py-3 text-lg font-extrabold text-night hover:bg-lantern-light">لعبة جديدة</a>
                     <a href="{{ route('home') }}" class="rounded-2xl border border-white/15 px-8 py-3 text-lg font-bold hover:bg-white/5">الرئيسية</a>
                 </div>
+                <x-copyright class="mt-6 text-white/40" />
             </div>
         </div>
     @endif

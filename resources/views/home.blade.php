@@ -35,5 +35,7 @@
                 </div>
             @endforeach
         </section>
+
+        <x-copyright class="mt-16 text-white/40" />
     </main>
 </x-layouts.app>
