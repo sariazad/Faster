@@ -28,6 +28,12 @@ class GameSetup extends Component
 
     public string $search = '';
 
+    /** Seconds the picking team gets to answer. */
+    public int $answerSeconds = Game::MAIN_SECONDS;
+
+    /** Seconds the other team gets to steal. */
+    public int $stealSeconds = Game::STEAL_SECONDS;
+
     public ?string $notice = null;
 
     /** All categories that can be played (enough questions in every level). */
@@ -125,7 +131,11 @@ class GameSetup extends Component
         $this->validate([
             'teamA' => 'required|string|max:40',
             'teamB' => 'required|string|max:40|different:teamA',
+            'answerSeconds' => ['required', 'integer', 'in:'.implode(',', Game::ANSWER_OPTIONS)],
+            'stealSeconds' => ['required', 'integer', 'in:'.implode(',', Game::STEAL_OPTIONS)],
         ], [
+            'answerSeconds.in' => 'اختر مدة إجابة من الخيارات.',
+            'stealSeconds.in' => 'اختر مدة سرقة من الخيارات.',
             'teamA.required' => 'اكتب اسم الفريق الأول.',
             'teamB.required' => 'اكتب اسم الفريق الثاني.',
             'teamB.different' => 'اسم الفريقين لازم يكون مختلف.',
@@ -134,7 +144,14 @@ class GameSetup extends Component
         ]);
 
         try {
-            $game = Game::start($this->teamA, $this->teamB, $this->selectedA, $this->selectedB);
+            $game = Game::start(
+                $this->teamA,
+                $this->teamB,
+                $this->selectedA,
+                $this->selectedB,
+                $this->answerSeconds,
+                $this->stealSeconds,
+            );
         } catch (DomainException $e) {
             $this->notice = $e->getMessage();
 
@@ -166,6 +183,8 @@ class GameSetup extends Component
 
         return view('livewire.game-setup', [
             'perTeam' => Game::CATEGORIES_PER_TEAM,
+            'answerOptions' => Game::ANSWER_OPTIONS,
+            'stealOptions' => Game::STEAL_OPTIONS,
             'ready' => count($this->selectedA) === Game::CATEGORIES_PER_TEAM
                 && count($this->selectedB) === Game::CATEGORIES_PER_TEAM,
             'slots' => [

@@ -22,11 +22,16 @@ class Game extends Model
     /** Categories each team picks. */
     public const CATEGORIES_PER_TEAM = 3;
 
-    /** Seconds the picking team has to answer. */
+    /** Default seconds the picking team has to answer. */
     public const MAIN_SECONDS = 60;
 
-    /** Seconds the other team has to steal. */
+    /** Default seconds the other team has to steal. */
     public const STEAL_SECONDS = 30;
+
+    /** Choices offered on the setup page. */
+    public const ANSWER_OPTIONS = [20, 30, 45, 60, 90, 120];
+
+    public const STEAL_OPTIONS = [10, 15, 20, 30, 45, 60];
 
     public const EXTRA_SECONDS = 30;
 
@@ -64,6 +69,8 @@ class Game extends Model
         'helpers',
         'current_game_question_id',
         'finished_at',
+        'answer_seconds',
+        'steal_seconds',
     ];
 
     protected function casts(): array
@@ -72,6 +79,8 @@ class Game extends Model
             'team_a_score' => 'integer',
             'team_b_score' => 'integer',
             'helpers' => 'array',
+            'answer_seconds' => 'integer',
+            'steal_seconds' => 'integer',
             'finished_at' => 'datetime',
         ];
     }
@@ -106,8 +115,18 @@ class Game extends Model
      * @param  array<int>  $teamACategoryIds
      * @param  array<int>  $teamBCategoryIds
      */
-    public static function start(string $teamA, string $teamB, array $teamACategoryIds, array $teamBCategoryIds): self
-    {
+    public static function start(
+        string $teamA,
+        string $teamB,
+        array $teamACategoryIds,
+        array $teamBCategoryIds,
+        int $answerSeconds = self::MAIN_SECONDS,
+        int $stealSeconds = self::STEAL_SECONDS,
+    ): self {
+        if (! in_array($answerSeconds, self::ANSWER_OPTIONS, true) || ! in_array($stealSeconds, self::STEAL_OPTIONS, true)) {
+            throw new DomainException('مدة الإجابة أو السرقة غير مسموحة.');
+        }
+
         $teamACategoryIds = array_values(array_unique(array_map('intval', $teamACategoryIds)));
         $teamBCategoryIds = array_values(array_unique(array_map('intval', $teamBCategoryIds)));
 
@@ -126,7 +145,7 @@ class Game extends Model
             throw new DomainException('وحدة من الفئات المختارة ما فيها أسئلة كافية.');
         }
 
-        return DB::transaction(function () use ($teamA, $teamB, $teamACategoryIds, $teamBCategoryIds) {
+        return DB::transaction(function () use ($teamA, $teamB, $teamACategoryIds, $teamBCategoryIds, $answerSeconds, $stealSeconds) {
             $game = self::create([
                 'uuid' => (string) Str::uuid(),
                 'team_a_name' => trim($teamA),
@@ -134,6 +153,8 @@ class Game extends Model
                 'current_team' => 'a',
                 'status' => self::PLAYING,
                 'helpers' => ['a' => [], 'b' => []],
+                'answer_seconds' => $answerSeconds,
+                'steal_seconds' => $stealSeconds,
             ]);
 
             // Board columns alternate: A1, B1, A2, B2, A3, B3

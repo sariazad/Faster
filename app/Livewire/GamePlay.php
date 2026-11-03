@@ -29,7 +29,7 @@ class GamePlay extends Component
             $gameQuestion = $this->game->gameQuestions()->findOrFail($gameQuestionId);
             $this->game->open($gameQuestion);
             $this->revealed = false;
-            $this->dispatch('timer-start', main: Game::MAIN_SECONDS, steal: Game::STEAL_SECONDS);
+            $this->dispatch('timer-start', main: $this->game->answer_seconds, steal: $this->game->steal_seconds);
         });
     }
 

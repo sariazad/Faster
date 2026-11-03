@@ -198,6 +198,9 @@
                 </div>
                 <span class="text-sm font-black tabular-nums text-night/60">{{ $answeredCount }}/{{ $allCells->count() }}</span>
             </div>
+            <p class="text-xs font-bold text-night/45">
+                ⏱ الإجابة {{ $game->answer_seconds }} ث · السرقة {{ $game->steal_seconds }} ث
+            </p>
         </div>
     </footer>
 
@@ -278,7 +281,7 @@
 
                     {{-- Timer (kept outside Livewire morphing so it keeps ticking) --}}
                     <div wire:ignore wire:key="timer-{{ $current->id }}"
-                         x-data="questionTimer({{ \App\Models\Game::MAIN_SECONDS }}, {{ \App\Models\Game::STEAL_SECONDS }}, @js(! $locked))"
+                         x-data="questionTimer({{ (int) $game->answer_seconds }}, {{ (int) $game->steal_seconds }}, @js(! $locked))"
                          @timer-add.window="add($event.detail.seconds)"
                          @timer-lock.window="lock()"
                          @timer-stop.window="stop()"

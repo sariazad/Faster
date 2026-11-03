@@ -424,4 +424,54 @@ class GameFlowTest extends TestCase
         $this->assertSame(1, $pruned);
         $this->assertNull(\App\Models\Question::find($retired->id));
     }
+
+    /* ---------------------------------------------------------------
+     | Timers
+     * -------------------------------------------------------------- */
+
+    public function test_game_keeps_the_timers_chosen_on_setup(): void
+    {
+        $ids = Category::orderBy('id')->pluck('id');
+
+        $component = Livewire::test(GameSetup::class)
+            ->set('teamA', 'الصقور')
+            ->set('teamB', 'النمور')
+            ->set('answerSeconds', 30)
+            ->set('stealSeconds', 15);
+
+        foreach ($ids->take(6) as $id) {
+            $component->call('toggle', $id);
+        }
+
+        $component->call('start')->assertHasNoErrors();
+
+        $game = Game::first();
+        $this->assertSame(30, $game->answer_seconds);
+        $this->assertSame(15, $game->steal_seconds);
+
+        $cell = $game->gameQuestions()->first();
+        Livewire::test(GamePlay::class, ['game' => $game])
+            ->call('open', $cell->id)
+            ->assertSee('questionTimer(30, 15', false);
+    }
+
+    public function test_timers_default_to_sixty_and_thirty(): void
+    {
+        $game = $this->newGame();
+
+        $this->assertSame(Game::MAIN_SECONDS, $game->fresh()->answer_seconds);
+        $this->assertSame(Game::STEAL_SECONDS, $game->fresh()->steal_seconds);
+    }
+
+    public function test_timer_outside_the_options_is_rejected(): void
+    {
+        Livewire::test(GameSetup::class)
+            ->set('answerSeconds', 7)
+            ->call('start')
+            ->assertHasErrors(['answerSeconds']);
+
+        $ids = Category::orderBy('id')->pluck('id');
+        $this->expectException(DomainException::class);
+        Game::start('أ', 'ب', $ids->slice(0, 3)->all(), $ids->slice(3, 3)->all(), 7, 30);
+    }
 }

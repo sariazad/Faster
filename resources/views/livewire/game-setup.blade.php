@@ -45,6 +45,39 @@
             </div>
         </div>
 
+        {{-- ============ Timers ============ --}}
+        <div class="mt-3 grid gap-3 md:grid-cols-2">
+            @foreach ([
+                ['answerSeconds', 'وقت الإجابة', 'للفريق صاحب الدور', $answerOptions, $answerSeconds],
+                ['stealSeconds', 'وقت السرقة', 'للفريق الثاني إذا ما عرفوا', $stealOptions, $stealSeconds],
+            ] as [$prop, $label, $hint, $options, $current])
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl bg-white px-4 py-3 shadow-sm">
+                    <div class="flex items-center gap-2">
+                        <svg class="h-5 w-5 text-lantern-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5M9 2h6"/></svg>
+                        <div class="leading-tight">
+                            <div class="font-extrabold">{{ $label }}</div>
+                            <div class="text-xs font-bold text-night/45">{{ $hint }}</div>
+                        </div>
+                    </div>
+                    <div class="flex flex-1 flex-wrap justify-end gap-1.5" role="radiogroup" aria-label="{{ $label }}">
+                        @foreach ($options as $seconds)
+                            <button type="button" wire:click="$set('{{ $prop }}', {{ $seconds }})"
+                                    role="radio" aria-checked="{{ $current === $seconds ? 'true' : 'false' }}"
+                                    @class([
+                                        'min-w-[3.25rem] rounded-full px-3 py-1.5 text-sm font-black tabular-nums transition',
+                                        'bg-night text-lantern shadow' => $current === $seconds,
+                                        'bg-night/5 text-night/70 hover:bg-night/10' => $current !== $seconds,
+                                    ])>
+                                {{ $seconds }} ث
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        @error('answerSeconds') <p class="mt-2 text-sm font-bold text-teamB-dark">{{ $message }}</p> @enderror
+        @error('stealSeconds') <p class="mt-2 text-sm font-bold text-teamB-dark">{{ $message }}</p> @enderror
         @error('teamA') <p class="mt-2 text-sm font-bold text-teamB-dark">{{ $message }}</p> @enderror
         @error('teamB') <p class="mt-2 text-sm font-bold text-teamB-dark">{{ $message }}</p> @enderror
 
