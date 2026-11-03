@@ -4,6 +4,7 @@ namespace App\Filament\Resources\QuestionResource\Pages;
 
 use App\Filament\Resources\QuestionResource;
 use App\Models\Question;
+use App\Services\QuestionBankBackup;
 use App\Services\QuestionCsvImporter;
 use App\Services\QuestionDeduplicator;
 use Filament\Actions;
@@ -20,6 +21,56 @@ class ListQuestions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\ActionGroup::make([
+                Actions\Action::make('backup')
+                    ->label('تنزيل نسخة احتياطية')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function () {
+                        $path = app(QuestionBankBackup::class)->export();
+
+                        return response()->download($path)->deleteFileAfterSend(true);
+                    }),
+
+                Actions\Action::make('restore')
+                    ->label('استعادة نسخة احتياطية')
+                    ->icon('heroicon-o-arrow-up-tray')
+                    ->modalHeading('استعادة نسخة احتياطية')
+                    ->modalDescription('بيضيف الفئات والأسئلة والصور والأصوات اللي مش موجودة. ما بيحذف ولا بيغيّر أي شي موجود، فآمن تستعيد نفس النسخة أكثر من مرة.')
+                    ->form([
+                        Forms\Components\FileUpload::make('file')
+                            ->label('ملف النسخة (ZIP)')
+                            ->disk('local')
+                            ->directory('imports')
+                            ->acceptedFileTypes(['application/zip', 'application/x-zip-compressed', 'application/octet-stream'])
+                            ->maxSize(256000)
+                            ->required(),
+                    ])
+                    ->action(function (array $data) {
+                        $disk = Storage::disk('local');
+
+                        try {
+                            $result = app(QuestionBankBackup::class)->restore($disk->path($data['file']));
+                        } catch (Throwable $e) {
+                            Notification::make()->title('فشلت الاستعادة')->body($e->getMessage())->danger()->send();
+
+                            return;
+                        } finally {
+                            $disk->delete($data['file']);
+                        }
+
+                        Notification::make()
+                            ->title('تمت الاستعادة')
+                            ->body("انضاف {$result['questions']} سؤال و{$result['categories']} فئة و{$result['media']} ملف وسائط، وتجاهلنا {$result['skipped']} موجود مسبقاً.")
+                            ->success()
+                            ->persistent()
+                            ->send();
+                    }),
+            ])
+                ->label('نسخة احتياطية')
+                ->icon('heroicon-o-archive-box')
+                ->color('gray')
+                ->button(),
+
             Actions\Action::make('template')
                 ->label('نموذج CSV')
                 ->icon('heroicon-o-document-arrow-down')

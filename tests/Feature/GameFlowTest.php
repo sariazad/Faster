@@ -533,4 +533,72 @@ class GameFlowTest extends TestCase
 
         $this->assertSame(36, $game->gameQuestions()->count());
     }
+
+    /* ---------------------------------------------------------------
+     | Backup / restore
+     * -------------------------------------------------------------- */
+
+    public function test_backup_and_restore_round_trip_with_media(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        \Illuminate\Support\Facades\Storage::disk('public')->put('questions/kabsa.jpg', 'fake-image-bytes');
+        \Illuminate\Support\Facades\Storage::disk('public')->put('questions/audio/song.mp3', 'fake-audio-bytes');
+
+        $food = Category::create(['name' => 'خمن الأكلة', 'icon' => '🍛', 'is_active' => true]);
+        $food->questions()->create(['points' => 200, 'body' => 'خمن اسم الأكلة', 'image' => 'questions/kabsa.jpg', 'answer' => 'كبسة', 'is_active' => true]);
+        $food->questions()->create(['points' => 400, 'body' => 'مين صاحب الصوت؟', 'audio' => 'questions/audio/song.mp3', 'answer' => 'محمد عبده', 'is_active' => true]);
+
+        $categories = Category::count();
+        $questions = \App\Models\Question::count();
+
+        $dir = sys_get_temp_dir().'/backup-test-'.uniqid();
+        $zipPath = app(\App\Services\QuestionBankBackup::class)->export($dir);
+
+        $zip = new \ZipArchive;
+        $this->assertTrue($zip->open($zipPath) === true);
+        $manifest = json_decode($zip->getFromName('manifest.json'), true);
+        $this->assertSame($questions, $manifest['questions']);
+        $this->assertSame($categories, $manifest['categories']);
+        $this->assertSame('fake-image-bytes', $zip->getFromName('media/questions/kabsa.jpg'));
+        $this->assertNotFalse($zip->getFromName('questions.csv'));
+        $zip->close();
+
+        // Lose everything, then restore.
+        Category::query()->delete();
+        \Illuminate\Support\Facades\Storage::disk('public')->delete(['questions/kabsa.jpg', 'questions/audio/song.mp3']);
+        $this->assertSame(0, \App\Models\Question::count());
+
+        $result = app(\App\Services\QuestionBankBackup::class)->restore($zipPath);
+
+        $this->assertSame($questions, $result['questions']);
+        $this->assertSame($questions, \App\Models\Question::count());
+        $this->assertSame($categories, Category::count());
+        $this->assertSame('🍛', Category::where('name', 'خمن الأكلة')->value('icon'));
+        $this->assertSame('fake-image-bytes', \Illuminate\Support\Facades\Storage::disk('public')->get('questions/kabsa.jpg'));
+
+        // Restoring the same backup again adds nothing.
+        $again = app(\App\Services\QuestionBankBackup::class)->restore($zipPath);
+        $this->assertSame(0, $again['questions']);
+        $this->assertSame($questions, \App\Models\Question::count());
+
+        @unlink($zipPath);
+        @rmdir($dir);
+    }
+
+    public function test_restore_rejects_a_zip_that_is_not_a_backup(): void
+    {
+        $path = sys_get_temp_dir().'/not-a-backup-'.uniqid().'.zip';
+        $zip = new \ZipArchive;
+        $zip->open($path, \ZipArchive::CREATE);
+        $zip->addFromString('hello.txt', 'hi');
+        $zip->close();
+
+        $this->expectException(\RuntimeException::class);
+
+        try {
+            app(\App\Services\QuestionBankBackup::class)->restore($path);
+        } finally {
+            @unlink($path);
+        }
+    }
 }
