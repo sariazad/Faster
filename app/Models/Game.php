@@ -35,6 +35,10 @@ class Game extends Model
 
     public const EXTRA_SECONDS = 30;
 
+    public const CLASSIC = 'classic';
+
+    public const TAQTAQ = 'taqtaq';
+
     public const PLAYING = 'playing';
 
     public const FINISHED = 'finished';
@@ -71,6 +75,11 @@ class Game extends Model
         'finished_at',
         'answer_seconds',
         'steal_seconds',
+        'mode',
+        'board_size',
+        'winner',
+        'winning_path',
+        'current_cell_question_id',
     ];
 
     protected function casts(): array
@@ -80,6 +89,8 @@ class Game extends Model
             'team_b_score' => 'integer',
             'helpers' => 'array',
             'answer_seconds' => 'integer',
+            'board_size' => 'integer',
+            'winning_path' => 'array',
             'steal_seconds' => 'integer',
             'finished_at' => 'datetime',
         ];
@@ -95,6 +106,32 @@ class Game extends Model
         return $this->belongsToMany(Category::class, 'game_categories')
             ->withPivot(['team', 'position'])
             ->orderByPivot('position');
+    }
+
+    public function cells(): HasMany
+    {
+        return $this->hasMany(BoardCell::class)->orderBy('row')->orderBy('col');
+    }
+
+    public function cellQuestions(): HasMany
+    {
+        return $this->hasMany(CellQuestion::class);
+    }
+
+    public function currentCellQuestion(): BelongsTo
+    {
+        return $this->belongsTo(CellQuestion::class, 'current_cell_question_id');
+    }
+
+    public function isTaqtaq(): bool
+    {
+        return $this->mode === self::TAQTAQ;
+    }
+
+    /** URL of the play screen for this game's mode. */
+    public function playUrl(): string
+    {
+        return $this->isTaqtaq() ? route('taqtaq.play', $this) : route('game.play', $this);
     }
 
     public function gameQuestions(): HasMany
@@ -484,6 +521,10 @@ class Game extends Model
     /** 'a', 'b' or 'tie'. */
     public function winner(): string
     {
+        if ($this->isTaqtaq()) {
+            return $this->getAttribute('winner') ?: 'tie';
+        }
+
         return match (true) {
             $this->team_a_score > $this->team_b_score => 'a',
             $this->team_b_score > $this->team_a_score => 'b',

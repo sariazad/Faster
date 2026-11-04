@@ -30,12 +30,21 @@ class GameResource extends Resource
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
+                Tables\Columns\TextColumn::make('mode')
+                    ->label('القسم')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state) => $state === Game::TAQTAQ ? 'طق طق' : 'التحدي')
+                    ->color(fn (?string $state) => $state === Game::TAQTAQ ? 'warning' : 'gray'),
                 Tables\Columns\TextColumn::make('team_a_name')
                     ->label('الفريق الأول')
-                    ->description(fn (Game $record) => $record->team_a_score.' نقطة'),
+                    ->description(fn (Game $record) => $record->isTaqtaq()
+                        ? ($record->winner === 'a' ? '🏆 وصّل' : null)
+                        : $record->team_a_score.' نقطة'),
                 Tables\Columns\TextColumn::make('team_b_name')
                     ->label('الفريق الثاني')
-                    ->description(fn (Game $record) => $record->team_b_score.' نقطة'),
+                    ->description(fn (Game $record) => $record->isTaqtaq()
+                        ? ($record->winner === 'b' ? '🏆 وصّل' : null)
+                        : $record->team_b_score.' نقطة'),
                 Tables\Columns\TextColumn::make('status')
                     ->label('الحالة')
                     ->badge()
@@ -47,6 +56,9 @@ class GameResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('mode')
+                    ->label('القسم')
+                    ->options([Game::CLASSIC => 'التحدي', Game::TAQTAQ => 'طق طق']),
                 Tables\Filters\SelectFilter::make('status')
                     ->label('الحالة')
                     ->options([Game::PLAYING => 'جارية', Game::FINISHED => 'انتهت']),
@@ -55,7 +67,7 @@ class GameResource extends Resource
                 Tables\Actions\Action::make('open')
                     ->label('فتح')
                     ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->url(fn (Game $record) => route('game.play', $record))
+                    ->url(fn (Game $record) => $record->playUrl())
                     ->openUrlInNewTab(),
                 Tables\Actions\DeleteAction::make(),
             ])

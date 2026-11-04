@@ -3,7 +3,12 @@
     {{-- ============ Top bar ============ --}}
     <header class="sticky top-0 z-30 bg-night text-white shadow-lg shadow-night/20">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
-            <a href="{{ route('home') }}" class="text-2xl sm:text-3xl" title="الرئيسية"><x-logo /></a>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('home') }}" class="text-2xl sm:text-3xl" title="الرئيسية"><x-logo /></a>
+                @if ($mode === 'taqtaq')
+                    <span class="rounded-full bg-lantern px-3 py-1 text-sm font-black text-night shadow">🚪 طق طق</span>
+                @endif
+            </div>
 
             <div class="flex items-center gap-2">
                 <button wire:click="shuffle" type="button"
@@ -76,6 +81,38 @@
             @endforeach
         </div>
 
+        @if ($mode === 'taqtaq')
+            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl bg-white px-4 py-3 shadow-sm">
+                <div class="flex items-center gap-2">
+                    <svg class="h-5 w-5 text-lantern-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 2l4.33 2.5v5L12 12 7.67 9.5v-5zM7.67 9.5L12 12v5l-4.33 2.5L3.34 17v-5zM16.33 9.5L20.66 12v5l-4.33 2.5L12 17v-5z"/></svg>
+                    <div class="leading-tight">
+                        <div class="font-extrabold">حجم اللوحة</div>
+                        <div class="text-xs font-bold text-night/45">كل ما كبرت، طالت المواجهة</div>
+                    </div>
+                </div>
+                <div class="flex flex-1 flex-wrap justify-end gap-1.5" role="radiogroup" aria-label="حجم اللوحة">
+                    @foreach ($sizeOptions as $size)
+                        <button type="button" wire:click="$set('boardSize', {{ $size }})"
+                                role="radio" aria-checked="{{ $boardSize === $size ? 'true' : 'false' }}"
+                                @class([
+                                    'rounded-full px-4 py-1.5 text-sm font-black tabular-nums transition',
+                                    'bg-night text-lantern shadow' => $boardSize === $size,
+                                    'bg-night/5 text-night/70 hover:bg-night/10' => $boardSize !== $size,
+                                ])>
+                            {{ $size }}×{{ $size }}
+                            <span class="font-bold opacity-60">· {{ ['4' => 'سريعة', '5' => 'عادية', '6' => 'طويلة'][$size] ?? '' }}</span>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+            <p class="mt-3 rounded-2xl bg-night/5 px-4 py-2 text-center text-sm font-bold text-night/60">
+                كل فريق يختار {{ $perTeam }} فئات، وتتوزّع على خلايا اللوحة.
+                <span class="text-teamA-dark">الأول</span> يوصّل فوق ↕ تحت،
+                و<span class="text-teamB-dark">الثاني</span> يوصّل يمين ↔ يسار.
+            </p>
+        @endif
+
+        @error('boardSize') <p class="mt-2 text-sm font-bold text-teamB-dark">{{ $message }}</p> @enderror
         @error('answerSeconds') <p class="mt-2 text-sm font-bold text-teamB-dark">{{ $message }}</p> @enderror
         @error('stealSeconds') <p class="mt-2 text-sm font-bold text-teamB-dark">{{ $message }}</p> @enderror
         @error('teamA') <p class="mt-2 text-sm font-bold text-teamB-dark">{{ $message }}</p> @enderror

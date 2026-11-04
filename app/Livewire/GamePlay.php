@@ -20,6 +20,10 @@ class GamePlay extends Component
 
     public function mount(Game $game): void
     {
+        if ($game->isTaqtaq()) {
+            $this->redirect($game->playUrl());
+        }
+
         $this->game = $game;
     }
 

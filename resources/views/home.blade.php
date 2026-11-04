@@ -8,33 +8,60 @@
         <h1 class="text-5xl sm:text-8xl"><x-logo /></h1>
 
         <p class="mt-6 max-w-xl text-lg leading-relaxed text-white/70 sm:text-xl">
-            فريقين، شاشة وحدة، وست فئات. كل فريق يختار سؤاله ويحاول يجاوب قبل ما يخلص الوقت، وإذا ما عرف، الفريق الثاني يسرق النقاط.
+            فريقين، شاشة وحدة، وبنك أسئلة كبير. اختاروا طريقة اللعب:
         </p>
 
-        <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+        <section class="mt-10 grid w-full gap-5 text-start md:grid-cols-2">
+            {{-- التحدي --}}
             <a href="{{ route('game.new') }}"
-               class="animate-glow rounded-2xl bg-lantern px-10 py-4 text-xl font-extrabold text-night transition hover:bg-lantern-light">
-                ابدأ لعبة جديدة
-            </a>
-            <a href="/admin"
-               class="rounded-2xl border border-white/15 px-8 py-4 text-lg font-bold text-white/80 transition hover:border-white/30 hover:text-white">
-                بنك الأسئلة
-            </a>
-        </div>
-
-        <section class="mt-20 grid w-full gap-4 text-start sm:grid-cols-3">
-            @foreach ([
-                ['١', 'اختاروا الفئات', 'كل فريق يختار ٣ فئات، والمجموع ٣٦ سؤال على اللوحة.'],
-                ['٢', 'العبوا بالدور', 'الفريق يختار سؤال ٢٠٠ أو ٤٠٠ أو ٦٠٠، وعنده ٦٠ ثانية.'],
-                ['٣', 'اسرقوا النقاط', 'إذا ما عرف، الفريق الثاني عنده ٣٠ ثانية يسرق فيها السؤال.'],
-            ] as [$n, $head, $text])
-                <div class="rounded-2xl border border-white/10 bg-night-800/70 p-6">
-                    <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-lantern/15 text-xl font-black text-lantern">{{ $n }}</div>
-                    <h2 class="text-lg font-extrabold">{{ $head }}</h2>
-                    <p class="mt-1 text-white/60">{{ $text }}</p>
+               class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-night-800/80 p-6 transition hover:-translate-y-1 hover:border-lantern/60 sm:p-8">
+                <div class="mb-5 grid w-fit grid-cols-3 gap-1.5" aria-hidden="true">
+                    @foreach ([200, 400, 600, 400, 600, 200] as $p)
+                        <span @class([
+                            'flex h-9 w-14 items-center justify-center rounded-lg text-xs font-black',
+                            'bg-level-200 text-night' => $p === 200,
+                            'bg-level-400 text-night' => $p === 400,
+                            'bg-level-600 text-white' => $p === 600,
+                        ])>{{ $p }}</span>
+                    @endforeach
                 </div>
-            @endforeach
+                <h2 class="text-3xl font-black">التحدي</h2>
+                <p class="mt-2 leading-relaxed text-white/65">
+                    كل فريق يختار ٣ فئات، والأسئلة على اللوحة ٢٠٠ و٤٠٠ و٦٠٠. اللي يجمع نقاط أكثر يفوز، ولو غلط الخصم تقدر تسرق السؤال.
+                </p>
+                <span class="mt-6 inline-flex items-center gap-2 rounded-2xl bg-lantern px-6 py-3 text-lg font-extrabold text-night transition group-hover:bg-lantern-light">
+                    ابدأ التحدي ←
+                </span>
+            </a>
+
+            {{-- طق طق --}}
+            <a href="{{ route('taqtaq.new') }}"
+               class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-night-800/80 p-6 transition hover:-translate-y-1 hover:border-lantern/60 sm:p-8">
+                <span class="absolute end-5 top-5 rounded-full bg-lantern px-3 py-1 text-xs font-black text-night">جديد</span>
+                <svg class="mb-5 h-[3.6rem] w-auto" viewBox="0 0 150 76" aria-hidden="true">
+                    @foreach ([[0,0,'#22d3ee'],[1,0,'#fff7e6'],[2,0,'#fb7185'],[0,1,'#22d3ee'],[1,1,'#22d3ee'],[2,1,'#fff7e6']] as [$c,$r,$f])
+                        @php
+                            $x = 22 + $c * 38 + ($r ? 19 : 0); $y = 20 + $r * 33; $pts = [];
+                            foreach ([-90,-30,30,90,150,210] as $d) { $a = deg2rad($d); $pts[] = round($x + 20 * cos($a), 1).','.round($y + 20 * sin($a), 1); }
+                        @endphp
+                        <polygon points="{{ implode(' ', $pts) }}" fill="{{ $f }}" stroke="#120d2b" stroke-opacity=".35" stroke-width="2"/>
+                    @endforeach
+                </svg>
+                <h2 class="text-3xl font-black">طق طق 🚪</h2>
+                <p class="mt-1 font-bold text-lantern">من طق طق… للسلام عليكم</p>
+                <p class="mt-2 leading-relaxed text-white/65">
+                    لوحة خلايا سداسية، وكل خلية بسؤال. جاوب صح وخذ الخلية، وأول فريق يوصّل جهتي اللوحة تبعه يفوز.
+                </p>
+                <span class="mt-6 inline-flex items-center gap-2 rounded-2xl bg-lantern px-6 py-3 text-lg font-extrabold text-night transition group-hover:bg-lantern-light">
+                    ابدأ طق طق ←
+                </span>
+            </a>
         </section>
+
+        <a href="/admin"
+           class="mt-8 rounded-2xl border border-white/15 px-8 py-3 text-base font-bold text-white/70 transition hover:border-white/30 hover:text-white">
+            بنك الأسئلة ولوحة التحكم
+        </a>
 
         <x-copyright class="mt-16 text-white/40" />
     </main>

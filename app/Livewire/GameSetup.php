@@ -7,6 +7,7 @@ use App\Models\Game;
 use DomainException;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -36,11 +37,49 @@ class GameSetup extends Component
 
     public ?string $notice = null;
 
-    /** All categories that can be played (enough questions in every level). */
+    /** Which game this setup page starts: classic | taqtaq. */
+    #[Locked]
+    public string $mode = Game::CLASSIC;
+
+    /** All categories that can be played in this mode. */
     #[Computed]
     public function categories(): Collection
     {
+        return $this->loadCategories();
+    }
+
+    protected function loadCategories(): Collection
+    {
         return Category::playable();
+    }
+
+    protected function perTeam(): int
+    {
+        return Game::CATEGORIES_PER_TEAM;
+    }
+
+    /** Extra validation rules for the mode. */
+    protected function modeRules(): array
+    {
+        return [];
+    }
+
+    protected function createGame(): Game
+    {
+        return Game::start(
+            $this->teamA,
+            $this->teamB,
+            $this->selectedA,
+            $this->selectedB,
+            $this->answerSeconds,
+            $this->stealSeconds,
+        );
+    }
+
+    /** Extra data for the view. */
+    protected function modeViewData(): array
+    {
+        return [];
     }
 
     /** Categories shown in the grid after the search filter. */
@@ -82,10 +121,10 @@ class GameSetup extends Component
 
         $team = $this->picking;
 
-        if (count($this->selection($team)) >= Game::CATEGORIES_PER_TEAM) {
+        if (count($this->selection($team)) >= $this->perTeam()) {
             $other = Game::other($team);
 
-            if (count($this->selection($other)) >= Game::CATEGORIES_PER_TEAM) {
+            if (count($this->selection($other)) >= $this->perTeam()) {
                 $this->notice = 'الفريقين اختاروا فئاتهم. شيل فئة إذا بدك تغيّر.';
 
                 return;
@@ -97,8 +136,8 @@ class GameSetup extends Component
         $this->setSelection($team, [...$this->selection($team), $categoryId]);
 
         // Move on to the other team once this one is full.
-        if (count($this->selection($team)) === Game::CATEGORIES_PER_TEAM
-            && count($this->selection(Game::other($team))) < Game::CATEGORIES_PER_TEAM) {
+        if (count($this->selection($team)) === $this->perTeam()
+            && count($this->selection(Game::other($team))) < $this->perTeam()) {
             $this->picking = Game::other($team);
         }
     }
@@ -113,16 +152,16 @@ class GameSetup extends Component
 
     public function shuffle(): void
     {
-        $ids = $this->categories->pluck('id')->shuffle()->take(Game::CATEGORIES_PER_TEAM * 2)->values();
+        $ids = $this->categories->pluck('id')->shuffle()->take($this->perTeam() * 2)->values();
 
-        if ($ids->count() < Game::CATEGORIES_PER_TEAM * 2) {
+        if ($ids->count() < $this->perTeam() * 2) {
             $this->notice = 'ما فيه فئات كافية.';
 
             return;
         }
 
-        $this->selectedA = $ids->take(Game::CATEGORIES_PER_TEAM)->all();
-        $this->selectedB = $ids->slice(Game::CATEGORIES_PER_TEAM)->values()->all();
+        $this->selectedA = $ids->take($this->perTeam())->all();
+        $this->selectedB = $ids->slice($this->perTeam())->values()->all();
         $this->notice = null;
     }
 
@@ -133,6 +172,7 @@ class GameSetup extends Component
             'teamB' => 'required|string|max:40|different:teamA',
             'answerSeconds' => ['required', 'integer', 'in:'.implode(',', Game::ANSWER_OPTIONS)],
             'stealSeconds' => ['required', 'integer', 'in:'.implode(',', Game::STEAL_OPTIONS)],
+            ...$this->modeRules(),
         ], [
             'answerSeconds.in' => 'اختر مدة إجابة من الخيارات.',
             'stealSeconds.in' => 'اختر مدة سرقة من الخيارات.',
@@ -144,21 +184,14 @@ class GameSetup extends Component
         ]);
 
         try {
-            $game = Game::start(
-                $this->teamA,
-                $this->teamB,
-                $this->selectedA,
-                $this->selectedB,
-                $this->answerSeconds,
-                $this->stealSeconds,
-            );
+            $game = $this->createGame();
         } catch (DomainException $e) {
             $this->notice = $e->getMessage();
 
             return;
         }
 
-        $this->redirectRoute('game.play', $game);
+        $this->redirect($game->playUrl());
     }
 
     /** @return array<int> */
@@ -182,11 +215,13 @@ class GameSetup extends Component
         $byId = $this->categories->keyBy('id');
 
         return view('livewire.game-setup', [
-            'perTeam' => Game::CATEGORIES_PER_TEAM,
+            ...$this->modeViewData(),
+            'mode' => $this->mode,
+            'perTeam' => $this->perTeam(),
             'answerOptions' => Game::ANSWER_OPTIONS,
             'stealOptions' => Game::STEAL_OPTIONS,
-            'ready' => count($this->selectedA) === Game::CATEGORIES_PER_TEAM
-                && count($this->selectedB) === Game::CATEGORIES_PER_TEAM,
+            'ready' => count($this->selectedA) === $this->perTeam()
+                && count($this->selectedB) === $this->perTeam(),
             'slots' => [
                 'a' => collect($this->selectedA)->map(fn ($id) => $byId->get($id))->filter()->values(),
                 'b' => collect($this->selectedB)->map(fn ($id) => $byId->get($id))->filter()->values(),

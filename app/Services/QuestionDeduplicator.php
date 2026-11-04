@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\CellQuestion;
 use App\Models\Game;
 use App\Models\GameQuestion;
 use App\Models\Question;
@@ -130,7 +131,7 @@ class QuestionDeduplicator
                     return;
                 }
 
-                if (GameQuestion::where('question_id', $q->id)->exists()) {
+                if (GameQuestion::where('question_id', $q->id)->exists() || CellQuestion::where('question_id', $q->id)->exists()) {
                     Question::whereKey($q->id)->update(['is_active' => false]);
                 } else {
                     $q->delete();
@@ -145,6 +146,7 @@ class QuestionDeduplicator
     private function merge(Question $copy, Question $keeper): void
     {
         GameQuestion::where('question_id', $copy->id)->update(['question_id' => $keeper->id]);
+        CellQuestion::where('question_id', $copy->id)->update(['question_id' => $keeper->id]);
 
         Question::whereKey($keeper->id)->update([
             'times_used' => DB::raw('times_used + '.(int) $copy->times_used),

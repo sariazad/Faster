@@ -94,6 +94,10 @@ class Category extends Model
     /** Active questions across all levels (uses withLevelCounts when loaded). */
     public function playableQuestionsCount(): int
     {
+        if ($this->getAttribute('active_questions_count') !== null) {
+            return (int) $this->getAttribute('active_questions_count');
+        }
+
         $total = 0;
 
         foreach (Game::LEVELS as $points) {
