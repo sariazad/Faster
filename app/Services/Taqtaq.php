@@ -32,6 +32,9 @@ class Taqtaq
 
     public const CATEGORIES_PER_TEAM = 2;
 
+    /** Choices for categories per team on the setup page. */
+    public const CATEGORY_OPTIONS = [2, 3];
+
     /** A category needs at least this many active questions to be offered. */
     public const MIN_QUESTIONS = 6;
 
@@ -86,8 +89,8 @@ class Taqtaq
         $a = array_values(array_unique(array_map('intval', $teamACategoryIds)));
         $b = array_values(array_unique(array_map('intval', $teamBCategoryIds)));
 
-        if (count($a) !== self::CATEGORIES_PER_TEAM || count($b) !== self::CATEGORIES_PER_TEAM) {
-            throw new DomainException('كل فريق لازم يختار '.self::CATEGORIES_PER_TEAM.' فئات.');
+        if (count($a) !== count($b) || ! in_array(count($a), self::CATEGORY_OPTIONS, true)) {
+            throw new DomainException('كل فريق لازم يختار نفس العدد من الفئات (2 أو 3).');
         }
 
         if (array_intersect($a, $b)) {
@@ -115,6 +118,8 @@ class Taqtaq
                 'team_a_name' => trim($teamA),
                 'team_b_name' => trim($teamB),
                 'current_team' => 'a',
+                'team_a_score' => 0,
+                'team_b_score' => 0,
                 'status' => Game::PLAYING,
                 'helpers' => ['a' => [], 'b' => []],
                 'answer_seconds' => $answerSeconds,
@@ -128,7 +133,7 @@ class Taqtaq
                 }
             }
 
-            // Spread the 4 categories evenly over the board, in random places.
+            // Spread the chosen categories evenly over the board, in random places.
             $categories = [...$a, ...$b];
             $total = $size * $size;
             $deck = collect(range(0, $total - 1))

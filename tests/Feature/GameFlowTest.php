@@ -46,7 +46,7 @@ class GameFlowTest extends TestCase
     public function test_pages_load(): void
     {
         $this->get('/')->assertOk()->assertSee('مين');
-        $this->get('/play/new')->assertOk()->assertSee('الفئات');
+        $this->get('/play/new')->assertOk()->assertSee('ابحث عن فئة');
 
         $game = $this->newGame();
         $this->get(route('game.play', $game))->assertOk()->assertSee('الصقور');

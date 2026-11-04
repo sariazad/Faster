@@ -231,4 +231,31 @@ class TaqtaqTest extends TestCase
         // The classic URL sends a طق طق game to its own screen.
         Livewire::test(\App\Livewire\GamePlay::class, ['game' => $game])->assertRedirect(route('taqtaq.play', $game));
     }
+
+    public function test_three_categories_per_team_are_spread_over_the_board(): void
+    {
+        $ids = Taqtaq::playableCategories()->pluck('id');
+
+        $component = Livewire::test(TaqtaqSetup::class)
+            ->set('teamA', 'الصقور')
+            ->set('teamB', 'النمور')
+            ->set('categoriesPerTeam', 3);
+
+        foreach ($ids->take(6) as $id) {
+            $component->call('toggle', $id);
+        }
+
+        $component->call('start')->assertHasNoErrors();
+
+        $game = Game::where('mode', Game::TAQTAQ)->firstOrFail();
+        $this->assertCount(6, $game->cells()->get()->countBy('category_id'));
+    }
+
+    public function test_uneven_category_counts_are_rejected(): void
+    {
+        $ids = Taqtaq::playableCategories()->pluck('id');
+
+        $this->expectException(DomainException::class);
+        $this->engine()->start('أ', 'ب', $ids->slice(0, 3)->all(), $ids->slice(3, 2)->all());
+    }
 }

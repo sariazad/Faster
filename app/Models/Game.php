@@ -188,6 +188,8 @@ class Game extends Model
                 'team_a_name' => trim($teamA),
                 'team_b_name' => trim($teamB),
                 'current_team' => 'a',
+                'team_a_score' => 0,
+                'team_b_score' => 0,
                 'status' => self::PLAYING,
                 'helpers' => ['a' => [], 'b' => []],
                 'answer_seconds' => $answerSeconds,
@@ -510,7 +512,7 @@ class Game extends Model
 
     public function score(string $team): int
     {
-        return $team === 'a' ? $this->team_a_score : $this->team_b_score;
+        return (int) ($team === 'a' ? $this->team_a_score : $this->team_b_score);
     }
 
     public function isFinished(): bool

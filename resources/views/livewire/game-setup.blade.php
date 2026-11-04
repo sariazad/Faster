@@ -105,8 +105,31 @@
                     @endforeach
                 </div>
             </div>
+            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl bg-white px-4 py-3 shadow-sm">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">🗂️</span>
+                    <div class="leading-tight">
+                        <div class="font-extrabold">عدد الفئات لكل فريق</div>
+                        <div class="text-xs font-bold text-night/45">تتوزّع كلها على خلايا اللوحة بالتساوي</div>
+                    </div>
+                </div>
+                <div class="flex flex-1 flex-wrap justify-end gap-1.5" role="radiogroup" aria-label="عدد الفئات لكل فريق">
+                    @foreach ($categoryOptions as $count)
+                        <button type="button" wire:click="$set('categoriesPerTeam', {{ $count }})"
+                                role="radio" aria-checked="{{ $categoriesPerTeam === $count ? 'true' : 'false' }}"
+                                @class([
+                                    'rounded-full px-4 py-1.5 text-sm font-black transition',
+                                    'bg-night text-lantern shadow' => $categoriesPerTeam === $count,
+                                    'bg-night/5 text-night/70 hover:bg-night/10' => $categoriesPerTeam !== $count,
+                                ])>
+                            {{ $count === 2 ? 'فئتين' : $count.' فئات' }}
+                            <span class="font-bold opacity-60">· {{ $count * 2 }} بالمجموع</span>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
             <p class="mt-3 rounded-2xl bg-night/5 px-4 py-2 text-center text-sm font-bold text-night/60">
-                كل فريق يختار {{ $perTeam }} فئات، وتتوزّع على خلايا اللوحة.
+                كل فريق يختار {{ $perTeam === 2 ? 'فئتين' : $perTeam.' فئات' }}، وتتوزّع على خلايا اللوحة.
                 <span class="text-teamA-dark">الأول</span> يوصّل فوق ↕ تحت،
                 و<span class="text-teamB-dark">الثاني</span> يوصّل يمين ↔ يسار.
             </p>
