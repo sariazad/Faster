@@ -14,6 +14,24 @@
 
     <script>
         // Question timer: main phase for the picking team, then a steal phase for the other team.
+        // A game screen can stay open on a TV for hours. If the session expires, Livewire would
+        // ask "This page has expired"; the game state lives in the database, so just reload quietly.
+        document.addEventListener('livewire:init', () => {
+            Livewire.hook('request', ({ fail }) => {
+                fail(({ status, preventDefault }) => {
+                    if (status === 419) {
+                        preventDefault();
+                        window.location.reload();
+                    }
+                });
+            });
+        });
+
+        // Keep the session alive while a game screen is open (every 20 minutes).
+        setInterval(() => {
+            fetch('/ping', { credentials: 'same-origin', cache: 'no-store' }).catch(() => {});
+        }, 20 * 60 * 1000);
+
         document.addEventListener('alpine:init', () => {
             Alpine.data('questionTimer', (main, steal, canSteal) => ({
                 phase: 'main',      // main | steal | over | stopped

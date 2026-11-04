@@ -26,6 +26,9 @@ if [ ! -f .env ]; then
     cp .env.example .env
 fi
 
+# Game screens stay open for hours: older .env files used a 2-hour session.
+sed -i 's/^SESSION_LIFETIME=120$/SESSION_LIFETIME=1440/' .env
+
 # Point APP_URL at the Codespace's forwarded port so links and assets work.
 if [ -n "$CODESPACE_NAME" ]; then
     url="https://${CODESPACE_NAME}-8000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"

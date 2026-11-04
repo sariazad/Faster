@@ -15,3 +15,6 @@ Route::get('/play/{game}', GamePlay::class)->name('game.play');
 // طق طق — connect your two sides of the hex board.
 Route::get('/taqtaq/new', TaqtaqSetup::class)->name('taqtaq.new');
 Route::get('/taqtaq/{game}', TaqtaqPlay::class)->name('taqtaq.play');
+
+// Keeps the session alive while a game screen sits open (called by the layout every 20 minutes).
+Route::get('/ping', fn () => response()->noContent())->name('ping');
