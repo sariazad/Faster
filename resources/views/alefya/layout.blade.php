@@ -11,8 +11,8 @@
                 $x = 40 + $c * 70 + ($r % 2 ? 35 : 0); $y = 40 + $r * 61;
                 $pts = [];
                 foreach ([-90, -30, 30, 90, 150, 210] as $d) { $a = deg2rad($d); $pts[] = round($x + 38 * cos($a), 1).','.round($y + 38 * sin($a), 1); }
-                $out .= '<polygon points="'.implode(' ', $pts).'" fill="none" stroke="#fff" stroke-width="3"/>';
-                $out .= '<text x="'.$x.'" y="'.($y + 2).'" fill="#fff" font-size="30" font-weight="800" text-anchor="middle" dominant-baseline="central" font-family="Tajawal">'.$letters[mt_rand(0, 27)].'</text>';
+                $out .= '<polygon points="'.implode(' ', $pts).'" fill="none" stroke="currentColor" stroke-width="3"/>';
+                $out .= '<text x="'.$x.'" y="'.($y + 2).'" fill="currentColor" font-size="30" font-weight="800" text-anchor="middle" dominant-baseline="central" font-family="Tajawal">'.$letters[mt_rand(0, 27)].'</text>';
             }
         }
         mt_srand();
@@ -32,7 +32,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#4A1C75">
+    <meta name="theme-color" content="#120d2b">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ isset($title) ? $title.' — ' : '' }}{{ S::get('app.name') }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +44,7 @@
     </script>
     @vite(['resources/css/alefya.css', 'resources/js/alefya/main.js'])
 </head>
-<body class="ay" data-page="{{ $page }}">
+<body class="ay {{ in_array($page, ['play', 'solo']) ? 'ay-light' : '' }}" data-page="{{ $page }}">
     <div class="ay-pattern" aria-hidden="true">
         <svg class="left" viewBox="0 0 250 880" preserveAspectRatio="xMinYMid slice">{!! $strip(3) !!}</svg>
         <svg class="right" viewBox="0 0 250 880" preserveAspectRatio="xMaxYMid slice">{!! $strip(11) !!}</svg>

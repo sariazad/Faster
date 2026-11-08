@@ -1,6 +1,6 @@
 // ألف ياء — the main board: two teams, hex letters, connect your two sides to win the round.
 import { $, $$, S, el, store, toast, openModal, closeModal, isModalOpen, sfx, confetti, config } from '../core.js';
-import { buildBoard, findPath, randomLetters } from '../hex.js';
+import { buildBoard, findPath, randomLetters, shade } from '../hex.js';
 import { getQuestion } from '../api.js';
 import { loadSettings, colorPair } from '../settings.js';
 import { listen } from '../sync.js';
@@ -53,8 +53,9 @@ function paintCell(i) {
     const cell = board.cells[i];
     const owner = game.owners[i];
     const selected = game.selected === i;
-    const fill = owner !== null ? game.colors[owner] : selected ? 'var(--selected)' : '#fff';
+    const fill = owner !== null ? game.colors[owner] : selected ? '#ffaa33' : '#fff3dc';
     cell.poly.setAttribute('fill', fill);
+    cell.g.classList.toggle('selected', selected);
     cell.text.textContent = owner !== null ? '' : (game.mystery && !selected ? '؟' : game.letters[i]);
     cell.g.setAttribute('aria-label', owner !== null ? `${game.names[owner]}` : `حرف ${game.mystery && !selected ? 'مخفي' : game.letters[i]}`);
     cell.g.classList.remove('win');
@@ -73,15 +74,16 @@ function renderTeams() {
     const wrap = $('#teamBars');
     wrap.replaceChildren();
     [0, 1].forEach((t) => {
-        wrap.append(el('div', { class: 'team-bar', style: 'margin-bottom:10px' }, [
+        wrap.append(el('div', { class: 'team-bar', style: `--tc:${shade(game.colors[t], 0.42)}` }, [
             el('div', { class: 'hex-count', style: `background:${game.colors[t]}`, 'aria-label': `${S('play.wins')}: ${game.wins[t]}`, text: String(game.wins[t]) }),
-            el('div', { class: 'name', style: `color:${game.colors[t]}`, text: game.names[t] }),
+            el('div', { class: 'name', text: game.names[t] }),
+            el('span', { class: 'dir', 'aria-hidden': 'true', text: t === 0 ? '↕' : '↔' }),
             game.selected !== null && !busy
                 ? el('button', {
-                    class: 'award-btn', style: `background:${game.colors[t]}`,
+                    class: 'award-btn',
                     'aria-label': `${S('play.award')} ${game.names[t]} (${t + 1})`, title: `${t + 1}`,
                     onclick: () => award(t),
-                }, el('i', { class: 'fa-solid fa-check' }))
+                }, '✓')
                 : null,
         ]));
     });
@@ -275,7 +277,7 @@ function showResults() {
     const winner = game.wins[0] === game.wins[1] ? null : game.wins[0] > game.wins[1] ? 0 : 1;
     [0, 1].forEach((t) => {
         wrap.append(el('div', { class: 'team' }, [
-            t === winner ? el('div', { class: 'trophy' }, [el('i', { class: 'fa-solid fa-trophy' }), el('span', { text: S('result.champion') })]) : null,
+            t === winner ? el('div', { class: 'trophy' }, [el('div', { class: 'cup', text: '🏆' }), el('span', { text: S('result.champion') })]) : null,
             el('div', { class: 'big-hex', style: `background:${game.colors[t]}`, text: String(game.wins[t]) }),
             el('div', { class: 'name-bar' }, [
                 el('b', { style: `color:${game.colors[t]}`, text: game.names[t] }),

@@ -15,7 +15,8 @@
             </button>
         </div>
 
-        <div style="margin-top: 34px">@include('alefya.partials.logo')</div>
+        <div style="margin-top: 40px">@include('alefya.partials.logo')</div>
+        <a class="family-tag" href="{{ route('home') }}">⏱ من عائلة مين الأسبق</a>
         <div class="intro-box">{{ S::get('app.intro') }}</div>
 
         <nav class="btn-stack" aria-label="القائمة الرئيسية">

@@ -18,13 +18,15 @@
     </div>
 </main>
 
-<main class="solo-wrap" id="soloGame" hidden>
+<div id="soloGame" hidden>
+@include('alefya.partials.game-header', ['pill' => '⏱ '.S::get('solo.title')])
+<main class="solo-wrap">
     <div class="solo-board" id="soloBoard"></div>
     <div class="solo-side">
         <div class="timer" id="timer">
             <svg viewBox="0 0 120 120" width="150" height="150">
-                <circle cx="60" cy="60" r="52" fill="rgba(20,5,35,.6)" stroke="rgba(255,255,255,.15)" stroke-width="10"/>
-                <circle id="timerRing" cx="60" cy="60" r="52" fill="none" stroke="#FFDD00" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="0"/>
+                <circle cx="60" cy="60" r="52" fill="#fff3dc" stroke="rgba(18,13,43,.08)" stroke-width="10"/>
+                <circle id="timerRing" cx="60" cy="60" r="52" fill="none" stroke="#ffaa33" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="0"/>
             </svg>
             <div class="num" id="timerNum">30</div>
         </div>
@@ -32,6 +34,7 @@
         <div class="counter bad">{{ S::get('solo.wrong') }}<b id="badCount">0</b></div>
     </div>
 </main>
+</div>
 
 <div class="modal" id="soloQ" role="dialog" aria-modal="true" aria-labelledby="soloQText">
     <div class="glass">

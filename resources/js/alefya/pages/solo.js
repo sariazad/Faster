@@ -3,8 +3,8 @@ import { $, S, el, openModal, closeModal, sfx, confetti, config, toast } from '.
 import { buildBoard, findPath } from '../hex.js';
 import { soloQuestions, saveScore } from '../api.js';
 
-const GREEN = '#3BB61B';
-const ORANGE = '#FF7A2F';
+const GREEN = '#22d3ee';   // right answers + the two sides to join (team cyan)
+const ORANGE = '#fb7185';  // wrong answers + the closed sides (team rose)
 const RING = 2 * Math.PI * 52;
 
 let state = null;
@@ -89,7 +89,7 @@ function drawTimer() {
     $('#timerRing').setAttribute('stroke-dashoffset', String(RING * (1 - ratio)));
     const danger = state.remaining <= 7;
     $('#timer').classList.toggle('danger', danger);
-    $('#timerRing').setAttribute('stroke', danger ? '#FF5252' : '#FFDD00');
+    $('#timerRing').setAttribute('stroke', danger ? '#fb7185' : '#ffaa33');
     document.body.classList.toggle('danger-bg', danger && !state.over);
 }
 
@@ -100,7 +100,7 @@ function clickCell(r, c) {
     const q = state.questions[i];
     state.open = i;
     sfx.select();
-    state.board.cells[i].poly.setAttribute('fill', '#FFDD00');
+    state.board.cells[i].poly.setAttribute('fill', '#ffaa33');
     $('#soloQHex').textContent = q.letter;
     $('#soloQText').textContent = q.question;
     $('#soloOptions').replaceChildren(...q.options.map((opt) => el('button', {

@@ -57,25 +57,24 @@
             </a>
             {{-- ألف ياء --}}
             <a href="{{ route('alefya.home') }}"
-               class="group relative overflow-hidden rounded-[2rem] border border-white/10 p-6 transition hover:-translate-y-1 hover:border-[#FFDD00]/70 sm:p-8"
-               style="background: radial-gradient(circle at 30% 20%, #6A3093 0%, #4A1C75 100%)">
-                <span class="absolute end-5 top-5 rounded-full bg-[#FF5252] px-3 py-1 text-xs font-black text-white">جديد</span>
+               class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-night-800/80 p-6 transition hover:-translate-y-1 hover:border-lantern/60 sm:p-8">
+                <span class="absolute end-5 top-5 rounded-full bg-lantern px-3 py-1 text-xs font-black text-night">جديد</span>
                 <svg class="mb-5 h-[3.6rem] w-auto" viewBox="0 0 150 76" aria-hidden="true">
-                    @foreach ([[0,0,'#fff','أ'],[1,0,'#3BB61B',''],[2,0,'#fff','ي'],[0,1,'#FF7A2F',''],[1,1,'#FFDD00','ب'],[2,1,'#fff','ح']] as [$c,$r,$f,$l])
+                    @foreach ([[0,0,'#fff3dc','أ'],[1,0,'#22d3ee',''],[2,0,'#fff3dc','ي'],[0,1,'#fb7185',''],[1,1,'#ffaa33','ب'],[2,1,'#fff3dc','ح']] as [$c,$r,$f,$l])
                         @php
                             $x = 22 + $c * 38 + ($r ? 19 : 0); $y = 20 + $r * 33; $pts = [];
                             foreach ([-90,-30,30,90,150,210] as $d) { $a = deg2rad($d); $pts[] = round($x + 20 * cos($a), 1).','.round($y + 20 * sin($a), 1); }
                         @endphp
-                        <polygon points="{{ implode(' ', $pts) }}" fill="{{ $f }}" stroke="#6A3093" stroke-width="3"/>
-                        <text x="{{ $x }}" y="{{ $y + 1 }}" text-anchor="middle" dominant-baseline="central" font-size="18" font-weight="800" fill="#6A3093">{{ $l }}</text>
+                        <polygon points="{{ implode(' ', $pts) }}" fill="{{ $f }}" stroke="#120d2b" stroke-opacity=".35" stroke-width="2"/>
+                        <text x="{{ $x }}" y="{{ $y + 1 }}" text-anchor="middle" dominant-baseline="central" font-size="18" font-weight="900" fill="#120d2b">{{ $l }}</text>
                     @endforeach
                 </svg>
-                <h2 class="text-3xl font-black"><span class="text-[#FFDD00]">ألف</span> <span class="text-[#26C6DA]">ياء</span></h2>
-                <p class="mt-1 font-bold text-[#26C6DA]">لوحة الحروف</p>
-                <p class="mt-2 leading-relaxed text-white/70">
+                <h2 class="text-3xl font-black">ألف ياء 🔤</h2>
+                <p class="mt-1 font-bold text-lantern">من الألف… للياء</p>
+                <p class="mt-2 leading-relaxed text-white/65">
                     كل خلية فيها حرف، والجواب يبدأ فيه. أول فريق يوصّل ضلعيه يربح، ومعها تحدي فردي ولوحة شرف وبوابة أسئلة للمقدّم.
                 </p>
-                <span class="mt-6 inline-flex items-center gap-2 rounded-2xl bg-[#FFDD00] px-6 py-3 text-lg font-extrabold text-[#3E1B52] transition group-hover:brightness-105">
+                <span class="mt-6 inline-flex items-center gap-2 rounded-2xl bg-lantern px-6 py-3 text-lg font-extrabold text-night transition group-hover:bg-lantern-light">
                     ابدأ ألف ياء ←
                 </span>
             </a>

@@ -2,14 +2,13 @@
 @php use App\Support\AlefYaStrings as S; @endphp
 
 @section('content')
+@include('alefya.partials.game-header', ['menu' => true, 'pill' => '🔤 '.S::get('app.name')])
 <main class="play-wrap">
-    <section class="board-area" id="boardArea" aria-label="لوحة الحروف"></section>
+    <section class="board-card" id="boardArea" aria-label="لوحة الحروف"></section>
 
     <aside class="side" aria-label="لوحة التحكم">
         <div class="side-head">
-            <button class="icon-btn" id="menuBtn" aria-label="{{ S::get('play.menu') }}"><i class="fa-solid fa-bars"></i></button>
             <div class="round-title" id="roundTitle"><span class="a">{{ S::get('play.round') }}</span> <span class="b">{{ S::get('play.round_names.0') }}</span></div>
-            <button class="icon-btn" id="musicBtn" aria-label="{{ S::get('home.music') }}"><i class="fa-solid fa-music"></i></button>
         </div>
         <div class="contest-name" id="contestName"></div>
 
@@ -25,7 +24,7 @@
             <button class="btn btn-yellow" id="newQBtn"><i class="fa-solid fa-rotate-right"></i> {{ S::get('play.new_question') }}</button>
         </div>
 
-        <div id="teamBars"></div>
+        <div id="teamBars" style="display:grid; gap:10px"></div>
 
         <div style="text-align:center"><span class="sync-pill" id="syncPill" hidden></span></div>
         <div class="keys-hint">{{ S::get('play.keys') }}</div>
