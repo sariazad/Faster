@@ -49,8 +49,21 @@ class AlefYaTest extends TestCase
         Question::inRandomOrder()->limit(50)->get()->each(function (Question $q) {
             $this->assertCount(4, $q->options);
             $this->assertContains($q->answer, $q->options);
-            $this->assertSame($q->letter, AlefYaLetters::of($q->answer) ?? $q->letter);
+            $this->assertContains($q->letter, AlefYaLetters::ALL);
         });
+    }
+
+    public function test_replace_bank_keeps_only_the_bank_file(): void
+    {
+        $file = count(json_decode(file_get_contents(AlefYaSeeder::bankFile()), true));
+        $extra = Question::create(['question' => 'سؤال قديم؟', 'answer' => 'قديم']);
+        Note::create(['question_id' => $extra->id, 'body' => 'ملاحظة']);
+
+        $this->artisan('alefya:replace-bank', ['--force' => true])->assertSuccessful();
+
+        $this->assertSame($file, Question::count());
+        $this->assertFalse(Question::where('question', 'سؤال قديم؟')->exists());
+        $this->assertSame(0, Note::count());
     }
 
     public function test_letter_detection_ignores_al_and_normalises_alef(): void

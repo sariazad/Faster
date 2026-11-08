@@ -55,3 +55,21 @@ Artisan::command('questions:restore {file : مسار ملف ZIP}', function (Que
 
     return 0;
 })->purpose('استعادة بنك الأسئلة من نسخة احتياطية (بدون حذف أي شي موجود)');
+
+// ألف ياء: delete every question in the letters bank and load database/seeders/data/alefya-questions.json.
+Artisan::command('alefya:replace-bank {--force : بدون سؤال تأكيد}', function () {
+    $old = \App\Models\AlefYa\Question::count();
+
+    if (! $this->option('force') && ! $this->confirm("رح ينحذف {$old} سؤال من ألف ياء (مع ملاحظاتها) وينحط البنك الجديد مكانها. متأكد؟", true)) {
+        return;
+    }
+
+    \App\Models\AlefYa\Question::query()->getConnection()->transaction(function () {
+        \App\Models\AlefYa\Note::query()->delete();
+        \App\Models\AlefYa\Contribution::query()->whereNotNull('question_id')->update(['question_id' => null]);
+        \App\Models\AlefYa\Question::query()->delete();
+    });
+
+    $added = \Database\Seeders\AlefYaSeeder::import();
+    $this->info("✅ انحذف {$old} سؤال قديم، وانضاف {$added} سؤال جديد.");
+})->purpose('استبدال بنك أسئلة ألف ياء بالكامل بملف البنك الجديد');

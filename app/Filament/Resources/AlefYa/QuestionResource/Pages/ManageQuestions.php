@@ -59,6 +59,18 @@ class ManageQuestions extends ManageRecords
                     }
                 }),
 
+            Actions\Action::make('replace')
+                ->label('استبدال البنك بالكامل')
+                ->icon('heroicon-o-arrow-path')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('استبدال بنك ألف ياء')
+                ->modalDescription('بيحذف كل أسئلة الحروف الحالية (مع ملاحظاتها) وبيحط مكانها البنك الموجود مع اللعبة (database/seeders/data/alefya-questions.json). ما في تراجع، فصدّر نسخة JSON قبل إذا بدك.')
+                ->action(function () {
+                    \Illuminate\Support\Facades\Artisan::call('alefya:replace-bank', ['--force' => true]);
+                    Notification::make()->title('تم الاستبدال')->body(trim(\Illuminate\Support\Facades\Artisan::output()))->success()->persistent()->send();
+                }),
+
             Actions\Action::make('play')
                 ->label('افتح اللعبة')
                 ->icon('heroicon-o-play')
