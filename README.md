@@ -64,7 +64,8 @@
 ### إضافة أسئلة الحروف
 - **من لوحة التحكم:** ألف ياء ← أسئلة الحروف ← سؤال جديد. الحرف بيتحدد تلقائياً من الإجابة، والخيارات الأربعة بتنعمل تلقائياً إذا تركتها فاضية.
 - **استيراد وتصدير JSON:** `[{"question": "...", "answer": "...", "letter": "ب", "options": ["...","...","...","..."], "category": "...", "contributor": "..."}]`.
-- **البنك الأساسي** موجود بـ`database/seeders/data/alefya-questions.json`، وبتعبّيه بـ`php artisan db:seed --class=AlefYaSeeder`، وبيتجاهل الأسئلة الموجودة.
+- **البنك الأساسي** (7349 سؤال) موجود بـ`database/seeders/data/alefya-questions.json`. الأمر `php artisan db:seed --class=AlefYaSeeder` بيضيف الأسئلة الناقصة بس.
+- **لاستبدال البنك بالكامل** (بيحذف القديم وبيترك أسئلة الملف بس): `php artisan alefya:replace-bank`، أو من زر «استبدال البنك بالكامل» بلوحة التحكم.
 
 ### تعديل النصوص والروابط
 - كل نصوص الواجهة موجودة بـ`resources/alefya/strings.ar.json`.
