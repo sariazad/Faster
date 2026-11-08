@@ -35,7 +35,7 @@ if [ -n "$CODESPACE_NAME" ]; then
     sed -i "s#^APP_URL=.*#APP_URL=${url}#" .env
 fi
 
-touch database/database.sqlite
+touch database/database.sqlite database/alefya.sqlite
 
 step "تثبيت مكتبات PHP (composer)"
 if ! composer install --no-interaction --prefer-dist > /tmp/composer.log 2>&1; then

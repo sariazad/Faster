@@ -44,6 +44,18 @@ return [
             'transaction_mode' => 'DEFERRED',
         ],
 
+        // ألف ياء — the letters game keeps its own database, separate from the main question bank.
+        'alefya' => [
+            'driver' => 'sqlite',
+            'database' => env('ALEFYA_DB_DATABASE', database_path('alefya.sqlite')),
+            'prefix' => '',
+            'foreign_key_constraints' => true,
+            'busy_timeout' => null,
+            'journal_mode' => null,
+            'synchronous' => null,
+            'transaction_mode' => 'DEFERRED',
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),

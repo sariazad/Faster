@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->call(QuestionBankSeeder::class);
+        $this->call(AlefYaSeeder::class);
     }
 }
