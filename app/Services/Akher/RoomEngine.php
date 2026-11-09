@@ -162,6 +162,10 @@ class RoomEngine
             if (array_key_exists('wrong_penalty', $data)) {
                 $room->wrong_penalty = (bool) $data['wrong_penalty'];
             }
+            if (array_key_exists('host_plays', $data)) {
+                $room->host_plays = (bool) $data['host_plays'];
+                $this->syncHostSeat($room);
+            }
             $this->bump($room);
         });
     }
@@ -368,6 +372,7 @@ class RoomEngine
             $room->scores = ['A' => 0, 'B' => 0];
             $room->expires_at = now()->addHours(self::ROOM_HOURS);
             $room->players()->update(['spectator' => false]);
+            $this->syncHostSeat($room);
             $this->bump($room);
         });
     }
@@ -408,7 +413,7 @@ class RoomEngine
             'is_host' => $isHost,
             'my_players' => $mine,
             'list' => $list ? ['id' => $list->id, 'title' => $list->title_ar, 'extra_label' => $list->extra_label, 'hint' => $list->unit_hint, 'count' => $list->items_count] : null,
-            'settings' => ['turns_per_player' => $room->turns_per_player, 'turn_seconds' => $room->turn_seconds, 'wrong_penalty' => $room->wrong_penalty],
+            'settings' => ['turns_per_player' => $room->turns_per_player, 'turn_seconds' => $room->turn_seconds, 'wrong_penalty' => $room->wrong_penalty, 'host_plays' => $room->host_plays !== false],
             'turn_idx' => $room->turn_idx,
             'turns_total' => count($room->order ?? []),
             'current_player' => $room->currentPlayerId(),
@@ -501,9 +506,15 @@ class RoomEngine
         return Room::findOrFail($room->code);
     }
 
+    /** A host who only runs the game sits out as a spectator (and is never counted in a team). */
+    private function syncHostSeat(Room $room): void
+    {
+        $room->players()->where('device_id', $room->host_device)->update(['spectator' => $room->host_plays === false]);
+    }
+
     private function smallerTeam(Room $room): string
     {
-        $counts = $room->players()->selectRaw('team, count(*) as n')->groupBy('team')->pluck('n', 'team');
+        $counts = $room->players()->where('spectator', false)->selectRaw('team, count(*) as n')->groupBy('team')->pluck('n', 'team');
 
         return ($counts['B'] ?? 0) < ($counts['A'] ?? 0) ? 'B' : 'A';
     }

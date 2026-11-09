@@ -103,6 +103,34 @@ class AkherRoomTest extends TestCase
         $this->assertSame($khalid, collect($end['revealed'])->firstWhere('name', 'كندا')['player_id']);
     }
 
+    public function test_host_can_run_the_game_without_playing(): void
+    {
+        $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->json('code');
+        $this->api('POST', "/rooms/$code/settings", ['device' => self::HOST, 'host_plays' => false, 'turns_per_player' => 1])->assertOk();
+        $this->assertFalse($this->state($code)['settings']['host_plays']);
+
+        // With the host out, the next two players fill A and B.
+        $this->api('POST', "/rooms/$code/join", ['name' => 'خالد', 'device' => self::PHONE])->assertOk();
+        $this->api('POST', "/rooms/$code/join", ['name' => 'ليلى', 'device' => 'phone-device-3'])->assertOk();
+        $s = $this->state($code);
+        $this->assertSame(['A', 'B'], collect($s['players'])->where('host', false)->pluck('team')->values()->all());
+
+        $this->api('POST', "/rooms/$code/start", ['device' => self::HOST])->assertOk();
+        $s = $this->state($code);
+        $this->assertSame(2, $s['turns_total']);
+        $this->assertNotSame($s['players'][0]['id'], $s['current_player'], 'the host never gets a turn');
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 0, 'text' => 'كندا'])->assertStatus(422)->assertJsonPath('message', 'not_your_turn');
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::PHONE, 'turn_idx' => 0, 'text' => 'كندا'])->assertOk();
+
+        // A new round keeps the host out.
+        $this->api('POST', "/rooms/$code/reset", ['device' => self::HOST])->assertOk();
+        $this->assertTrue($this->state($code)['players'][0]['spectator']);
+
+        // Switching back puts the host in the game again.
+        $this->api('POST', "/rooms/$code/settings", ['device' => self::HOST, 'host_plays' => true])->assertOk();
+        $this->assertFalse($this->state($code)['players'][0]['spectator']);
+    }
+
     public function test_room_flow_lobby_to_end(): void
     {
         $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->assertOk()->json('code');

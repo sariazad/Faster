@@ -21,6 +21,7 @@ class Room extends Model
         'order' => 'array',
         'scores' => 'array',
         'wrong_penalty' => 'boolean',
+        'host_plays' => 'boolean',
         'turn_deadline' => 'datetime',
         'expires_at' => 'datetime',
         'turn_idx' => 'integer',

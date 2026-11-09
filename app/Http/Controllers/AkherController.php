@@ -113,9 +113,10 @@ class AkherController extends Controller
             'turn_seconds' => 'nullable|integer',
             'wrong_penalty' => 'nullable|boolean',
             'mode' => 'nullable|in:teams,solo',
+            'host_plays' => 'nullable|boolean',
         ]);
 
-        return $this->run(fn () => $this->engine->settings($this->room($code), $data['device'], $request->only(['list_id', 'turns_per_player', 'turn_seconds', 'wrong_penalty', 'mode'])));
+        return $this->run(fn () => $this->engine->settings($this->room($code), $data['device'], $request->only(['list_id', 'turns_per_player', 'turn_seconds', 'wrong_penalty', 'mode', 'host_plays'])));
     }
 
     public function guess(Request $request, string $code): JsonResponse

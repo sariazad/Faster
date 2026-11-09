@@ -87,7 +87,9 @@ async function act(fn, ...args) {
 
 function renderLobby() {
     const s = state;
-    const teams = { A: s.players.filter((p) => p.team === 'A'), B: s.players.filter((p) => p.team === 'B') };
+    const hostOnly = s.settings.host_plays === false;
+    const seated = s.players.filter((p) => !(hostOnly && p.host)); // a host who only runs the game isn't on the board
+    const teams = { A: seated.filter((p) => p.team === 'A'), B: seated.filter((p) => p.team === 'B') };
     const joinUrl = new URL(`${config.base}?room=${s.code}`, location.href).href; // config.base is already absolute
     const active = s.players.filter((p) => !p.spectator);
     const nTurns = solo() ? s.settings.turns_per_player : s.settings.turns_per_player * Math.max(teams.A.length, teams.B.length, 1);
@@ -97,15 +99,15 @@ function renderLobby() {
         p.host ? el('span', { class: 'tag', text: S('lobby.host') }) : null,
         p.mine ? el('span', { class: 'tag me', text: S('lobby.this_device') }) : null,
         p.offline ? el('span', { class: 'tag', text: S('lobby.no_phone') }) : null,
-        p.spectator ? el('span', { class: 'tag', text: S('lobby.spectator') }) : null,
+        p.spectator && !p.host ? el('span', { class: 'tag', text: S('lobby.spectator') }) : null,
         !solo() && (p.mine || (s.is_host && p.offline)) ? el('button', { class: 'chip-btn', text: S('lobby.switch'), 'aria-label': `${S('lobby.switch')}: ${p.name}`, onclick: () => act(api.switchTeam, p.id) }) : null,
         (p.mine && !p.host) || (s.is_host && !p.host) ? el('button', { class: 'chip-btn', text: '✕', 'aria-label': `${S('lobby.remove')}: ${p.name}`, onclick: () => act(api.removePlayer, p.id) }) : null,
     ]);
 
     const cols = solo()
         ? el('section', { class: 'card', 'aria-label': S('lobby.players') }, [
-            el('h3', { text: `${S('lobby.players')} (${s.players.length})` }),
-            el('div', { class: 'solo-players' }, s.players.map((p) => { const c = playerCard(p); const sd = ownerOf(p.id); c.prepend(el('span', { class: `dot ${sd.cls}`, style: sd.style })); return c; })),
+            el('h3', { text: `${S('lobby.players')} (${seated.length})` }),
+            el('div', { class: 'solo-players' }, seated.map((p) => { const c = playerCard(p); const sd = ownerOf(p.id); c.prepend(el('span', { class: `dot ${sd.cls}`, style: sd.style })); return c; })),
         ])
         : el('div', { class: 'teams' }, ['A', 'B'].map((t) => el('section', { class: `team-col ${t}`, 'aria-label': teamName(t) }, [
             el('h3', { text: `${teamName(t)} (${teams[t].length})` }),
@@ -117,6 +119,7 @@ function renderLobby() {
         el('div', { class: 'room-code', text: s.code, 'aria-label': `${S('lobby.code')} ${s.code.split('').join(' ')}` }),
         s.is_host ? el('div', { class: 'qr', id: 'qr', 'aria-hidden': 'true' }) : null,
         s.is_host ? el('p', { class: 'muted small', text: S('lobby.scan') }) : null,
+        hostOnly ? el('p', { class: 'muted small', text: S('lobby.host_only_note', { name: s.players.find((p) => p.host)?.name || '' }) }) : null,
     ]);
 
     const children = [header([el('button', { class: 'btn ghost sm', text: S('lobby.leave'), onclick: leave })]), el('div', { class: 'stack' }, [top, cols])];
@@ -149,6 +152,7 @@ function renderLobby() {
         children.push(el('div', { class: 'card stack', style: 'margin-top:14px' }, [
             el('h2', { text: S('lobby.settings') }),
             opt('mode', [['teams', S('lobby.mode_teams')], ['solo', S('lobby.mode_solo')]], S('lobby.mode')),
+            opt('host_plays', [[true, S('lobby.host_plays')], [false, S('lobby.host_only')]], S('lobby.host_role')),
             el('div', {}, [
                 el('div', { class: 'lbl', text: S('lobby.list') }),
                 el('div', { class: 'list-cards' }, (s.lists || []).map((l) => el('button', {
