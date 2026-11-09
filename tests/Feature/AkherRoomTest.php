@@ -157,7 +157,7 @@ class AkherRoomTest extends TestCase
         $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 0, 'text' => 'روسيا'])->assertOk();
 
         $s = $this->state($code, self::PHONE);
-        $this->assertSame([['rank' => 1, 'team' => 'A', 'player' => 'سارة', 'player_id' => $s['players'][0]['id'], 'name' => 'روسيا', 'extra' => '17,098,246']], $s['revealed']);
+        $this->assertSame([['rank' => 1, 'team' => 'A', 'player_id' => $s['players'][0]['id'], 'player' => 'سارة', 'name' => 'روسيا', 'extra' => '17,098,246']], $s['revealed']);
         $this->assertNull($s['full_list']);
         $this->assertStringNotContainsString('كندا', json_encode($s, JSON_UNESCAPED_UNICODE));
     }
