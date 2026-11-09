@@ -78,7 +78,7 @@ async function act(fn, ...args) {
 function renderLobby() {
     const s = state;
     const teams = { A: s.players.filter((p) => p.team === 'A'), B: s.players.filter((p) => p.team === 'B') };
-    const joinUrl = `${location.origin}${config.base}?room=${s.code}`;
+    const joinUrl = new URL(`${config.base}?room=${s.code}`, location.href).href; // config.base is already absolute
     const nTurns = s.settings.turns_per_player * Math.max(teams.A.length, teams.B.length, 1);
 
     const playerCard = (p) => el('div', { class: 'pcard' }, [
