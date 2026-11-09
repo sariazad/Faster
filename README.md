@@ -122,6 +122,14 @@
 
 إذا التجهيز ما اشتغل لأي سبب، شغّله يدوياً بـ `bash .devcontainer/setup.sh`.
 
+### على ويندوز (بدون Codespaces)
+
+1. ثبّت [Laravel Herd](https://herd.laravel.com/windows) (بيجيب PHP وComposer)، و[Node.js LTS](https://nodejs.org)، و[Git](https://git-scm.com/download/win).
+2. `git clone https://github.com/sariazad/Faster.git`
+3. دبل كليك على `windows\setup.bat` (مرة وحدة).
+4. دبل كليك على `windows\start.bat` كل ما بدك تلعب. بيطلعلك رابط للجوالات على نفس الواي فاي.
+5. للتحديثات: `windows\update.bat`.
+
 ### على جهازك (PHP 8.2+ مع إضافتي intl و zip، و Composer، و Node 20+)
 
 ```bash
