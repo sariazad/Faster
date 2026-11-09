@@ -1,0 +1,19 @@
+{
+    "_comment": "آخر القائمة — أرقام محرّك المطابقة. عدّلها من هون من غير ما تلمس الكود.",
+    "threshold": 0.80,
+    "ambiguity_gap": 0.08,
+    "min_fuzzy_length": 4,
+    "single_word_min": 3,
+    "single_word_match_min": 5,
+    "costs": {
+        "same_group": 0.35,
+        "final_ha_alef": 0.3,
+        "substitute": 1.0,
+        "first_letter_multiplier": 2.0,
+        "weak_insert_delete": 0.5,
+        "insert_delete": 1.0,
+        "transpose": 0.6
+    },
+    "groups": ["بتثني", "جحخ", "دذ", "رز", "سش", "صض", "طظ", "عغ", "فق"],
+    "weak_letters": "اوي"
+}

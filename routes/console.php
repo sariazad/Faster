@@ -73,3 +73,34 @@ Artisan::command('alefya:replace-bank {--force : بدون سؤال تأكيد}',
     $added = \Database\Seeders\AlefYaSeeder::import();
     $this->info("✅ انحذف {$old} سؤال قديم، وانضاف {$added} سؤال جديد.");
 })->purpose('استبدال بنك أسئلة ألف ياء بالكامل بملف البنك الجديد');
+
+// آخر القائمة: checks every list file (ranks 1..N without gaps, no name shared by two items).
+Artisan::command('akher:validate-lists {--db : افحص القوائم الموجودة بقاعدة البيانات بدل الملفات}', function () {
+    $sources = [];
+
+    if ($this->option('db')) {
+        foreach (\App\Models\Akher\GameList::with('items')->get() as $list) {
+            $sources[$list->id] = $list->toFile();
+        }
+    } else {
+        foreach (glob(database_path('seeders/data/akher/*.json')) as $file) {
+            $sources[basename($file)] = json_decode(file_get_contents($file), true) ?? ['items' => []];
+        }
+    }
+
+    $failed = false;
+    foreach ($sources as $name => $data) {
+        $problems = \App\Models\Akher\GameList::problems($data);
+        if ($problems) {
+            $failed = true;
+            $this->error("✘ {$name}");
+            foreach ($problems as $p) {
+                $this->line("   - {$p}");
+            }
+        } else {
+            $this->info("✔ {$name}: ".count($data['items']).' عنصر');
+        }
+    }
+
+    return $failed ? 1 : 0;
+})->purpose('فحص قوائم آخر القائمة');

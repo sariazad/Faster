@@ -13,11 +13,13 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // ألف ياء uses its own SQLite file: create it on first run so `php artisan migrate` just works.
-        $path = config('database.connections.alefya.database');
+        // ألف ياء and آخر القائمة use their own SQLite files: create them on first run so `php artisan migrate` just works.
+        foreach (['alefya', 'akher'] as $connection) {
+            $path = config("database.connections.$connection.database");
 
-        if (is_string($path) && $path !== '' && $path !== ':memory:' && ! file_exists($path) && is_dir(dirname($path))) {
-            @touch($path);
+            if (is_string($path) && $path !== '' && $path !== ':memory:' && ! file_exists($path) && is_dir(dirname($path))) {
+                @touch($path);
+            }
         }
     }
 }

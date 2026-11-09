@@ -11,7 +11,7 @@
             فريقين، شاشة وحدة، وبنك أسئلة كبير. اختاروا طريقة اللعب:
         </p>
 
-        <section class="mt-10 grid w-full gap-5 text-start md:grid-cols-2 lg:grid-cols-3">
+        <section class="mt-10 grid w-full gap-5 text-start md:grid-cols-2">
             {{-- التحدي --}}
             <a href="{{ route('game.new') }}"
                class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-night-800/80 p-6 transition hover:-translate-y-1 hover:border-lantern/60 sm:p-8">
@@ -55,6 +55,25 @@
                     ابدأ طق طق ←
                 </span>
             </a>
+            {{-- آخر القائمة --}}
+            <a href="{{ route('akher.home') }}"
+               class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-night-800/80 p-6 transition hover:-translate-y-1 hover:border-lantern/60 sm:p-8">
+                <span class="absolute end-5 top-5 rounded-full bg-lantern px-3 py-1 text-xs font-black text-night">جديد</span>
+                <div class="mb-5 grid h-[3.6rem] w-[9.5rem] grid-cols-5 gap-1" aria-hidden="true" dir="ltr">
+                    @foreach ([0,0,1,0,2,0,1,0,0,2] as $i => $t)
+                        <span class="rounded-[4px] {{ $t === 1 ? 'bg-[#e5484d]' : ($t === 2 ? 'bg-[#2b7fd8]' : 'bg-white/10') }} text-[9px] font-bold leading-none text-white/60 ps-0.5 pt-0.5">{{ [91, 92, 93, 94, 95, 96, 97, 98, 99, 100][$i] }}</span>
+                    @endforeach
+                </div>
+                <h2 class="text-3xl font-black"><span class="font-light">آخر</span> القائمة<sup class="ms-1 text-sm font-bold text-lantern">100</sup></h2>
+                <p class="mt-1 font-bold text-lantern">كل ما بعّدت… ربحت أكتر</p>
+                <p class="mt-2 leading-relaxed text-white/65">
+                    قائمة من 100 وفريقين، وكل واحد بيخمّن من جواله. الدولة رقم 90 بـ90 نقطة، بس انتبه لا تطلع برّا القائمة.
+                </p>
+                <span class="mt-6 inline-flex items-center gap-2 rounded-2xl bg-lantern px-6 py-3 text-lg font-extrabold text-night transition group-hover:bg-lantern-light">
+                    افتح غرفة ←
+                </span>
+            </a>
+
             {{-- ألف ياء --}}
             <a href="{{ route('alefya.home') }}"
                class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-night-800/80 p-6 transition hover:-translate-y-1 hover:border-lantern/60 sm:p-8">

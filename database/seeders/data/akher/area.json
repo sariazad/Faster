@@ -1,0 +1,851 @@
+{
+ "id": "area",
+ "title_ar": "أكبر 100 دولة بالمساحة",
+ "extra_label": "كم²",
+ "unit_hint": "اكتب اسم دولة",
+ "source": "CIA World Factbook (المساحة الكلية، يابسة + مياه داخلية)، بيانات 2024 تقريبية",
+ "updated": "2026-11",
+ "items": [
+  {
+   "rank": 1,
+   "name_ar": "روسيا",
+   "name_en": "Russia",
+   "aliases": [
+    "روسيا الاتحادية",
+    "Russian Federation"
+   ],
+   "extra": "17,098,246"
+  },
+  {
+   "rank": 2,
+   "name_ar": "كندا",
+   "name_en": "Canada",
+   "aliases": [],
+   "extra": "9,984,670"
+  },
+  {
+   "rank": 3,
+   "name_ar": "الولايات المتحدة",
+   "name_en": "United States",
+   "aliases": [
+    "امريكا",
+    "أمريكا",
+    "الولايات المتحدة الأمريكية",
+    "USA",
+    "US",
+    "America",
+    "الولايات المتحده"
+   ],
+   "extra": "9,833,517"
+  },
+  {
+   "rank": 4,
+   "name_ar": "الصين",
+   "name_en": "China",
+   "aliases": [
+    "جمهورية الصين الشعبية"
+   ],
+   "extra": "9,596,960"
+  },
+  {
+   "rank": 5,
+   "name_ar": "البرازيل",
+   "name_en": "Brazil",
+   "aliases": [],
+   "extra": "8,515,770"
+  },
+  {
+   "rank": 6,
+   "name_ar": "أستراليا",
+   "name_en": "Australia",
+   "aliases": [
+    "استراليا"
+   ],
+   "extra": "7,741,220"
+  },
+  {
+   "rank": 7,
+   "name_ar": "الهند",
+   "name_en": "India",
+   "aliases": [],
+   "extra": "3,287,263"
+  },
+  {
+   "rank": 8,
+   "name_ar": "الأرجنتين",
+   "name_en": "Argentina",
+   "aliases": [],
+   "extra": "2,780,400"
+  },
+  {
+   "rank": 9,
+   "name_ar": "كازاخستان",
+   "name_en": "Kazakhstan",
+   "aliases": [
+    "قازاقستان",
+    "كازخستان"
+   ],
+   "extra": "2,724,900"
+  },
+  {
+   "rank": 10,
+   "name_ar": "الجزائر",
+   "name_en": "Algeria",
+   "aliases": [],
+   "extra": "2,381,740"
+  },
+  {
+   "rank": 11,
+   "name_ar": "جمهورية الكونغو الديمقراطية",
+   "name_en": "DR Congo",
+   "aliases": [
+    "الكونغو الديمقراطية",
+    "كونغو الديمقراطية",
+    "DRC",
+    "Democratic Republic of the Congo",
+    "كونغو كينشاسا",
+    "زائير"
+   ],
+   "extra": "2,344,858"
+  },
+  {
+   "rank": 12,
+   "name_ar": "السعودية",
+   "name_en": "Saudi Arabia",
+   "aliases": [
+    "المملكة العربية السعودية",
+    "المملكة",
+    "KSA"
+   ],
+   "extra": "2,149,690"
+  },
+  {
+   "rank": 13,
+   "name_ar": "المكسيك",
+   "name_en": "Mexico",
+   "aliases": [],
+   "extra": "1,964,375"
+  },
+  {
+   "rank": 14,
+   "name_ar": "إندونيسيا",
+   "name_en": "Indonesia",
+   "aliases": [
+    "اندونيسيا",
+    "اندونيسيا"
+   ],
+   "extra": "1,904,569"
+  },
+  {
+   "rank": 15,
+   "name_ar": "السودان",
+   "name_en": "Sudan",
+   "aliases": [],
+   "extra": "1,861,484"
+  },
+  {
+   "rank": 16,
+   "name_ar": "ليبيا",
+   "name_en": "Libya",
+   "aliases": [],
+   "extra": "1,759,540"
+  },
+  {
+   "rank": 17,
+   "name_ar": "إيران",
+   "name_en": "Iran",
+   "aliases": [
+    "ايران"
+   ],
+   "extra": "1,648,195"
+  },
+  {
+   "rank": 18,
+   "name_ar": "منغوليا",
+   "name_en": "Mongolia",
+   "aliases": [
+    "منغوليا",
+    "مونغوليا"
+   ],
+   "extra": "1,564,116"
+  },
+  {
+   "rank": 19,
+   "name_ar": "بيرو",
+   "name_en": "Peru",
+   "aliases": [
+    "البيرو"
+   ],
+   "extra": "1,285,216"
+  },
+  {
+   "rank": 20,
+   "name_ar": "تشاد",
+   "name_en": "Chad",
+   "aliases": [],
+   "extra": "1,284,000"
+  },
+  {
+   "rank": 21,
+   "name_ar": "النيجر",
+   "name_en": "Niger",
+   "aliases": [],
+   "extra": "1,267,000"
+  },
+  {
+   "rank": 22,
+   "name_ar": "أنغولا",
+   "name_en": "Angola",
+   "aliases": [
+    "انغولا",
+    "انجولا"
+   ],
+   "extra": "1,246,700"
+  },
+  {
+   "rank": 23,
+   "name_ar": "مالي",
+   "name_en": "Mali",
+   "aliases": [],
+   "extra": "1,240,192"
+  },
+  {
+   "rank": 24,
+   "name_ar": "جنوب أفريقيا",
+   "name_en": "South Africa",
+   "aliases": [
+    "جنوب افريقيا",
+    "جنوب إفريقيا"
+   ],
+   "extra": "1,219,090"
+  },
+  {
+   "rank": 25,
+   "name_ar": "كولومبيا",
+   "name_en": "Colombia",
+   "aliases": [],
+   "extra": "1,138,910"
+  },
+  {
+   "rank": 26,
+   "name_ar": "إثيوبيا",
+   "name_en": "Ethiopia",
+   "aliases": [
+    "اثيوبيا",
+    "الحبشة"
+   ],
+   "extra": "1,104,300"
+  },
+  {
+   "rank": 27,
+   "name_ar": "بوليفيا",
+   "name_en": "Bolivia",
+   "aliases": [],
+   "extra": "1,098,581"
+  },
+  {
+   "rank": 28,
+   "name_ar": "موريتانيا",
+   "name_en": "Mauritania",
+   "aliases": [],
+   "extra": "1,030,700"
+  },
+  {
+   "rank": 29,
+   "name_ar": "مصر",
+   "name_en": "Egypt",
+   "aliases": [],
+   "extra": "1,001,450"
+  },
+  {
+   "rank": 30,
+   "name_ar": "تنزانيا",
+   "name_en": "Tanzania",
+   "aliases": [],
+   "extra": "947,300"
+  },
+  {
+   "rank": 31,
+   "name_ar": "نيجيريا",
+   "name_en": "Nigeria",
+   "aliases": [],
+   "extra": "923,768"
+  },
+  {
+   "rank": 32,
+   "name_ar": "فنزويلا",
+   "name_en": "Venezuela",
+   "aliases": [],
+   "extra": "912,050"
+  },
+  {
+   "rank": 33,
+   "name_ar": "ناميبيا",
+   "name_en": "Namibia",
+   "aliases": [],
+   "extra": "824,292"
+  },
+  {
+   "rank": 34,
+   "name_ar": "موزمبيق",
+   "name_en": "Mozambique",
+   "aliases": [
+    "موزنبيق"
+   ],
+   "extra": "799,380"
+  },
+  {
+   "rank": 35,
+   "name_ar": "باكستان",
+   "name_en": "Pakistan",
+   "aliases": [],
+   "extra": "796,095"
+  },
+  {
+   "rank": 36,
+   "name_ar": "تركيا",
+   "name_en": "Turkey",
+   "aliases": [
+    "Turkiye",
+    "تركية"
+   ],
+   "extra": "783,562"
+  },
+  {
+   "rank": 37,
+   "name_ar": "تشيلي",
+   "name_en": "Chile",
+   "aliases": [
+    "تشيلى",
+    "شيلي"
+   ],
+   "extra": "756,102"
+  },
+  {
+   "rank": 38,
+   "name_ar": "زامبيا",
+   "name_en": "Zambia",
+   "aliases": [],
+   "extra": "752,618"
+  },
+  {
+   "rank": 39,
+   "name_ar": "ميانمار",
+   "name_en": "Myanmar",
+   "aliases": [
+    "بورما",
+    "Burma"
+   ],
+   "extra": "676,578"
+  },
+  {
+   "rank": 40,
+   "name_ar": "أفغانستان",
+   "name_en": "Afghanistan",
+   "aliases": [
+    "افغانستان"
+   ],
+   "extra": "652,230"
+  },
+  {
+   "rank": 41,
+   "name_ar": "جنوب السودان",
+   "name_en": "South Sudan",
+   "aliases": [],
+   "extra": "644,329"
+  },
+  {
+   "rank": 42,
+   "name_ar": "فرنسا",
+   "name_en": "France",
+   "aliases": [],
+   "extra": "643,801"
+  },
+  {
+   "rank": 43,
+   "name_ar": "الصومال",
+   "name_en": "Somalia",
+   "aliases": [],
+   "extra": "637,657"
+  },
+  {
+   "rank": 44,
+   "name_ar": "جمهورية أفريقيا الوسطى",
+   "name_en": "Central African Republic",
+   "aliases": [
+    "أفريقيا الوسطى",
+    "افريقيا الوسطى",
+    "CAR"
+   ],
+   "extra": "622,984"
+  },
+  {
+   "rank": 45,
+   "name_ar": "أوكرانيا",
+   "name_en": "Ukraine",
+   "aliases": [
+    "اوكرانيا"
+   ],
+   "extra": "603,550"
+  },
+  {
+   "rank": 46,
+   "name_ar": "مدغشقر",
+   "name_en": "Madagascar",
+   "aliases": [],
+   "extra": "587,041"
+  },
+  {
+   "rank": 47,
+   "name_ar": "بوتسوانا",
+   "name_en": "Botswana",
+   "aliases": [],
+   "extra": "581,730"
+  },
+  {
+   "rank": 48,
+   "name_ar": "كينيا",
+   "name_en": "Kenya",
+   "aliases": [],
+   "extra": "580,367"
+  },
+  {
+   "rank": 49,
+   "name_ar": "اليمن",
+   "name_en": "Yemen",
+   "aliases": [],
+   "extra": "527,968"
+  },
+  {
+   "rank": 50,
+   "name_ar": "تايلاند",
+   "name_en": "Thailand",
+   "aliases": [
+    "تايلند"
+   ],
+   "extra": "513,120"
+  },
+  {
+   "rank": 51,
+   "name_ar": "إسبانيا",
+   "name_en": "Spain",
+   "aliases": [
+    "اسبانيا"
+   ],
+   "extra": "505,370"
+  },
+  {
+   "rank": 52,
+   "name_ar": "تركمانستان",
+   "name_en": "Turkmenistan",
+   "aliases": [],
+   "extra": "488,100"
+  },
+  {
+   "rank": 53,
+   "name_ar": "الكاميرون",
+   "name_en": "Cameroon",
+   "aliases": [],
+   "extra": "475,440"
+  },
+  {
+   "rank": 54,
+   "name_ar": "بابوا غينيا الجديدة",
+   "name_en": "Papua New Guinea",
+   "aliases": [
+    "بابوا",
+    "PNG"
+   ],
+   "extra": "462,840"
+  },
+  {
+   "rank": 55,
+   "name_ar": "السويد",
+   "name_en": "Sweden",
+   "aliases": [],
+   "extra": "450,295"
+  },
+  {
+   "rank": 56,
+   "name_ar": "أوزبكستان",
+   "name_en": "Uzbekistan",
+   "aliases": [
+    "اوزبكستان"
+   ],
+   "extra": "447,400"
+  },
+  {
+   "rank": 57,
+   "name_ar": "المغرب",
+   "name_en": "Morocco",
+   "aliases": [],
+   "extra": "446,550"
+  },
+  {
+   "rank": 58,
+   "name_ar": "العراق",
+   "name_en": "Iraq",
+   "aliases": [],
+   "extra": "438,317"
+  },
+  {
+   "rank": 59,
+   "name_ar": "باراغواي",
+   "name_en": "Paraguay",
+   "aliases": [
+    "البراغواي",
+    "باراجواي"
+   ],
+   "extra": "406,752"
+  },
+  {
+   "rank": 60,
+   "name_ar": "زيمبابوي",
+   "name_en": "Zimbabwe",
+   "aliases": [],
+   "extra": "390,757"
+  },
+  {
+   "rank": 61,
+   "name_ar": "اليابان",
+   "name_en": "Japan",
+   "aliases": [],
+   "extra": "377,915"
+  },
+  {
+   "rank": 62,
+   "name_ar": "ألمانيا",
+   "name_en": "Germany",
+   "aliases": [
+    "المانيا"
+   ],
+   "extra": "357,022"
+  },
+  {
+   "rank": 63,
+   "name_ar": "جمهورية الكونغو",
+   "name_en": "Republic of the Congo",
+   "aliases": [
+    "كونغو برازافيل",
+    "Congo-Brazzaville"
+   ],
+   "extra": "342,000"
+  },
+  {
+   "rank": 64,
+   "name_ar": "فنلندا",
+   "name_en": "Finland",
+   "aliases": [
+    "فنلنده"
+   ],
+   "extra": "338,145"
+  },
+  {
+   "rank": 65,
+   "name_ar": "فيتنام",
+   "name_en": "Vietnam",
+   "aliases": [
+    "فيتنام",
+    "Viet Nam"
+   ],
+   "extra": "331,210"
+  },
+  {
+   "rank": 66,
+   "name_ar": "ماليزيا",
+   "name_en": "Malaysia",
+   "aliases": [],
+   "extra": "329,847"
+  },
+  {
+   "rank": 67,
+   "name_ar": "النرويج",
+   "name_en": "Norway",
+   "aliases": [],
+   "extra": "323,802"
+  },
+  {
+   "rank": 68,
+   "name_ar": "ساحل العاج",
+   "name_en": "Ivory Coast",
+   "aliases": [
+    "كوت ديفوار",
+    "Côte d'Ivoire"
+   ],
+   "extra": "322,463"
+  },
+  {
+   "rank": 69,
+   "name_ar": "بولندا",
+   "name_en": "Poland",
+   "aliases": [],
+   "extra": "312,685"
+  },
+  {
+   "rank": 70,
+   "name_ar": "عُمان",
+   "name_en": "Oman",
+   "aliases": [
+    "سلطنة عمان"
+   ],
+   "extra": "309,500"
+  },
+  {
+   "rank": 71,
+   "name_ar": "إيطاليا",
+   "name_en": "Italy",
+   "aliases": [
+    "ايطاليا"
+   ],
+   "extra": "301,340"
+  },
+  {
+   "rank": 72,
+   "name_ar": "الفلبين",
+   "name_en": "Philippines",
+   "aliases": [
+    "الفليبين"
+   ],
+   "extra": "300,000"
+  },
+  {
+   "rank": 73,
+   "name_ar": "الإكوادور",
+   "name_en": "Ecuador",
+   "aliases": [
+    "الاكوادور"
+   ],
+   "extra": "283,561"
+  },
+  {
+   "rank": 74,
+   "name_ar": "بوركينا فاسو",
+   "name_en": "Burkina Faso",
+   "aliases": [
+    "بوركينافاسو"
+   ],
+   "extra": "274,200"
+  },
+  {
+   "rank": 75,
+   "name_ar": "نيوزيلندا",
+   "name_en": "New Zealand",
+   "aliases": [
+    "نيوزلندا"
+   ],
+   "extra": "268,838"
+  },
+  {
+   "rank": 76,
+   "name_ar": "الغابون",
+   "name_en": "Gabon",
+   "aliases": [
+    "غابون"
+   ],
+   "extra": "267,667"
+  },
+  {
+   "rank": 77,
+   "name_ar": "غينيا",
+   "name_en": "Guinea",
+   "aliases": [
+    "غينيا كوناكري"
+   ],
+   "extra": "245,857"
+  },
+  {
+   "rank": 78,
+   "name_ar": "المملكة المتحدة",
+   "name_en": "United Kingdom",
+   "aliases": [
+    "بريطانيا",
+    "انجلترا",
+    "إنجلترا",
+    "UK",
+    "Britain",
+    "England",
+    "بريطانيا العظمى"
+   ],
+   "extra": "243,610"
+  },
+  {
+   "rank": 79,
+   "name_ar": "أوغندا",
+   "name_en": "Uganda",
+   "aliases": [
+    "اوغندا"
+   ],
+   "extra": "241,038"
+  },
+  {
+   "rank": 80,
+   "name_ar": "غانا",
+   "name_en": "Ghana",
+   "aliases": [],
+   "extra": "238,533"
+  },
+  {
+   "rank": 81,
+   "name_ar": "رومانيا",
+   "name_en": "Romania",
+   "aliases": [],
+   "extra": "238,391"
+  },
+  {
+   "rank": 82,
+   "name_ar": "لاوس",
+   "name_en": "Laos",
+   "aliases": [],
+   "extra": "236,800"
+  },
+  {
+   "rank": 83,
+   "name_ar": "غيانا",
+   "name_en": "Guyana",
+   "aliases": [
+    "غويانا"
+   ],
+   "extra": "214,969"
+  },
+  {
+   "rank": 84,
+   "name_ar": "بيلاروسيا",
+   "name_en": "Belarus",
+   "aliases": [
+    "روسيا البيضاء",
+    "بيلاروس"
+   ],
+   "extra": "207,600"
+  },
+  {
+   "rank": 85,
+   "name_ar": "قيرغيزستان",
+   "name_en": "Kyrgyzstan",
+   "aliases": [
+    "قرغيزستان",
+    "قيرغيزيا"
+   ],
+   "extra": "199,951"
+  },
+  {
+   "rank": 86,
+   "name_ar": "السنغال",
+   "name_en": "Senegal",
+   "aliases": [],
+   "extra": "196,722"
+  },
+  {
+   "rank": 87,
+   "name_ar": "سوريا",
+   "name_en": "Syria",
+   "aliases": [
+    "سورية"
+   ],
+   "extra": "185,180"
+  },
+  {
+   "rank": 88,
+   "name_ar": "كمبوديا",
+   "name_en": "Cambodia",
+   "aliases": [],
+   "extra": "181,035"
+  },
+  {
+   "rank": 89,
+   "name_ar": "الأوروغواي",
+   "name_en": "Uruguay",
+   "aliases": [
+    "اوروجواي"
+   ],
+   "extra": "176,215"
+  },
+  {
+   "rank": 90,
+   "name_ar": "سورينام",
+   "name_en": "Suriname",
+   "aliases": [],
+   "extra": "163,820"
+  },
+  {
+   "rank": 91,
+   "name_ar": "تونس",
+   "name_en": "Tunisia",
+   "aliases": [],
+   "extra": "163,610"
+  },
+  {
+   "rank": 92,
+   "name_ar": "بنغلاديش",
+   "name_en": "Bangladesh",
+   "aliases": [
+    "بنجلاديش"
+   ],
+   "extra": "148,460"
+  },
+  {
+   "rank": 93,
+   "name_ar": "نيبال",
+   "name_en": "Nepal",
+   "aliases": [],
+   "extra": "147,181"
+  },
+  {
+   "rank": 94,
+   "name_ar": "طاجيكستان",
+   "name_en": "Tajikistan",
+   "aliases": [],
+   "extra": "144,100"
+  },
+  {
+   "rank": 95,
+   "name_ar": "اليونان",
+   "name_en": "Greece",
+   "aliases": [],
+   "extra": "131,957"
+  },
+  {
+   "rank": 96,
+   "name_ar": "نيكاراغوا",
+   "name_en": "Nicaragua",
+   "aliases": [
+    "نيكاراجوا"
+   ],
+   "extra": "130,370"
+  },
+  {
+   "rank": 97,
+   "name_ar": "كوريا الشمالية",
+   "name_en": "North Korea",
+   "aliases": [
+    "DPRK"
+   ],
+   "extra": "120,538"
+  },
+  {
+   "rank": 98,
+   "name_ar": "مالاوي",
+   "name_en": "Malawi",
+   "aliases": [
+    "ملاوي"
+   ],
+   "extra": "118,484"
+  },
+  {
+   "rank": 99,
+   "name_ar": "إريتريا",
+   "name_en": "Eritrea",
+   "aliases": [
+    "اريتريا",
+    "ارتيريا"
+   ],
+   "extra": "117,600"
+  },
+  {
+   "rank": 100,
+   "name_ar": "بنين",
+   "name_en": "Benin",
+   "aliases": [],
+   "extra": "112,622"
+  }
+ ]
+}

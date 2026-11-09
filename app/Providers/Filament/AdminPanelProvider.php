@@ -38,6 +38,11 @@ class AdminPanelProvider extends PanelProvider
                     ->url('/play/new', shouldOpenInNewTab: true)
                     ->icon('heroicon-o-play')
                     ->sort(100),
+                NavigationItem::make('افتح آخر القائمة')
+                    ->url('/akher', shouldOpenInNewTab: true)
+                    ->icon('heroicon-o-list-bullet')
+                    ->group('آخر القائمة')
+                    ->sort(100),
                 NavigationItem::make('افتح ألف ياء')
                     ->url('/alefya', shouldOpenInNewTab: true)
                     ->icon('heroicon-o-language')

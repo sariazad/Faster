@@ -56,6 +56,18 @@ return [
             'transaction_mode' => 'DEFERRED',
         ],
 
+        // آخر القائمة — rooms, players, guesses and lists in their own database.
+        'akher' => [
+            'driver' => 'sqlite',
+            'database' => env('AKHER_DB_DATABASE', database_path('akher.sqlite')),
+            'prefix' => '',
+            'foreign_key_constraints' => true,
+            'busy_timeout' => 5000,
+            'journal_mode' => 'wal',
+            'synchronous' => null,
+            'transaction_mode' => 'IMMEDIATE',
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),

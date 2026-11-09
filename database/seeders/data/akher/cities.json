@@ -1,0 +1,884 @@
+{
+ "id": "cities",
+ "title_ar": "أكبر 100 مدينة بالعالم بعدد السكان",
+ "extra_label": "نسمة (التجمّع الحضري)",
+ "unit_hint": "اكتب اسم مدينة",
+ "source": "الأمم المتحدة — World Urbanization Prospects 2018، إسقاطات 2025 للتجمعات الحضرية، مقرّبة",
+ "updated": "2026-11",
+ "items": [
+  {
+   "rank": 1,
+   "name_ar": "طوكيو",
+   "name_en": "Tokyo",
+   "aliases": [],
+   "extra": "37 مليون — اليابان"
+  },
+  {
+   "rank": 2,
+   "name_ar": "دلهي",
+   "name_en": "Delhi",
+   "aliases": [
+    "نيودلهي",
+    "نيو دلهي",
+    "New Delhi"
+   ],
+   "extra": "34.7 مليون — الهند"
+  },
+  {
+   "rank": 3,
+   "name_ar": "شنغهاي",
+   "name_en": "Shanghai",
+   "aliases": [
+    "شانغهاي"
+   ],
+   "extra": "30.5 مليون — الصين"
+  },
+  {
+   "rank": 4,
+   "name_ar": "دكا",
+   "name_en": "Dhaka",
+   "aliases": [
+    "داكا"
+   ],
+   "extra": "24.7 مليون — بنغلاديش"
+  },
+  {
+   "rank": 5,
+   "name_ar": "ساو باولو",
+   "name_en": "Sao Paulo",
+   "aliases": [
+    "ساوباولو",
+    "سان باولو"
+   ],
+   "extra": "22.8 مليون — البرازيل"
+  },
+  {
+   "rank": 6,
+   "name_ar": "القاهرة",
+   "name_en": "Cairo",
+   "aliases": [],
+   "extra": "22.6 مليون — مصر"
+  },
+  {
+   "rank": 7,
+   "name_ar": "مكسيكو سيتي",
+   "name_en": "Mexico City",
+   "aliases": [
+    "مدينة مكسيكو",
+    "مكسيكو"
+   ],
+   "extra": "22.5 مليون — المكسيك"
+  },
+  {
+   "rank": 8,
+   "name_ar": "بكين",
+   "name_en": "Beijing",
+   "aliases": [
+    "بيجين",
+    "بيكين"
+   ],
+   "extra": "22.2 مليون — الصين"
+  },
+  {
+   "rank": 9,
+   "name_ar": "مومباي",
+   "name_en": "Mumbai",
+   "aliases": [
+    "بومباي",
+    "Bombay"
+   ],
+   "extra": "21.7 مليون — الهند"
+  },
+  {
+   "rank": 10,
+   "name_ar": "أوساكا",
+   "name_en": "Osaka",
+   "aliases": [
+    "اوساكا"
+   ],
+   "extra": "19 مليون — اليابان"
+  },
+  {
+   "rank": 11,
+   "name_ar": "نيويورك",
+   "name_en": "New York",
+   "aliases": [
+    "NYC",
+    "نيو يورك"
+   ],
+   "extra": "18.9 مليون — الولايات المتحدة"
+  },
+  {
+   "rank": 12,
+   "name_ar": "تشونغتشينغ",
+   "name_en": "Chongqing",
+   "aliases": [
+    "تشونغ تشينغ",
+    "شونغكينغ"
+   ],
+   "extra": "17.8 مليون — الصين"
+  },
+  {
+   "rank": 13,
+   "name_ar": "كراتشي",
+   "name_en": "Karachi",
+   "aliases": [
+    "كراچي"
+   ],
+   "extra": "17.6 مليون — باكستان"
+  },
+  {
+   "rank": 14,
+   "name_ar": "كينشاسا",
+   "name_en": "Kinshasa",
+   "aliases": [],
+   "extra": "17 مليون — الكونغو الديمقراطية"
+  },
+  {
+   "rank": 15,
+   "name_ar": "لاغوس",
+   "name_en": "Lagos",
+   "aliases": [
+    "لاجوس"
+   ],
+   "extra": "16.5 مليون — نيجيريا"
+  },
+  {
+   "rank": 16,
+   "name_ar": "إسطنبول",
+   "name_en": "Istanbul",
+   "aliases": [
+    "اسطنبول",
+    "استانبول",
+    "الأستانة"
+   ],
+   "extra": "16 مليون — تركيا"
+  },
+  {
+   "rank": 17,
+   "name_ar": "كولكاتا",
+   "name_en": "Kolkata",
+   "aliases": [
+    "كلكتا",
+    "Calcutta"
+   ],
+   "extra": "15.6 مليون — الهند"
+  },
+  {
+   "rank": 18,
+   "name_ar": "بوينس آيرس",
+   "name_en": "Buenos Aires",
+   "aliases": [
+    "بوينس ايرس",
+    "بيونس آيرس"
+   ],
+   "extra": "15.5 مليون — الأرجنتين"
+  },
+  {
+   "rank": 19,
+   "name_ar": "مانيلا",
+   "name_en": "Manila",
+   "aliases": [],
+   "extra": "14.9 مليون — الفلبين"
+  },
+  {
+   "rank": 20,
+   "name_ar": "قوانغتشو",
+   "name_en": "Guangzhou",
+   "aliases": [
+    "غوانزو",
+    "كانتون",
+    "غوانغجو"
+   ],
+   "extra": "14.6 مليون — الصين"
+  },
+  {
+   "rank": 21,
+   "name_ar": "لاهور",
+   "name_en": "Lahore",
+   "aliases": [],
+   "extra": "14 مليون — باكستان"
+  },
+  {
+   "rank": 22,
+   "name_ar": "تيانجين",
+   "name_en": "Tianjin",
+   "aliases": [
+    "تيانجن"
+   ],
+   "extra": "14 مليون — الصين"
+  },
+  {
+   "rank": 23,
+   "name_ar": "بنغالور",
+   "name_en": "Bangalore",
+   "aliases": [
+    "بنغالورو",
+    "Bengaluru"
+   ],
+   "extra": "13.9 مليون — الهند"
+  },
+  {
+   "rank": 24,
+   "name_ar": "ريو دي جانيرو",
+   "name_en": "Rio de Janeiro",
+   "aliases": [
+    "ريو",
+    "ريو دي جانيرو"
+   ],
+   "extra": "13.8 مليون — البرازيل"
+  },
+  {
+   "rank": 25,
+   "name_ar": "شنجن",
+   "name_en": "Shenzhen",
+   "aliases": [
+    "شينزين",
+    "شنزن",
+    "شينجين"
+   ],
+   "extra": "13.5 مليون — الصين"
+  },
+  {
+   "rank": 26,
+   "name_ar": "موسكو",
+   "name_en": "Moscow",
+   "aliases": [],
+   "extra": "12.7 مليون — روسيا"
+  },
+  {
+   "rank": 27,
+   "name_ar": "لوس أنجلوس",
+   "name_en": "Los Angeles",
+   "aliases": [
+    "لوس انجلوس",
+    "لوس انجلس",
+    "LA"
+   ],
+   "extra": "12.5 مليون — الولايات المتحدة"
+  },
+  {
+   "rank": 28,
+   "name_ar": "تشيناي",
+   "name_en": "Chennai",
+   "aliases": [
+    "مدراس",
+    "Madras"
+   ],
+   "extra": "12 مليون — الهند"
+  },
+  {
+   "rank": 29,
+   "name_ar": "بوغوتا",
+   "name_en": "Bogota",
+   "aliases": [
+    "بوجوتا"
+   ],
+   "extra": "11.5 مليون — كولومبيا"
+  },
+  {
+   "rank": 30,
+   "name_ar": "جاكرتا",
+   "name_en": "Jakarta",
+   "aliases": [],
+   "extra": "11.4 مليون — إندونيسيا"
+  },
+  {
+   "rank": 31,
+   "name_ar": "ليما",
+   "name_en": "Lima",
+   "aliases": [],
+   "extra": "11.2 مليون — بيرو"
+  },
+  {
+   "rank": 32,
+   "name_ar": "باريس",
+   "name_en": "Paris",
+   "aliases": [],
+   "extra": "11.2 مليون — فرنسا"
+  },
+  {
+   "rank": 33,
+   "name_ar": "بانكوك",
+   "name_en": "Bangkok",
+   "aliases": [],
+   "extra": "11.1 مليون — تايلاند"
+  },
+  {
+   "rank": 34,
+   "name_ar": "حيدر أباد",
+   "name_en": "Hyderabad",
+   "aliases": [
+    "حيدرآباد",
+    "حيدر اباد"
+   ],
+   "extra": "10.8 مليون — الهند"
+  },
+  {
+   "rank": 35,
+   "name_ar": "سيول",
+   "name_en": "Seoul",
+   "aliases": [
+    "سول"
+   ],
+   "extra": "10 مليون — كوريا الجنوبية"
+  },
+  {
+   "rank": 36,
+   "name_ar": "لواندا",
+   "name_en": "Luanda",
+   "aliases": [],
+   "extra": "9.6 مليون — أنغولا"
+  },
+  {
+   "rank": 37,
+   "name_ar": "لندن",
+   "name_en": "London",
+   "aliases": [],
+   "extra": "9.6 مليون — المملكة المتحدة"
+  },
+  {
+   "rank": 38,
+   "name_ar": "تشنغدو",
+   "name_en": "Chengdu",
+   "aliases": [
+    "شينغدو"
+   ],
+   "extra": "9.5 مليون — الصين"
+  },
+  {
+   "rank": 39,
+   "name_ar": "ناغويا",
+   "name_en": "Nagoya",
+   "aliases": [
+    "ناجويا"
+   ],
+   "extra": "9.5 مليون — اليابان"
+  },
+  {
+   "rank": 40,
+   "name_ar": "طهران",
+   "name_en": "Tehran",
+   "aliases": [],
+   "extra": "9.4 مليون — إيران"
+  },
+  {
+   "rank": 41,
+   "name_ar": "نانجينغ",
+   "name_en": "Nanjing",
+   "aliases": [
+    "نانكين",
+    "نانجنغ"
+   ],
+   "extra": "9.4 مليون — الصين"
+  },
+  {
+   "rank": 42,
+   "name_ar": "هو تشي منه",
+   "name_en": "Ho Chi Minh City",
+   "aliases": [
+    "سايغون",
+    "Saigon",
+    "هوشي منه"
+   ],
+   "extra": "9.1 مليون — فيتنام"
+  },
+  {
+   "rank": 43,
+   "name_ar": "شيان",
+   "name_en": "Xian",
+   "aliases": [
+    "Xi'an",
+    "شي آن",
+    "زيان"
+   ],
+   "extra": "8.9 مليون — الصين"
+  },
+  {
+   "rank": 44,
+   "name_ar": "أحمد آباد",
+   "name_en": "Ahmedabad",
+   "aliases": [
+    "احمد اباد",
+    "أحمد أباد"
+   ],
+   "extra": "8.9 مليون — الهند"
+  },
+  {
+   "rank": 45,
+   "name_ar": "ووهان",
+   "name_en": "Wuhan",
+   "aliases": [],
+   "extra": "8.9 مليون — الصين"
+  },
+  {
+   "rank": 46,
+   "name_ar": "شيكاغو",
+   "name_en": "Chicago",
+   "aliases": [],
+   "extra": "8.9 مليون — الولايات المتحدة"
+  },
+  {
+   "rank": 47,
+   "name_ar": "كوالالمبور",
+   "name_en": "Kuala Lumpur",
+   "aliases": [
+    "كوالا لمبور"
+   ],
+   "extra": "8.6 مليون — ماليزيا"
+  },
+  {
+   "rank": 48,
+   "name_ar": "هانغتشو",
+   "name_en": "Hangzhou",
+   "aliases": [
+    "هانغجو",
+    "هانجتشو"
+   ],
+   "extra": "8.2 مليون — الصين"
+  },
+  {
+   "rank": 49,
+   "name_ar": "سورات",
+   "name_en": "Surat",
+   "aliases": [],
+   "extra": "8 مليون — الهند"
+  },
+  {
+   "rank": 50,
+   "name_ar": "الرياض",
+   "name_en": "Riyadh",
+   "aliases": [],
+   "extra": "7.8 مليون — السعودية"
+  },
+  {
+   "rank": 51,
+   "name_ar": "دار السلام",
+   "name_en": "Dar es Salaam",
+   "aliases": [],
+   "extra": "7.8 مليون — تنزانيا"
+  },
+  {
+   "rank": 52,
+   "name_ar": "سوتشو",
+   "name_en": "Suzhou",
+   "aliases": [
+    "سوجو"
+   ],
+   "extra": "7.8 مليون — الصين"
+  },
+  {
+   "rank": 53,
+   "name_ar": "هونغ كونغ",
+   "name_en": "Hong Kong",
+   "aliases": [
+    "هونج كونج",
+    "هونغكونغ"
+   ],
+   "extra": "7.6 مليون — الصين"
+  },
+  {
+   "rank": 54,
+   "name_ar": "بغداد",
+   "name_en": "Baghdad",
+   "aliases": [],
+   "extra": "7.5 مليون — العراق"
+  },
+  {
+   "rank": 55,
+   "name_ar": "دونغقوان",
+   "name_en": "Dongguan",
+   "aliases": [
+    "دونغوان"
+   ],
+   "extra": "7.5 مليون — الصين"
+  },
+  {
+   "rank": 56,
+   "name_ar": "فوشان",
+   "name_en": "Foshan",
+   "aliases": [],
+   "extra": "7.5 مليون — الصين"
+  },
+  {
+   "rank": 57,
+   "name_ar": "شنيانغ",
+   "name_en": "Shenyang",
+   "aliases": [
+    "شينيانغ",
+    "موكدن"
+   ],
+   "extra": "7.4 مليون — الصين"
+  },
+  {
+   "rank": 58,
+   "name_ar": "بونه",
+   "name_en": "Pune",
+   "aliases": [
+    "بيون",
+    "بونا"
+   ],
+   "extra": "7.3 مليون — الهند"
+  },
+  {
+   "rank": 59,
+   "name_ar": "سانتياغو",
+   "name_en": "Santiago",
+   "aliases": [
+    "سانتياجو"
+   ],
+   "extra": "6.9 مليون — تشيلي"
+  },
+  {
+   "rank": 60,
+   "name_ar": "مدريد",
+   "name_en": "Madrid",
+   "aliases": [],
+   "extra": "6.7 مليون — إسبانيا"
+  },
+  {
+   "rank": 61,
+   "name_ar": "هاربين",
+   "name_en": "Harbin",
+   "aliases": [
+    "خاربين"
+   ],
+   "extra": "6.6 مليون — الصين"
+  },
+  {
+   "rank": 62,
+   "name_ar": "هيوستن",
+   "name_en": "Houston",
+   "aliases": [
+    "هيوستون"
+   ],
+   "extra": "6.6 مليون — الولايات المتحدة"
+  },
+  {
+   "rank": 63,
+   "name_ar": "دالاس",
+   "name_en": "Dallas",
+   "aliases": [
+    "دالاس فورت وورث"
+   ],
+   "extra": "6.6 مليون — الولايات المتحدة"
+  },
+  {
+   "rank": 64,
+   "name_ar": "تورونتو",
+   "name_en": "Toronto",
+   "aliases": [
+    "تورنتو"
+   ],
+   "extra": "6.4 مليون — كندا"
+  },
+  {
+   "rank": 65,
+   "name_ar": "الخرطوم",
+   "name_en": "Khartoum",
+   "aliases": [],
+   "extra": "6.3 مليون — السودان"
+  },
+  {
+   "rank": 66,
+   "name_ar": "ميامي",
+   "name_en": "Miami",
+   "aliases": [],
+   "extra": "6.3 مليون — الولايات المتحدة"
+  },
+  {
+   "rank": 67,
+   "name_ar": "بيلو هوريزونتي",
+   "name_en": "Belo Horizonte",
+   "aliases": [
+    "بيلو أوريزونتي"
+   ],
+   "extra": "6.2 مليون — البرازيل"
+  },
+  {
+   "rank": 68,
+   "name_ar": "جوهانسبرغ",
+   "name_en": "Johannesburg",
+   "aliases": [
+    "جوهانسبيرغ",
+    "جوهانسبرج"
+   ],
+   "extra": "6.2 مليون — جنوب أفريقيا"
+  },
+  {
+   "rank": 69,
+   "name_ar": "سنغافورة",
+   "name_en": "Singapore",
+   "aliases": [],
+   "extra": "6.1 مليون — سنغافورة"
+  },
+  {
+   "rank": 70,
+   "name_ar": "فيلادلفيا",
+   "name_en": "Philadelphia",
+   "aliases": [],
+   "extra": "5.8 مليون — الولايات المتحدة"
+  },
+  {
+   "rank": 71,
+   "name_ar": "تشينغداو",
+   "name_en": "Qingdao",
+   "aliases": [
+    "كينغداو",
+    "تسينغتاو"
+   ],
+   "extra": "5.7 مليون — الصين"
+  },
+  {
+   "rank": 72,
+   "name_ar": "داليان",
+   "name_en": "Dalian",
+   "aliases": [],
+   "extra": "5.7 مليون — الصين"
+  },
+  {
+   "rank": 73,
+   "name_ar": "أتلانتا",
+   "name_en": "Atlanta",
+   "aliases": [
+    "اتلانتا"
+   ],
+   "extra": "5.6 مليون — الولايات المتحدة"
+  },
+  {
+   "rank": 74,
+   "name_ar": "برشلونة",
+   "name_en": "Barcelona",
+   "aliases": [],
+   "extra": "5.6 مليون — إسبانيا"
+  },
+  {
+   "rank": 75,
+   "name_ar": "سانت بطرسبرغ",
+   "name_en": "Saint Petersburg",
+   "aliases": [
+    "سان بطرسبرغ",
+    "بطرسبرغ",
+    "لينينغراد",
+    "St Petersburg"
+   ],
+   "extra": "5.6 مليون — روسيا"
+  },
+  {
+   "rank": 76,
+   "name_ar": "يانغون",
+   "name_en": "Yangon",
+   "aliases": [
+    "رانغون",
+    "Rangoon"
+   ],
+   "extra": "5.6 مليون — ميانمار"
+  },
+  {
+   "rank": 77,
+   "name_ar": "الإسكندرية",
+   "name_en": "Alexandria",
+   "aliases": [
+    "اسكندرية",
+    "الاسكندرية"
+   ],
+   "extra": "5.6 مليون — مصر"
+  },
+  {
+   "rank": 78,
+   "name_ar": "أديس أبابا",
+   "name_en": "Addis Ababa",
+   "aliases": [
+    "اديس ابابا"
+   ],
+   "extra": "5.5 مليون — إثيوبيا"
+  },
+  {
+   "rank": 79,
+   "name_ar": "أبيدجان",
+   "name_en": "Abidjan",
+   "aliases": [
+    "ابيدجان"
+   ],
+   "extra": "5.5 مليون — ساحل العاج"
+  },
+  {
+   "rank": 80,
+   "name_ar": "فوكوكا",
+   "name_en": "Fukuoka",
+   "aliases": [
+    "فوكوأوكا"
+   ],
+   "extra": "5.5 مليون — اليابان"
+  },
+  {
+   "rank": 81,
+   "name_ar": "جينان",
+   "name_en": "Jinan",
+   "aliases": [],
+   "extra": "5.4 مليون — الصين"
+  },
+  {
+   "rank": 82,
+   "name_ar": "واشنطن",
+   "name_en": "Washington",
+   "aliases": [
+    "واشنطن العاصمة",
+    "Washington DC",
+    "DC"
+   ],
+   "extra": "5.4 مليون — الولايات المتحدة"
+  },
+  {
+   "rank": 83,
+   "name_ar": "غوادالاخارا",
+   "name_en": "Guadalajara",
+   "aliases": [
+    "جوادالاخارا"
+   ],
+   "extra": "5.3 مليون — المكسيك"
+  },
+  {
+   "rank": 84,
+   "name_ar": "نيروبي",
+   "name_en": "Nairobi",
+   "aliases": [],
+   "extra": "5.3 مليون — كينيا"
+  },
+  {
+   "rank": 85,
+   "name_ar": "أنقرة",
+   "name_en": "Ankara",
+   "aliases": [
+    "انقرة"
+   ],
+   "extra": "5.3 مليون — تركيا"
+  },
+  {
+   "rank": 86,
+   "name_ar": "تشنغتشو",
+   "name_en": "Zhengzhou",
+   "aliases": [
+    "جنغجو",
+    "تشنغجو"
+   ],
+   "extra": "5.3 مليون — الصين"
+  },
+  {
+   "rank": 87,
+   "name_ar": "ملبورن",
+   "name_en": "Melbourne",
+   "aliases": [],
+   "extra": "5.2 مليون — أستراليا"
+  },
+  {
+   "rank": 88,
+   "name_ar": "تشيتاغونغ",
+   "name_en": "Chittagong",
+   "aliases": [
+    "شيتاغونغ",
+    "Chattogram"
+   ],
+   "extra": "5.1 مليون — بنغلاديش"
+  },
+  {
+   "rank": 89,
+   "name_ar": "سيدني",
+   "name_en": "Sydney",
+   "aliases": [],
+   "extra": "5.1 مليون — أستراليا"
+  },
+  {
+   "rank": 90,
+   "name_ar": "مونتيري",
+   "name_en": "Monterrey",
+   "aliases": [
+    "مونتيريه"
+   ],
+   "extra": "5.1 مليون — المكسيك"
+  },
+  {
+   "rank": 91,
+   "name_ar": "هانوي",
+   "name_en": "Hanoi",
+   "aliases": [],
+   "extra": "5.1 مليون — فيتنام"
+  },
+  {
+   "rank": 92,
+   "name_ar": "تشانغشا",
+   "name_en": "Changsha",
+   "aliases": [],
+   "extra": "5 مليون — الصين"
+  },
+  {
+   "rank": 93,
+   "name_ar": "جدة",
+   "name_en": "Jeddah",
+   "aliases": [
+    "جده"
+   ],
+   "extra": "4.8 مليون — السعودية"
+  },
+  {
+   "rank": 94,
+   "name_ar": "كيب تاون",
+   "name_en": "Cape Town",
+   "aliases": [
+    "كيبتاون",
+    "مدينة الرأس"
+   ],
+   "extra": "4.8 مليون — جنوب أفريقيا"
+  },
+  {
+   "rank": 95,
+   "name_ar": "كابل",
+   "name_en": "Kabul",
+   "aliases": [
+    "كابول"
+   ],
+   "extra": "4.6 مليون — أفغانستان"
+  },
+  {
+   "rank": 96,
+   "name_ar": "بوسطن",
+   "name_en": "Boston",
+   "aliases": [
+    "بوستن"
+   ],
+   "extra": "4.4 مليون — الولايات المتحدة"
+  },
+  {
+   "rank": 97,
+   "name_ar": "ياوندي",
+   "name_en": "Yaounde",
+   "aliases": [
+    "ياوندى"
+   ],
+   "extra": "4.3 مليون — الكاميرون"
+  },
+  {
+   "rank": 98,
+   "name_ar": "روما",
+   "name_en": "Rome",
+   "aliases": [],
+   "extra": "4.3 مليون — إيطاليا"
+  },
+  {
+   "rank": 99,
+   "name_ar": "كانو",
+   "name_en": "Kano",
+   "aliases": [],
+   "extra": "4.2 مليون — نيجيريا"
+  },
+  {
+   "rank": 100,
+   "name_ar": "ريسيفي",
+   "name_en": "Recife",
+   "aliases": [
+    "ريسيف"
+   ],
+   "extra": "4.2 مليون — البرازيل"
+  }
+ ]
+}

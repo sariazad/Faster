@@ -129,7 +129,7 @@ say "بناء الواجهة"
 as_app "npm ci --no-audit --no-fund --silent && npm run build --silent" >/dev/null
 
 say "قواعد البيانات"
-as_app "touch database/database.sqlite database/alefya.sqlite"
+as_app "touch database/database.sqlite database/alefya.sqlite database/akher.sqlite"
 as_app "php artisan migrate --force"
 
 # ── 7. Admin + question banks ────────────────────────────────────────────────

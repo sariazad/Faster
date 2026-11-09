@@ -9,6 +9,8 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/alefya.css',
                 'resources/js/alefya/main.js',
+                'resources/css/akher.css',
+                'resources/js/akher/main.js',
             ],
             refresh: true,
         }),

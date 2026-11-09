@@ -6,7 +6,7 @@ DEST="${BACKUP_DIR:-/var/backups/faster}"
 STAMP="$(date +%F-%H%M)"
 mkdir -p "$DEST/$STAMP"
 
-for DB in database alefya; do
+for DB in database alefya akher; do
     SRC="$APP_DIR/database/$DB.sqlite"
     # .backup makes a consistent copy even while the game is being played.
     [[ -f "$SRC" ]] && sqlite3 "$SRC" ".backup '$DEST/$STAMP/$DB.sqlite'"

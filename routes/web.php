@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AkherController;
 use App\Http\Controllers\AlefYaController;
 use App\Livewire\GamePlay;
 use App\Livewire\GameSetup;
@@ -46,4 +47,25 @@ Route::prefix('alefya')->name('alefya.')->controller(AlefYaController::class)->g
     });
 
     Route::get('/{page}', 'page')->whereIn('page', AlefYaController::PAGES)->name('page');
+});
+
+// آخر القائمة — list-guessing party game with rooms, own database ("akher").
+Route::prefix('akher')->name('akher.')->controller(AkherController::class)->group(function () {
+    Route::get('/', 'page')->name('home');
+    Route::get('/room/{code}', 'roomPage')->where('code', '\\d{4}')->name('room');
+
+    Route::prefix('api')->name('api.')->group(function () {
+        Route::post('/rooms', 'create')->middleware('throttle:20,1')->name('create');
+        Route::get('/rooms/{code}', 'state')->name('state');
+        Route::post('/rooms/{code}/join', 'join')->middleware('throttle:30,1')->name('join');
+        Route::post('/rooms/{code}/players', 'addPlayer')->name('players.add');
+        Route::post('/rooms/{code}/players/{player}/switch', 'switchTeam')->name('players.switch');
+        Route::post('/rooms/{code}/players/{player}/remove', 'removePlayer')->name('players.remove');
+        Route::post('/rooms/{code}/settings', 'settings')->name('settings');
+        Route::post('/rooms/{code}/guess', 'guess')->middleware('throttle:90,1')->name('guess');
+        Route::post('/rooms/{code}/expire', 'expire')->name('expire');
+        Route::post('/rooms/{code}/{action}', 'hostAction')->whereIn('action', ['start', 'skip', 'end', 'reset', 'leave'])->name('action');
+    });
+
+    Route::get('/{page}', 'page')->whereIn('page', AkherController::PAGES)->name('page');
 });

@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Game screens stay open on a TV for hours; an expired CSRF token would stop the game
         // with "This page has expired". Livewire signs its own component state, and the session
         // cookie is SameSite=lax (not sent on cross-site requests), so this is safe here.
-        $middleware->validateCsrfTokens(except: ['livewire/update', 'livewire*/update', 'alefya/api/*']);
+        $middleware->validateCsrfTokens(except: ['livewire/update', 'livewire*/update', 'alefya/api/*', 'akher/api/*']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
