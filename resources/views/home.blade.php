@@ -56,7 +56,7 @@
                 </span>
             </a>
             {{-- آخر القائمة --}}
-            <a href="{{ route('akher.home') }}"
+            <a href="{{ route('akher.home') }}" title="آخر القائمة"
                class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-night-800/80 p-6 transition hover:-translate-y-1 hover:border-lantern/60 sm:p-8">
                 <span class="absolute end-5 top-5 rounded-full bg-lantern px-3 py-1 text-xs font-black text-night">جديد</span>
                 <div class="mb-5 grid h-[3.6rem] w-[9.5rem] grid-cols-5 gap-1" aria-hidden="true" dir="ltr">
