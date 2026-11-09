@@ -58,6 +58,51 @@ class AkherRoomTest extends TestCase
         $this->assertSame([1, 9, 2, 9, 3, 9, 1, 9, 2, 9, 3, 9], RoomEngine::buildOrder([1, 2, 3], [9], 2));
     }
 
+    public function test_solo_order_repeats_players_each_round(): void
+    {
+        $this->assertSame([5, 7, 9, 5, 7, 9], RoomEngine::buildSoloOrder([5, 7, 9], 2));
+    }
+
+    public function test_teams_must_have_the_same_number_of_players(): void
+    {
+        $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->json('code');
+        $this->api('POST', "/rooms/$code/join", ['name' => 'خالد', 'device' => self::PHONE])->assertOk();
+        $this->api('POST', "/rooms/$code/players", ['device' => self::HOST, 'name' => 'جدّو', 'team' => 'A'])->assertOk();
+        $this->api('POST', "/rooms/$code/settings", ['device' => self::HOST, 'turns_per_player' => 1])->assertOk();
+
+        $this->api('POST', "/rooms/$code/start", ['device' => self::HOST])->assertStatus(422)->assertJsonPath('message', 'uneven_teams');
+
+        $this->api('POST', "/rooms/$code/players", ['device' => self::HOST, 'name' => 'ستّو', 'team' => 'B'])->assertOk();
+        $this->api('POST', "/rooms/$code/start", ['device' => self::HOST])->assertOk();
+        $this->assertSame(4, $this->state($code)['turns_total']);
+    }
+
+    public function test_solo_mode_every_player_scores_alone(): void
+    {
+        $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->json('code');
+        $this->api('POST', "/rooms/$code/settings", ['device' => self::HOST, 'list_id' => 'area', 'mode' => 'solo', 'wrong_penalty' => true, 'turns_per_player' => 1])->assertOk();
+        $this->api('POST', "/rooms/$code/start", ['device' => self::HOST])->assertStatus(422)->assertJsonPath('message', 'need_two');
+
+        $this->api('POST', "/rooms/$code/join", ['name' => 'خالد', 'device' => self::PHONE])->assertOk();
+        $grandpa = $this->api('POST', "/rooms/$code/players", ['device' => self::HOST, 'name' => 'جدّو'])->assertOk()->json('player');
+        $this->api('POST', "/rooms/$code/start", ['device' => self::HOST])->assertOk(); // 3 players, uneven teams don't matter
+
+        $s = $this->state($code);
+        $this->assertSame('solo', $s['mode']);
+        $this->assertSame(3, $s['turns_total']);
+        [$sara, $khalid] = [$s['players'][0]['id'], $s['players'][1]['id']];
+
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 0, 'text' => 'تونس'])->assertOk()->assertJsonPath('points', 91);
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::PHONE, 'turn_idx' => 1, 'text' => 'كندا'])->assertOk()->assertJsonPath('points', 2);
+        $this->assertSame($grandpa, $this->state($code)['current_player']);
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 2, 'text' => 'مالطا'])->assertOk()->assertJsonPath('points', 0);
+
+        $end = $this->state($code);
+        $this->assertSame('done', $end['status']);
+        $this->assertSame([(string) $sara => 91, (string) $khalid => 2, (string) $grandpa => 0], $end['scores']);
+        $this->assertSame($khalid, collect($end['revealed'])->firstWhere('name', 'كندا')['player_id']);
+    }
+
     public function test_room_flow_lobby_to_end(): void
     {
         $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->assertOk()->json('code');
@@ -112,7 +157,7 @@ class AkherRoomTest extends TestCase
         $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 0, 'text' => 'روسيا'])->assertOk();
 
         $s = $this->state($code, self::PHONE);
-        $this->assertSame([['rank' => 1, 'team' => 'A', 'player' => 'سارة', 'name' => 'روسيا', 'extra' => '17,098,246']], $s['revealed']);
+        $this->assertSame([['rank' => 1, 'team' => 'A', 'player' => 'سارة', 'player_id' => $s['players'][0]['id'], 'name' => 'روسيا', 'extra' => '17,098,246']], $s['revealed']);
         $this->assertNull($s['full_list']);
         $this->assertStringNotContainsString('كندا', json_encode($s, JSON_UNESCAPED_UNICODE));
     }

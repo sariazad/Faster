@@ -25,6 +25,10 @@ class RoomEngine
     public const MAX_PLAYERS = 30;
     public const GRACE_SECONDS = 1.5;
 
+    // Modes
+    public const TEAMS = 'teams';   // two teams with the same number of players
+    public const SOLO = 'solo';     // every player is their own team
+
     // Guess results
     public const MATCH = 'match';
     public const NONE = 'none';
@@ -90,13 +94,14 @@ class RoomEngine
     }
 
     /** A player without a phone: plays from the host's screen. */
-    public function addOffline(Room $room, string $device, string $name, string $team): Player
+    public function addOffline(Room $room, string $device, string $name, ?string $team = null): Player
     {
         $name = $this->cleanName($name);
-        $team = $team === 'B' ? 'B' : 'A';
 
         return $this->tx(function () use ($room, $device, $name, $team) {
             $room = $this->fresh($room);
+            // No team given (solo lobby): keep the teams balanced in case the host switches back.
+            $team = in_array($team, ['A', 'B'], true) ? $team : $this->smallerTeam($room);
             $this->mustBeHost($room, $device);
             $this->mustBe($room, Room::LOBBY);
 
@@ -151,6 +156,9 @@ class RoomEngine
             if (isset($data['turn_seconds']) && in_array((int) $data['turn_seconds'], self::SECONDS_OPTIONS, true)) {
                 $room->turn_seconds = (int) $data['turn_seconds'];
             }
+            if (isset($data['mode']) && in_array($data['mode'], [self::TEAMS, self::SOLO], true)) {
+                $room->mode = $data['mode'];
+            }
             if (array_key_exists('wrong_penalty', $data)) {
                 $room->wrong_penalty = (bool) $data['wrong_penalty'];
             }
@@ -159,6 +167,23 @@ class RoomEngine
     }
 
     // ───────────────────────────── Game flow ─────────────────────────────
+
+    /** Solo: every player in join order, round after round. */
+    public static function buildSoloOrder(array $players, int $turnsPerPlayer): array
+    {
+        $order = [];
+        for ($k = 0; $k < $turnsPerPlayer; $k++) {
+            array_push($order, ...$players);
+        }
+
+        return $order;
+    }
+
+    /** Where a player's points go: their team, or (solo) their own id. */
+    public static function scoreKey(Room $room, Player $player): string
+    {
+        return $room->mode === self::SOLO ? (string) $player->id : $player->team;
+    }
 
     /** Builds the order once: A[0], B[0], A[1], B[1]… each team cycling through its members. */
     public static function buildOrder(array $teamA, array $teamB, int $turnsPerPlayer): array
@@ -181,20 +206,35 @@ class RoomEngine
             $this->mustBe($room, Room::LOBBY);
 
             $players = $room->players()->where('spectator', false)->get();
-            $a = $players->where('team', 'A')->pluck('id')->values()->all();
-            $b = $players->where('team', 'B')->pluck('id')->values()->all();
 
-            if (! $a || ! $b) {
-                throw new DomainException('empty_team');
+            if ($room->mode === self::SOLO) {
+                if ($players->count() < 2) {
+                    throw new DomainException('need_two');
+                }
+                $ids = $players->pluck('id')->values()->all();
+                $order = self::buildSoloOrder($ids, $room->turns_per_player);
+                $scores = array_fill_keys(array_map('strval', $ids), 0);
+            } else {
+                $a = $players->where('team', 'A')->pluck('id')->values()->all();
+                $b = $players->where('team', 'B')->pluck('id')->values()->all();
+                if (! $a || ! $b) {
+                    throw new DomainException('empty_team');
+                }
+                if (count($a) !== count($b)) {
+                    throw new DomainException('uneven_teams'); // fair totals: same number of players
+                }
+                $order = self::buildOrder($a, $b, $room->turns_per_player);
+                $scores = ['A' => 0, 'B' => 0];
             }
+
             if (! $room->list_id || ! GameList::playable()->whereKey($room->list_id)->exists()) {
                 throw new DomainException('bad_list');
             }
 
-            $room->order = self::buildOrder($a, $b, $room->turns_per_player);
+            $room->order = $order;
             $room->status = Room::PLAYING;
             $room->turn_idx = 0;
-            $room->scores = ['A' => 0, 'B' => 0];
+            $room->scores = $scores;
             $room->turn_deadline = $this->deadline($room);
             $room->expires_at = now()->addHours(self::ROOM_HOURS);
             $this->bump($room);
@@ -243,7 +283,7 @@ class RoomEngine
                     $points = $rank;
                 }
             } elseif ($result === Matcher::NONE && $room->wrong_penalty) {
-                $points = -min(self::PENALTY, (int) ($room->scores[$player->team] ?? 0)); // never below zero
+                $points = -min(self::PENALTY, (int) ($room->scores[self::scoreKey($room, $player)] ?? 0)); // never below zero
             }
 
             Guess::create([
@@ -261,7 +301,8 @@ class RoomEngine
 
             if ($points !== 0) {
                 $scores = $room->scores;
-                $scores[$player->team] = max(0, ($scores[$player->team] ?? 0) + $points);
+                $key = self::scoreKey($room, $player);
+                $scores[$key] = max(0, ($scores[$key] ?? 0) + $points);
                 $room->scores = $scores;
             }
 
@@ -362,6 +403,7 @@ class RoomEngine
             'version' => $room->version,
             'code' => $room->code,
             'status' => $room->status,
+            'mode' => $room->mode ?? self::TEAMS,
             'round' => $room->round,
             'is_host' => $isHost,
             'my_players' => $mine,
@@ -371,7 +413,7 @@ class RoomEngine
             'turns_total' => count($room->order ?? []),
             'current_player' => $room->currentPlayerId(),
             'deadline' => $room->turn_deadline ? (int) round($room->turn_deadline->getPreciseTimestamp(3)) : null,
-            'scores' => $room->scores ?? ['A' => 0, 'B' => 0],
+            'scores' => (object) ($room->scores ?? ['A' => 0, 'B' => 0]),
             'players' => $room->players->map(fn (Player $p) => [
                 'id' => $p->id,
                 'name' => $p->name,
@@ -395,6 +437,7 @@ class RoomEngine
             'revealed' => $matched->map(fn (Guess $g) => [
                 'rank' => $g->item_rank,
                 'team' => $g->team,
+                'player_id' => $g->player_id,
                 'player' => $g->player_name,
                 'name' => $items->get($g->item_rank)?->name_ar,
                 'extra' => $items->get($g->item_rank)?->extra,

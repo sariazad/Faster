@@ -8,6 +8,15 @@ const app = $('#app');
 const code = app.dataset.code;
 const POLL_MS = 1000;
 const teamName = (t) => S(`teams.${t}`);
+const SOLO_COLORS = ['#e5484d', '#2b7fd8', '#16a34a', '#d97706', '#9333ea', '#db2777', '#0891b2', '#65a30d', '#ea580c', '#4f46e5', '#0d9488', '#be185d'];
+const solo = () => state?.mode === 'solo';
+
+/** Colour of whoever owns something: the team (teams mode) or the player (solo). */
+function ownerOf(playerId, team) {
+    if (!solo()) return { cls: team || 'A', style: null };
+    const idx = Math.max(0, state.players.findIndex((p) => p.id === playerId));
+    return { cls: 'P', style: `--c:${SOLO_COLORS[idx % SOLO_COLORS.length]}` };
+}
 
 let state = null;
 let offset = 0;                 // server clock − local clock
@@ -36,6 +45,7 @@ async function poll() {
             render(prev);
         }
     } catch (e) {
+        if (!e.status) console.error(e);
         if (e.status === 404) {
             store.del('room');
             app.replaceChildren(el('div', { class: 'card center', style: 'margin-top:60px' }, [
@@ -79,7 +89,8 @@ function renderLobby() {
     const s = state;
     const teams = { A: s.players.filter((p) => p.team === 'A'), B: s.players.filter((p) => p.team === 'B') };
     const joinUrl = new URL(`${config.base}?room=${s.code}`, location.href).href; // config.base is already absolute
-    const nTurns = s.settings.turns_per_player * Math.max(teams.A.length, teams.B.length, 1);
+    const active = s.players.filter((p) => !p.spectator);
+    const nTurns = solo() ? s.settings.turns_per_player : s.settings.turns_per_player * Math.max(teams.A.length, teams.B.length, 1);
 
     const playerCard = (p) => el('div', { class: 'pcard' }, [
         el('span', { class: 'nm', text: p.name }),
@@ -87,14 +98,19 @@ function renderLobby() {
         p.mine ? el('span', { class: 'tag me', text: S('lobby.this_device') }) : null,
         p.offline ? el('span', { class: 'tag', text: S('lobby.no_phone') }) : null,
         p.spectator ? el('span', { class: 'tag', text: S('lobby.spectator') }) : null,
-        (p.mine || (s.is_host && p.offline)) ? el('button', { class: 'chip-btn', text: S('lobby.switch'), 'aria-label': `${S('lobby.switch')}: ${p.name}`, onclick: () => act(api.switchTeam, p.id) }) : null,
+        !solo() && (p.mine || (s.is_host && p.offline)) ? el('button', { class: 'chip-btn', text: S('lobby.switch'), 'aria-label': `${S('lobby.switch')}: ${p.name}`, onclick: () => act(api.switchTeam, p.id) }) : null,
         (p.mine && !p.host) || (s.is_host && !p.host) ? el('button', { class: 'chip-btn', text: '✕', 'aria-label': `${S('lobby.remove')}: ${p.name}`, onclick: () => act(api.removePlayer, p.id) }) : null,
     ]);
 
-    const cols = el('div', { class: 'teams' }, ['A', 'B'].map((t) => el('section', { class: `team-col ${t}`, 'aria-label': teamName(t) }, [
-        el('h3', { text: `${teamName(t)} (${teams[t].length})` }),
-        ...(teams[t].length ? teams[t].map(playerCard) : [el('p', { class: 'muted small', text: S('lobby.empty') })]),
-    ])));
+    const cols = solo()
+        ? el('section', { class: 'card', 'aria-label': S('lobby.players') }, [
+            el('h3', { text: `${S('lobby.players')} (${s.players.length})` }),
+            el('div', { class: 'solo-players' }, s.players.map((p) => { const c = playerCard(p); const sd = ownerOf(p.id); c.prepend(el('span', { class: `dot ${sd.cls}`, style: sd.style })); return c; })),
+        ])
+        : el('div', { class: 'teams' }, ['A', 'B'].map((t) => el('section', { class: `team-col ${t}`, 'aria-label': teamName(t) }, [
+            el('h3', { text: `${teamName(t)} (${teams[t].length})` }),
+            ...(teams[t].length ? teams[t].map(playerCard) : [el('p', { class: 'muted small', text: S('lobby.empty') })]),
+        ])));
 
     const top = el('div', { class: 'card center' }, [
         el('div', { class: 'muted', text: S('lobby.code') }),
@@ -109,23 +125,30 @@ function renderLobby() {
         const nameIn = el('input', { class: 'field grow', maxlength: 20, placeholder: S('lobby.add_name'), 'aria-label': S('lobby.add_name') });
         let addTeam = 'A';
         const teamOpts = el('div', { class: 'opts' }, ['A', 'B'].map((t) => el('button', { type: 'button', class: 'opt' + (t === 'A' ? ' on' : ''), text: teamName(t), onclick: (e) => { addTeam = t; [...teamOpts.children].forEach((b) => b.classList.toggle('on', b === e.currentTarget)); } })));
-        const addForm = el('form', { class: 'card stack', onsubmit: async (e) => { e.preventDefault(); if (!nameIn.value.trim()) return; await act(api.addPlayer, nameIn.value.trim(), addTeam); nameIn.value = ''; } }, [
+        const addForm = el('form', { class: 'card stack', onsubmit: async (e) => { e.preventDefault(); if (!nameIn.value.trim()) return; await act(api.addPlayer, nameIn.value.trim(), solo() ? null : addTeam); nameIn.value = ''; } }, [
             el('h3', { text: S('lobby.add_title') }),
             el('div', { class: 'row' }, [nameIn, el('button', { class: 'btn', text: S('lobby.add') })]),
-            teamOpts,
+            solo() ? null : teamOpts,
         ]);
 
-        const opt = (key, values, label) => el('div', {}, [
+        const current = (key) => (key === 'mode' ? s.mode : s.settings[key]);
+    const opt = (key, values, label) => el('div', {}, [
             el('div', { class: 'lbl', text: label }),
             el('div', { class: 'opts', role: 'radiogroup', 'aria-label': label }, values.map(([v, t]) => el('button', {
-                class: 'opt' + (s.settings[key] === v ? ' on' : ''), role: 'radio', 'aria-checked': String(s.settings[key] === v), text: t,
+                class: 'opt' + (current(key) === v ? ' on' : ''), role: 'radio', 'aria-checked': String(current(key) === v), text: t,
                 onclick: () => act(api.saveSettings, { [key]: v }),
             }))),
         ]);
 
-        const canStart = teams.A.some((p) => !p.spectator) && teams.B.some((p) => !p.spectator) && s.list;
+        const a = teams.A.filter((p) => !p.spectator).length;
+        const b = teams.B.filter((p) => !p.spectator).length;
+        const problem = solo()
+            ? (active.length < 2 ? S('lobby.need_two') : null)
+            : (!a || !b ? S('lobby.empty_team') : (a !== b ? S('lobby.uneven', { a, b }) : null));
+        const canStart = !problem && s.list;
         children.push(el('div', { class: 'card stack', style: 'margin-top:14px' }, [
             el('h2', { text: S('lobby.settings') }),
+            opt('mode', [['teams', S('lobby.mode_teams')], ['solo', S('lobby.mode_solo')]], S('lobby.mode')),
             el('div', {}, [
                 el('div', { class: 'lbl', text: S('lobby.list') }),
                 el('div', { class: 'list-cards' }, (s.lists || []).map((l) => el('button', {
@@ -136,9 +159,9 @@ function renderLobby() {
             opt('turns_per_player', [1, 2, 3, 4].map((n) => [n, String(n)]), S('lobby.turns')),
             opt('turn_seconds', [20, 30, 45, 60].map((n) => [n, `${n} ${S('lobby.sec')}`]), S('lobby.seconds')),
             opt('wrong_penalty', [[false, S('lobby.no_penalty')], [true, S('lobby.minus10')]], S('lobby.penalty')),
-            el('p', { class: 'muted', text: S('lobby.calc', { n: nTurns }) }),
+            el('p', { class: 'muted', text: S(solo() ? 'lobby.calc_solo' : 'lobby.calc', { n: nTurns }) }),
             el('button', { class: 'btn lantern block', disabled: !canStart, text: S('lobby.start'), onclick: () => act(api.action, 'start') }),
-            canStart ? null : el('p', { class: 'muted small center', text: S('lobby.empty_team') }),
+            problem ? el('p', { class: 'muted small center', role: 'status', text: problem }) : null,
         ]), addForm);
     } else {
         const meSpectating = s.players.some((p) => p.mine && p.spectator);
@@ -178,8 +201,10 @@ function board(mini = false) {
     const grid = el('div', { class: 'board' + (mini ? ' mini' : ''), role: 'grid', 'aria-label': state.list?.title });
     for (let i = 1; i <= total; i++) {
         const r = cells.get(i);
+        const sd = r ? ownerOf(r.player_id, r.team) : null;
         grid.append(el('div', {
-            class: 'cell' + (r ? ` ${r.team}` : '') + (fresh.has(i) ? ' pop' : ''),
+            class: 'cell' + (r ? ` ${sd.cls}` : '') + (fresh.has(i) ? ' pop' : ''),
+            style: sd?.style,
             role: 'gridcell',
             'aria-label': r ? `${i}: ${r.name}` : String(i),
             title: r ? `${r.name} — ${r.player}` : null,
@@ -235,7 +260,11 @@ function renderGame(prev) {
 
     const last = lastResultLine();
     const leader = s.scores.A === s.scores.B ? null : (s.scores.A > s.scores.B ? 'A' : 'B');
-    const scorebar = el('div', { class: 'scorebar' }, [
+    const ranking = solo() ? s.players.filter((p) => s.scores[p.id] !== undefined).sort((x, y) => s.scores[y.id] - s.scores[x.id]) : [];
+    const scorebar = solo() ? el('div', { class: 'solo-scores' }, [
+        el('div', { class: 'score-mid' }, [el('div', { class: 'num', text: S('play.turn', { i: Math.min(s.turn_idx + 1, s.turns_total), n: s.turns_total }) }), el('div', { class: 'muted small num', text: `#${s.code}` })]),
+        ...ranking.map((p, i) => { const sd = ownerOf(p.id); return el('div', { class: 'pscore' + (p.id === s.current_player ? ' now' : '') + (i === 0 && s.scores[p.id] > 0 ? ' lead' : ''), style: sd.style }, [el('span', { class: `dot ${sd.cls}`, style: sd.style }), el('span', { class: 'nm', text: p.name }), el('b', { class: 'num', text: String(s.scores[p.id]) })]); }),
+    ]) : el('div', { class: 'scorebar' }, [
         el('div', { class: `score A${leader === 'A' ? ' lead' : ''}` }, [el('span', { class: 't', text: teamName('A') }), el('span', { class: 'big-num', text: String(s.scores.A) })]),
         el('div', { class: 'score-mid' }, [el('div', { class: 'num', text: S('play.turn', { i: Math.min(s.turn_idx + 1, s.turns_total), n: s.turns_total }) }), el('div', { class: 'muted small num', text: `#${s.code}` })]),
         el('div', { class: `score B${leader === 'B' ? ' lead' : ''}` }, [el('span', { class: 't', text: teamName('B') }), el('span', { class: 'big-num', text: String(s.scores.B) })]),
@@ -244,11 +273,13 @@ function renderGame(prev) {
     const timebar = el('div', { class: 'timebar', 'aria-hidden': 'true' }, el('i', { id: 'timefill' }));
     const lastLine = el('div', { class: `last ${last.cls}`, role: 'status', 'aria-live': 'polite', text: last.text });
 
+    const cs = ownerOf(current?.id, current?.team);
+    const sub = solo() ? (s.list?.title || '') : teamName(current?.team || 'A');
     if (s.is_host) {
         // ── Stage (big screen) ──
-        const turnCard = el('section', { class: `turn ${current?.team || 'A'}`, id: 'turnCard' }, [
+        const turnCard = el('section', { class: `turn ${cs.cls}`, style: cs.style, id: 'turnCard' }, [
             el('h2', { text: S('play.turn_of', { name: current?.name || '—' }) }),
-            el('div', { class: 'sub', text: teamName(current?.team || 'A') }),
+            el('div', { class: 'sub', text: sub }),
             timebar,
             current && mine(current.id) ? guessForm(current) : null,
         ]);
@@ -257,7 +288,7 @@ function renderGame(prev) {
             el('section', { class: 'card' }, [
                 el('h3', { text: `${S('play.revealed')} (${revealed.length})` }),
                 el('div', { class: 'revealed' }, revealed.map((r) => el('div', { class: 'rev' }, [
-                    el('span', { class: `num ${r.team}`, text: String(r.rank) }),
+                    el('span', { class: `num ${ownerOf(r.player_id, r.team).cls}`, style: ownerOf(r.player_id, r.team).style, text: String(r.rank) }),
                     el('b', { text: r.name }),
                     el('small', { text: [r.extra && `${r.extra} ${s.list?.extra_label || ''}`, r.player].filter(Boolean).join(' • ') }),
                 ]))),
@@ -284,16 +315,16 @@ function renderGame(prev) {
         const kids = [header(), scorebar];
         if (!amPlaying) kids.push(el('p', { class: 'center muted', text: S('play.spectating') }));
         if (myTurn) {
-            kids.push(el('section', { class: `phone-turn ${current.team}`, id: 'turnCard' }, [
+            kids.push(el('section', { class: `phone-turn ${cs.cls}`, style: cs.style, id: 'turnCard' }, [
                 el('h2', { text: S('play.your_turn', { name: current.name }) }),
                 el('div', { class: 'sub', text: s.list?.title }),
                 guessForm(current),
                 timebar,
             ]), lastLine);
         } else {
-            kids.push(el('section', { class: `turn ${current?.team || 'A'}`, id: 'turnCard' }, [
+            kids.push(el('section', { class: `turn ${cs.cls}`, style: cs.style, id: 'turnCard' }, [
                 el('h2', { text: S('play.turn_of', { name: current?.name || '—' }) }),
-                el('div', { class: 'sub', text: teamName(current?.team || 'A') }),
+                el('div', { class: 'sub', text: sub }),
                 timebar,
             ]), lastLine);
         }
@@ -329,13 +360,23 @@ function tick() {
 
 function renderEnd(prev) {
     const s = state;
-    const { A, B } = s.scores;
-    const winner = A === B ? null : (A > B ? 'A' : 'B');
     const firstTime = !prev || prev.status !== 'done';
-    if (firstTime && winner) { sfx.win(); confetti(getComputedStyle(document.documentElement).getPropertyValue(`--${winner}`).trim()); }
-
-    const banner = el('div', { class: `banner ${winner || 'tie'}`, role: 'status' },
-        winner ? S('end.win', { team: teamName(winner), a: Math.max(A, B), b: Math.min(A, B) }) : S('end.tie', { a: A, b: B }));
+    let banner;
+    if (solo()) {
+        const ranked = s.players.filter((p) => s.scores[p.id] !== undefined).sort((x, y) => s.scores[y.id] - s.scores[x.id]);
+        const top = ranked.length ? s.scores[ranked[0].id] : 0;
+        const winners = ranked.filter((p) => s.scores[p.id] === top);
+        const sd = winners.length === 1 ? ownerOf(winners[0].id) : null;
+        if (firstTime && sd) { sfx.win(); confetti(SOLO_COLORS[Math.max(0, s.players.findIndex((p) => p.id === winners[0].id)) % SOLO_COLORS.length]); }
+        banner = el('div', { class: `banner ${sd ? sd.cls : 'tie'}`, style: sd?.style, role: 'status' },
+            sd ? S('end.win_solo', { name: winners[0].name, n: top }) : S('end.tie_solo', { names: winners.map((p) => p.name).join(' و'), n: top }));
+    } else {
+        const { A, B } = s.scores;
+        const winner = A === B ? null : (A > B ? 'A' : 'B');
+        if (firstTime && winner) { sfx.win(); confetti(getComputedStyle(document.documentElement).getPropertyValue(`--${winner}`).trim()); }
+        banner = el('div', { class: `banner ${winner || 'tie'}`, role: 'status' },
+            winner ? S('end.win', { team: teamName(winner), a: Math.max(A, B), b: Math.min(A, B) }) : S('end.tie', { a: A, b: B }));
+    }
 
     // Per-player stats
     const stats = s.players.filter((p) => !p.spectator).map((p) => {
@@ -354,7 +395,7 @@ function renderEnd(prev) {
     const table = el('table', { class: 'stats' }, [
         el('thead', {}, el('tr', {}, [S('end.player'), S('end.points'), S('end.right'), S('end.wrong'), S('end.farthest')].map((h) => el('th', { text: h })))),
         el('tbody', {}, stats.map((p) => el('tr', {}, [
-            el('td', {}, [el('span', { class: `dot ${p.team}` }), p.name]),
+            el('td', {}, [el('span', { class: `dot ${ownerOf(p.id, p.team).cls}`, style: ownerOf(p.id, p.team).style }), p.name]),
             el('td', { class: 'num', text: String(p.points) }),
             el('td', { class: 'num', text: String(p.right) }),
             el('td', { class: 'num', text: String(p.wrong) }),
@@ -376,7 +417,8 @@ function renderEnd(prev) {
     const grid = el('div', { class: 'board', role: 'grid', 'aria-label': S('end.full_list') });
     const cells = full.map((it) => {
         const r = taken.get(it.rank);
-        return el('div', { class: 'cell' + (r ? ` ${r.team}` : ' ghost'), role: 'gridcell', title: it.extra || null, 'aria-label': `${it.rank}: ${it.name}` }, [el('span', { class: 'n', text: String(it.rank) }), it.name]);
+        const sd = r ? ownerOf(r.player_id, r.team) : null;
+        return el('div', { class: 'cell' + (r ? ` ${sd.cls}` : ' ghost'), style: sd?.style, role: 'gridcell', title: it.extra || null, 'aria-label': `${it.rank}: ${it.name}` }, [el('span', { class: 'n', text: String(it.rank) }), it.name]);
     });
     cells.forEach((c) => grid.append(c));
     if (!revealDone && !matchMedia('(prefers-reduced-motion: reduce)').matches) {

@@ -26,6 +26,8 @@ class AkherController extends Controller
         'host_stays' => 'المضيف ما بيطلع من غرفته.',
         'wrong_state' => 'ما بيصير هلق.',
         'empty_team' => 'كل فريق لازم يكون فيه لاعب واحد على الأقل.',
+        'uneven_teams' => 'الفريقين لازم يكونوا بنفس عدد اللاعبين لحتى يكون الحساب عادل.',
+        'need_two' => 'اللعب الفردي بدو لاعبين اتنين على الأقل.',
         'bad_list' => 'اختار قائمة.',
         'bad_text' => 'اكتب تخمينك.',
         'not_your_turn' => 'مش دورك.',
@@ -84,9 +86,9 @@ class AkherController extends Controller
 
     public function addPlayer(Request $request, string $code): JsonResponse
     {
-        $data = $this->validated($request, ['name' => 'required|string|max:40', 'team' => 'required|in:A,B']);
+        $data = $this->validated($request, ['name' => 'required|string|max:40', 'team' => 'nullable|in:A,B']);
 
-        return $this->run(fn () => ['player' => $this->engine->addOffline($this->room($code), $data['device'], $data['name'], $data['team'])->id]);
+        return $this->run(fn () => ['player' => $this->engine->addOffline($this->room($code), $data['device'], $data['name'], $data['team'] ?? null)->id]);
     }
 
     public function switchTeam(Request $request, string $code, int $player): JsonResponse
@@ -110,9 +112,10 @@ class AkherController extends Controller
             'turns_per_player' => 'nullable|integer',
             'turn_seconds' => 'nullable|integer',
             'wrong_penalty' => 'nullable|boolean',
+            'mode' => 'nullable|in:teams,solo',
         ]);
 
-        return $this->run(fn () => $this->engine->settings($this->room($code), $data['device'], $request->only(['list_id', 'turns_per_player', 'turn_seconds', 'wrong_penalty'])));
+        return $this->run(fn () => $this->engine->settings($this->room($code), $data['device'], $request->only(['list_id', 'turns_per_player', 'turn_seconds', 'wrong_penalty', 'mode'])));
     }
 
     public function guess(Request $request, string $code): JsonResponse

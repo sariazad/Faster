@@ -138,6 +138,21 @@ ul.rules li::marker { color: var(--lantern-dark); }
 .list-card small { display: block; color: var(--muted); font-weight: 600; margin-top: 4px; }
 .list-card.on { border-color: var(--lantern); box-shadow: 0 0 0 3px rgba(255, 170, 51, .25); }
 
+/* Solo: every player has their own colour (--c) */
+.cell.P { background: var(--c); border-color: var(--c); color: #fff; }
+.cell.P .n { color: rgba(255, 255, 255, .85); }
+.turn.P, .phone-turn.P, .banner.P { background: var(--c); }
+.num.P { color: var(--c); }
+.dot.P { background: var(--c); }
+.solo-players { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.solo-players .pcard { margin: 0; }
+.solo-scores { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+.pscore { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 2px solid var(--border); border-radius: 12px; padding: 8px 12px; }
+.pscore .nm { font-weight: 800; }
+.pscore b { font-size: 24px; }
+.pscore.now { border-color: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 25%, transparent); }
+.pscore.lead b::after { content: ' 👑'; font-size: 16px; }
+
 /* Game: score bar */
 .scorebar { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: stretch; margin-bottom: 14px; }
 .score { border-radius: 14px; padding: 10px 16px; border: 2px solid transparent; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
