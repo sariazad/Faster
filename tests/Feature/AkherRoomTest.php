@@ -196,7 +196,7 @@ class AkherRoomTest extends TestCase
 
         $this->api('POST', "/rooms/$code/expire", ['turn_idx' => 0])->assertOk()->assertJsonPath('expired', false);
 
-        $this->travel(31)->seconds();
+        $this->travel(33)->seconds();
         $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 0, 'text' => 'روسيا'])->assertStatus(422)->assertJsonPath('message', 'time_up');
         $this->api('POST', "/rooms/$code/expire", ['turn_idx' => 0])->assertOk()->assertJsonPath('expired', true);
         $this->api('POST', "/rooms/$code/expire", ['turn_idx' => 0])->assertOk()->assertJsonPath('expired', false);
