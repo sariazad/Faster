@@ -48,8 +48,8 @@ class AkherRoomTest extends TestCase
     public function test_lists_live_in_their_own_database(): void
     {
         $this->assertSame('akher', (new GameList)->getConnectionName());
-        $this->assertSame(3, DB::connection('akher')->table('lists')->count());
-        $this->assertSame(300, DB::connection('akher')->table('list_items')->count());
+        $this->assertSame(7, DB::connection('akher')->table('lists')->count());
+        $this->assertSame(576, DB::connection('akher')->table('list_items')->count());
         $this->artisan('akher:validate-lists')->assertSuccessful();
     }
 
