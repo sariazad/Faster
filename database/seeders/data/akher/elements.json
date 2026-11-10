@@ -1,0 +1,976 @@
+{
+ "id": "elements",
+ "title_ar": "أول 100 عنصر بالجدول الدوري",
+ "extra_label": "",
+ "unit_hint": "اكتب اسم عنصر كيميائي",
+ "source": "الترتيب = العدد الذري (IUPAC). العناصر من 101 لـ118 برّا القائمة.",
+ "updated": "2026-11",
+ "items": [
+  {
+   "rank": 1,
+   "name_ar": "هيدروجين",
+   "name_en": "Hydrogen",
+   "aliases": [
+    "H"
+   ],
+   "extra": "H"
+  },
+  {
+   "rank": 2,
+   "name_ar": "هيليوم",
+   "name_en": "Helium",
+   "aliases": [
+    "هليوم",
+    "He"
+   ],
+   "extra": "He"
+  },
+  {
+   "rank": 3,
+   "name_ar": "ليثيوم",
+   "name_en": "Lithium",
+   "aliases": [
+    "ليتيوم",
+    "Li"
+   ],
+   "extra": "Li"
+  },
+  {
+   "rank": 4,
+   "name_ar": "بيريليوم",
+   "name_en": "Beryllium",
+   "aliases": [
+    "بريليوم",
+    "Be"
+   ],
+   "extra": "Be"
+  },
+  {
+   "rank": 5,
+   "name_ar": "بورون",
+   "name_en": "Boron",
+   "aliases": [
+    "بور",
+    "B"
+   ],
+   "extra": "B"
+  },
+  {
+   "rank": 6,
+   "name_ar": "كربون",
+   "name_en": "Carbon",
+   "aliases": [
+    "فحم",
+    "C"
+   ],
+   "extra": "C"
+  },
+  {
+   "rank": 7,
+   "name_ar": "نيتروجين",
+   "name_en": "Nitrogen",
+   "aliases": [
+    "نتروجين",
+    "آزوت",
+    "N"
+   ],
+   "extra": "N"
+  },
+  {
+   "rank": 8,
+   "name_ar": "أكسجين",
+   "name_en": "Oxygen",
+   "aliases": [
+    "اكسيجين",
+    "أوكسجين",
+    "O"
+   ],
+   "extra": "O"
+  },
+  {
+   "rank": 9,
+   "name_ar": "فلور",
+   "name_en": "Fluorine",
+   "aliases": [
+    "فلورين",
+    "F"
+   ],
+   "extra": "F"
+  },
+  {
+   "rank": 10,
+   "name_ar": "نيون",
+   "name_en": "Neon",
+   "aliases": [
+    "Ne"
+   ],
+   "extra": "Ne"
+  },
+  {
+   "rank": 11,
+   "name_ar": "صوديوم",
+   "name_en": "Sodium",
+   "aliases": [
+    "Na"
+   ],
+   "extra": "Na"
+  },
+  {
+   "rank": 12,
+   "name_ar": "مغنيسيوم",
+   "name_en": "Magnesium",
+   "aliases": [
+    "مغنيزيوم",
+    "مغنزيوم",
+    "Mg"
+   ],
+   "extra": "Mg"
+  },
+  {
+   "rank": 13,
+   "name_ar": "ألومنيوم",
+   "name_en": "Aluminium",
+   "aliases": [
+    "الألمنيوم",
+    "الالمنيوم",
+    "الألومنيوم",
+    "ألمونيوم",
+    "الالومنيوم",
+    "المنيوم",
+    "ألمنيوم",
+    "Aluminum",
+    "الومينيوم",
+    "Al"
+   ],
+   "extra": "Al"
+  },
+  {
+   "rank": 14,
+   "name_ar": "سيليكون",
+   "name_en": "Silicon",
+   "aliases": [
+    "سليكون",
+    "سيليسيوم",
+    "Si"
+   ],
+   "extra": "Si"
+  },
+  {
+   "rank": 15,
+   "name_ar": "فوسفور",
+   "name_en": "Phosphorus",
+   "aliases": [
+    "فسفور",
+    "P"
+   ],
+   "extra": "P"
+  },
+  {
+   "rank": 16,
+   "name_ar": "كبريت",
+   "name_en": "Sulfur",
+   "aliases": [
+    "Sulphur",
+    "S"
+   ],
+   "extra": "S"
+  },
+  {
+   "rank": 17,
+   "name_ar": "كلور",
+   "name_en": "Chlorine",
+   "aliases": [
+    "كلورين",
+    "Cl"
+   ],
+   "extra": "Cl"
+  },
+  {
+   "rank": 18,
+   "name_ar": "أرغون",
+   "name_en": "Argon",
+   "aliases": [
+    "ارجون",
+    "آرغون",
+    "Ar"
+   ],
+   "extra": "Ar"
+  },
+  {
+   "rank": 19,
+   "name_ar": "بوتاسيوم",
+   "name_en": "Potassium",
+   "aliases": [
+    "K"
+   ],
+   "extra": "K"
+  },
+  {
+   "rank": 20,
+   "name_ar": "كالسيوم",
+   "name_en": "Calcium",
+   "aliases": [
+    "Ca"
+   ],
+   "extra": "Ca"
+  },
+  {
+   "rank": 21,
+   "name_ar": "سكانديوم",
+   "name_en": "Scandium",
+   "aliases": [
+    "Sc"
+   ],
+   "extra": "Sc"
+  },
+  {
+   "rank": 22,
+   "name_ar": "تيتانيوم",
+   "name_en": "Titanium",
+   "aliases": [
+    "تيتان",
+    "Ti"
+   ],
+   "extra": "Ti"
+  },
+  {
+   "rank": 23,
+   "name_ar": "فاناديوم",
+   "name_en": "Vanadium",
+   "aliases": [
+    "V"
+   ],
+   "extra": "V"
+  },
+  {
+   "rank": 24,
+   "name_ar": "كروم",
+   "name_en": "Chromium",
+   "aliases": [
+    "كروميوم",
+    "Cr"
+   ],
+   "extra": "Cr"
+  },
+  {
+   "rank": 25,
+   "name_ar": "منغنيز",
+   "name_en": "Manganese",
+   "aliases": [
+    "منجنيز",
+    "منغانيز",
+    "Mn"
+   ],
+   "extra": "Mn"
+  },
+  {
+   "rank": 26,
+   "name_ar": "حديد",
+   "name_en": "Iron",
+   "aliases": [
+    "Fe"
+   ],
+   "extra": "Fe"
+  },
+  {
+   "rank": 27,
+   "name_ar": "كوبالت",
+   "name_en": "Cobalt",
+   "aliases": [
+    "Co"
+   ],
+   "extra": "Co"
+  },
+  {
+   "rank": 28,
+   "name_ar": "نيكل",
+   "name_en": "Nickel",
+   "aliases": [
+    "Ni"
+   ],
+   "extra": "Ni"
+  },
+  {
+   "rank": 29,
+   "name_ar": "نحاس",
+   "name_en": "Copper",
+   "aliases": [
+    "Cu"
+   ],
+   "extra": "Cu"
+  },
+  {
+   "rank": 30,
+   "name_ar": "زنك",
+   "name_en": "Zinc",
+   "aliases": [
+    "خارصين",
+    "توتياء",
+    "Zn"
+   ],
+   "extra": "Zn"
+  },
+  {
+   "rank": 31,
+   "name_ar": "غاليوم",
+   "name_en": "Gallium",
+   "aliases": [
+    "جاليوم",
+    "Ga"
+   ],
+   "extra": "Ga"
+  },
+  {
+   "rank": 32,
+   "name_ar": "جرمانيوم",
+   "name_en": "Germanium",
+   "aliases": [
+    "غرمانيوم",
+    "جيرمانيوم",
+    "Ge"
+   ],
+   "extra": "Ge"
+  },
+  {
+   "rank": 33,
+   "name_ar": "زرنيخ",
+   "name_en": "Arsenic",
+   "aliases": [
+    "As"
+   ],
+   "extra": "As"
+  },
+  {
+   "rank": 34,
+   "name_ar": "سيلينيوم",
+   "name_en": "Selenium",
+   "aliases": [
+    "سيلنيوم",
+    "Se"
+   ],
+   "extra": "Se"
+  },
+  {
+   "rank": 35,
+   "name_ar": "بروم",
+   "name_en": "Bromine",
+   "aliases": [
+    "برومين",
+    "Br"
+   ],
+   "extra": "Br"
+  },
+  {
+   "rank": 36,
+   "name_ar": "كريبتون",
+   "name_en": "Krypton",
+   "aliases": [
+    "كربتون",
+    "Kr"
+   ],
+   "extra": "Kr"
+  },
+  {
+   "rank": 37,
+   "name_ar": "روبيديوم",
+   "name_en": "Rubidium",
+   "aliases": [
+    "Rb"
+   ],
+   "extra": "Rb"
+  },
+  {
+   "rank": 38,
+   "name_ar": "سترونشيوم",
+   "name_en": "Strontium",
+   "aliases": [
+    "سترونتيوم",
+    "Sr"
+   ],
+   "extra": "Sr"
+  },
+  {
+   "rank": 39,
+   "name_ar": "إتريوم",
+   "name_en": "Yttrium",
+   "aliases": [
+    "ايتريوم",
+    "Y"
+   ],
+   "extra": "Y"
+  },
+  {
+   "rank": 40,
+   "name_ar": "زركونيوم",
+   "name_en": "Zirconium",
+   "aliases": [
+    "Zr"
+   ],
+   "extra": "Zr"
+  },
+  {
+   "rank": 41,
+   "name_ar": "نيوبيوم",
+   "name_en": "Niobium",
+   "aliases": [
+    "Nb"
+   ],
+   "extra": "Nb"
+  },
+  {
+   "rank": 42,
+   "name_ar": "موليبدنوم",
+   "name_en": "Molybdenum",
+   "aliases": [
+    "موليبدينوم",
+    "Mo"
+   ],
+   "extra": "Mo"
+  },
+  {
+   "rank": 43,
+   "name_ar": "تكنيشيوم",
+   "name_en": "Technetium",
+   "aliases": [
+    "تكنيتيوم",
+    "Tc"
+   ],
+   "extra": "Tc"
+  },
+  {
+   "rank": 44,
+   "name_ar": "روثينيوم",
+   "name_en": "Ruthenium",
+   "aliases": [
+    "روثنيوم",
+    "Ru"
+   ],
+   "extra": "Ru"
+  },
+  {
+   "rank": 45,
+   "name_ar": "روديوم",
+   "name_en": "Rhodium",
+   "aliases": [
+    "Rh"
+   ],
+   "extra": "Rh"
+  },
+  {
+   "rank": 46,
+   "name_ar": "بالاديوم",
+   "name_en": "Palladium",
+   "aliases": [
+    "Pd"
+   ],
+   "extra": "Pd"
+  },
+  {
+   "rank": 47,
+   "name_ar": "فضة",
+   "name_en": "Silver",
+   "aliases": [
+    "Ag"
+   ],
+   "extra": "Ag"
+  },
+  {
+   "rank": 48,
+   "name_ar": "كادميوم",
+   "name_en": "Cadmium",
+   "aliases": [
+    "Cd"
+   ],
+   "extra": "Cd"
+  },
+  {
+   "rank": 49,
+   "name_ar": "إنديوم",
+   "name_en": "Indium",
+   "aliases": [
+    "انديوم",
+    "In"
+   ],
+   "extra": "In"
+  },
+  {
+   "rank": 50,
+   "name_ar": "قصدير",
+   "name_en": "Tin",
+   "aliases": [
+    "Sn"
+   ],
+   "extra": "Sn"
+  },
+  {
+   "rank": 51,
+   "name_ar": "أنتيمون",
+   "name_en": "Antimony",
+   "aliases": [
+    "انتيموان",
+    "إثمد",
+    "Sb"
+   ],
+   "extra": "Sb"
+  },
+  {
+   "rank": 52,
+   "name_ar": "تيلوريوم",
+   "name_en": "Tellurium",
+   "aliases": [
+    "تلوريوم",
+    "Te"
+   ],
+   "extra": "Te"
+  },
+  {
+   "rank": 53,
+   "name_ar": "يود",
+   "name_en": "Iodine",
+   "aliases": [
+    "يودين",
+    "I"
+   ],
+   "extra": "I"
+  },
+  {
+   "rank": 54,
+   "name_ar": "زينون",
+   "name_en": "Xenon",
+   "aliases": [
+    "Xe"
+   ],
+   "extra": "Xe"
+  },
+  {
+   "rank": 55,
+   "name_ar": "سيزيوم",
+   "name_en": "Caesium",
+   "aliases": [
+    "Cesium",
+    "Cs"
+   ],
+   "extra": "Cs"
+  },
+  {
+   "rank": 56,
+   "name_ar": "باريوم",
+   "name_en": "Barium",
+   "aliases": [
+    "Ba"
+   ],
+   "extra": "Ba"
+  },
+  {
+   "rank": 57,
+   "name_ar": "لانثانوم",
+   "name_en": "Lanthanum",
+   "aliases": [
+    "لانثانيوم",
+    "La"
+   ],
+   "extra": "La"
+  },
+  {
+   "rank": 58,
+   "name_ar": "سيريوم",
+   "name_en": "Cerium",
+   "aliases": [
+    "Ce"
+   ],
+   "extra": "Ce"
+  },
+  {
+   "rank": 59,
+   "name_ar": "براسيوديميوم",
+   "name_en": "Praseodymium",
+   "aliases": [
+    "Pr"
+   ],
+   "extra": "Pr"
+  },
+  {
+   "rank": 60,
+   "name_ar": "نيوديميوم",
+   "name_en": "Neodymium",
+   "aliases": [
+    "Nd"
+   ],
+   "extra": "Nd"
+  },
+  {
+   "rank": 61,
+   "name_ar": "بروميثيوم",
+   "name_en": "Promethium",
+   "aliases": [
+    "Pm"
+   ],
+   "extra": "Pm"
+  },
+  {
+   "rank": 62,
+   "name_ar": "ساماريوم",
+   "name_en": "Samarium",
+   "aliases": [
+    "Sm"
+   ],
+   "extra": "Sm"
+  },
+  {
+   "rank": 63,
+   "name_ar": "يوروبيوم",
+   "name_en": "Europium",
+   "aliases": [
+    "Eu"
+   ],
+   "extra": "Eu"
+  },
+  {
+   "rank": 64,
+   "name_ar": "غادولينيوم",
+   "name_en": "Gadolinium",
+   "aliases": [
+    "جادولينيوم",
+    "Gd"
+   ],
+   "extra": "Gd"
+  },
+  {
+   "rank": 65,
+   "name_ar": "تيربيوم",
+   "name_en": "Terbium",
+   "aliases": [
+    "Tb"
+   ],
+   "extra": "Tb"
+  },
+  {
+   "rank": 66,
+   "name_ar": "ديسبروسيوم",
+   "name_en": "Dysprosium",
+   "aliases": [
+    "Dy"
+   ],
+   "extra": "Dy"
+  },
+  {
+   "rank": 67,
+   "name_ar": "هولميوم",
+   "name_en": "Holmium",
+   "aliases": [
+    "Ho"
+   ],
+   "extra": "Ho"
+  },
+  {
+   "rank": 68,
+   "name_ar": "إربيوم",
+   "name_en": "Erbium",
+   "aliases": [
+    "اربيوم",
+    "Er"
+   ],
+   "extra": "Er"
+  },
+  {
+   "rank": 69,
+   "name_ar": "ثوليوم",
+   "name_en": "Thulium",
+   "aliases": [
+    "Tm"
+   ],
+   "extra": "Tm"
+  },
+  {
+   "rank": 70,
+   "name_ar": "إتيربيوم",
+   "name_en": "Ytterbium",
+   "aliases": [
+    "ايتربيوم",
+    "Yb"
+   ],
+   "extra": "Yb"
+  },
+  {
+   "rank": 71,
+   "name_ar": "لوتيشيوم",
+   "name_en": "Lutetium",
+   "aliases": [
+    "لوتيتيوم",
+    "Lu"
+   ],
+   "extra": "Lu"
+  },
+  {
+   "rank": 72,
+   "name_ar": "هافنيوم",
+   "name_en": "Hafnium",
+   "aliases": [
+    "Hf"
+   ],
+   "extra": "Hf"
+  },
+  {
+   "rank": 73,
+   "name_ar": "تانتالوم",
+   "name_en": "Tantalum",
+   "aliases": [
+    "تنتالوم",
+    "Ta"
+   ],
+   "extra": "Ta"
+  },
+  {
+   "rank": 74,
+   "name_ar": "تنغستن",
+   "name_en": "Tungsten",
+   "aliases": [
+    "تنجستن",
+    "ولفرام",
+    "W"
+   ],
+   "extra": "W"
+  },
+  {
+   "rank": 75,
+   "name_ar": "رينيوم",
+   "name_en": "Rhenium",
+   "aliases": [
+    "Re"
+   ],
+   "extra": "Re"
+  },
+  {
+   "rank": 76,
+   "name_ar": "أوزميوم",
+   "name_en": "Osmium",
+   "aliases": [
+    "اوسميوم",
+    "Os"
+   ],
+   "extra": "Os"
+  },
+  {
+   "rank": 77,
+   "name_ar": "إيريديوم",
+   "name_en": "Iridium",
+   "aliases": [
+    "Ir"
+   ],
+   "extra": "Ir"
+  },
+  {
+   "rank": 78,
+   "name_ar": "بلاتين",
+   "name_en": "Platinum",
+   "aliases": [
+    "بلاتينيوم",
+    "Pt"
+   ],
+   "extra": "Pt"
+  },
+  {
+   "rank": 79,
+   "name_ar": "ذهب",
+   "name_en": "Gold",
+   "aliases": [
+    "Au"
+   ],
+   "extra": "Au"
+  },
+  {
+   "rank": 80,
+   "name_ar": "زئبق",
+   "name_en": "Mercury",
+   "aliases": [
+    "Hg"
+   ],
+   "extra": "Hg"
+  },
+  {
+   "rank": 81,
+   "name_ar": "ثاليوم",
+   "name_en": "Thallium",
+   "aliases": [
+    "Tl"
+   ],
+   "extra": "Tl"
+  },
+  {
+   "rank": 82,
+   "name_ar": "رصاص",
+   "name_en": "Lead",
+   "aliases": [
+    "Pb"
+   ],
+   "extra": "Pb"
+  },
+  {
+   "rank": 83,
+   "name_ar": "بزموت",
+   "name_en": "Bismuth",
+   "aliases": [
+    "بيزموت",
+    "Bi"
+   ],
+   "extra": "Bi"
+  },
+  {
+   "rank": 84,
+   "name_ar": "بولونيوم",
+   "name_en": "Polonium",
+   "aliases": [
+    "Po"
+   ],
+   "extra": "Po"
+  },
+  {
+   "rank": 85,
+   "name_ar": "أستاتين",
+   "name_en": "Astatine",
+   "aliases": [
+    "At"
+   ],
+   "extra": "At"
+  },
+  {
+   "rank": 86,
+   "name_ar": "رادون",
+   "name_en": "Radon",
+   "aliases": [
+    "Rn"
+   ],
+   "extra": "Rn"
+  },
+  {
+   "rank": 87,
+   "name_ar": "فرانسيوم",
+   "name_en": "Francium",
+   "aliases": [
+    "Fr"
+   ],
+   "extra": "Fr"
+  },
+  {
+   "rank": 88,
+   "name_ar": "راديوم",
+   "name_en": "Radium",
+   "aliases": [
+    "Ra"
+   ],
+   "extra": "Ra"
+  },
+  {
+   "rank": 89,
+   "name_ar": "أكتينيوم",
+   "name_en": "Actinium",
+   "aliases": [
+    "Ac"
+   ],
+   "extra": "Ac"
+  },
+  {
+   "rank": 90,
+   "name_ar": "ثوريوم",
+   "name_en": "Thorium",
+   "aliases": [
+    "Th"
+   ],
+   "extra": "Th"
+  },
+  {
+   "rank": 91,
+   "name_ar": "بروتكتينيوم",
+   "name_en": "Protactinium",
+   "aliases": [
+    "بروتاكتينيوم",
+    "Pa"
+   ],
+   "extra": "Pa"
+  },
+  {
+   "rank": 92,
+   "name_ar": "يورانيوم",
+   "name_en": "Uranium",
+   "aliases": [
+    "U"
+   ],
+   "extra": "U"
+  },
+  {
+   "rank": 93,
+   "name_ar": "نبتونيوم",
+   "name_en": "Neptunium",
+   "aliases": [
+    "Np"
+   ],
+   "extra": "Np"
+  },
+  {
+   "rank": 94,
+   "name_ar": "بلوتونيوم",
+   "name_en": "Plutonium",
+   "aliases": [
+    "Pu"
+   ],
+   "extra": "Pu"
+  },
+  {
+   "rank": 95,
+   "name_ar": "أمريسيوم",
+   "name_en": "Americium",
+   "aliases": [
+    "أمريكيوم",
+    "Am"
+   ],
+   "extra": "Am"
+  },
+  {
+   "rank": 96,
+   "name_ar": "كوريوم",
+   "name_en": "Curium",
+   "aliases": [
+    "Cm"
+   ],
+   "extra": "Cm"
+  },
+  {
+   "rank": 97,
+   "name_ar": "بركليوم",
+   "name_en": "Berkelium",
+   "aliases": [
+    "بيركيليوم",
+    "Bk"
+   ],
+   "extra": "Bk"
+  },
+  {
+   "rank": 98,
+   "name_ar": "كاليفورنيوم",
+   "name_en": "Californium",
+   "aliases": [
+    "Cf"
+   ],
+   "extra": "Cf"
+  },
+  {
+   "rank": 99,
+   "name_ar": "أينشتاينيوم",
+   "name_en": "Einsteinium",
+   "aliases": [
+    "اينشتينيوم",
+    "Es"
+   ],
+   "extra": "Es"
+  },
+  {
+   "rank": 100,
+   "name_ar": "فيرميوم",
+   "name_en": "Fermium",
+   "aliases": [
+    "Fm"
+   ],
+   "extra": "Fm"
+  }
+ ]
+}

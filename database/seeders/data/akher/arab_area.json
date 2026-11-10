@@ -1,0 +1,180 @@
+{
+ "id": "arab_area",
+ "title_ar": "الدول العربية من الأكبر للأصغر",
+ "extra_label": "كم²",
+ "unit_hint": "اكتب اسم دولة عربية",
+ "source": "CIA World Factbook (المساحة الكلية). المغرب بدون الصحراء الغربية، وفلسطين = الضفة + غزة.",
+ "updated": "2026-11",
+ "items": [
+  {
+   "rank": 1,
+   "name_ar": "الجزائر",
+   "name_en": "Algeria",
+   "aliases": [],
+   "extra": "2,381,740"
+  },
+  {
+   "rank": 2,
+   "name_ar": "السعودية",
+   "name_en": "Saudi Arabia",
+   "aliases": [
+    "المملكة العربية السعودية",
+    "المملكة",
+    "KSA"
+   ],
+   "extra": "2,149,690"
+  },
+  {
+   "rank": 3,
+   "name_ar": "السودان",
+   "name_en": "Sudan",
+   "aliases": [],
+   "extra": "1,861,484"
+  },
+  {
+   "rank": 4,
+   "name_ar": "ليبيا",
+   "name_en": "Libya",
+   "aliases": [],
+   "extra": "1,759,540"
+  },
+  {
+   "rank": 5,
+   "name_ar": "موريتانيا",
+   "name_en": "Mauritania",
+   "aliases": [],
+   "extra": "1,030,700"
+  },
+  {
+   "rank": 6,
+   "name_ar": "مصر",
+   "name_en": "Egypt",
+   "aliases": [],
+   "extra": "1,001,450"
+  },
+  {
+   "rank": 7,
+   "name_ar": "الصومال",
+   "name_en": "Somalia",
+   "aliases": [],
+   "extra": "637,657"
+  },
+  {
+   "rank": 8,
+   "name_ar": "اليمن",
+   "name_en": "Yemen",
+   "aliases": [],
+   "extra": "527,968"
+  },
+  {
+   "rank": 9,
+   "name_ar": "المغرب",
+   "name_en": "Morocco",
+   "aliases": [],
+   "extra": "446,550"
+  },
+  {
+   "rank": 10,
+   "name_ar": "العراق",
+   "name_en": "Iraq",
+   "aliases": [],
+   "extra": "438,317"
+  },
+  {
+   "rank": 11,
+   "name_ar": "عُمان",
+   "name_en": "Oman",
+   "aliases": [
+    "سلطنة عمان"
+   ],
+   "extra": "309,500"
+  },
+  {
+   "rank": 12,
+   "name_ar": "سوريا",
+   "name_en": "Syria",
+   "aliases": [
+    "سورية"
+   ],
+   "extra": "185,180"
+  },
+  {
+   "rank": 13,
+   "name_ar": "تونس",
+   "name_en": "Tunisia",
+   "aliases": [],
+   "extra": "163,610"
+  },
+  {
+   "rank": 14,
+   "name_ar": "الأردن",
+   "name_en": "Jordan",
+   "aliases": [
+    "الاردن"
+   ],
+   "extra": "89,342"
+  },
+  {
+   "rank": 15,
+   "name_ar": "الإمارات",
+   "name_en": "United Arab Emirates",
+   "aliases": [
+    "الامارات",
+    "الإمارات العربية المتحدة",
+    "UAE"
+   ],
+   "extra": "83,600"
+  },
+  {
+   "rank": 16,
+   "name_ar": "جيبوتي",
+   "name_en": "Djibouti",
+   "aliases": [],
+   "extra": "23,200"
+  },
+  {
+   "rank": 17,
+   "name_ar": "الكويت",
+   "name_en": "Kuwait",
+   "aliases": [],
+   "extra": "17,818"
+  },
+  {
+   "rank": 18,
+   "name_ar": "قطر",
+   "name_en": "Qatar",
+   "aliases": [],
+   "extra": "11,586"
+  },
+  {
+   "rank": 19,
+   "name_ar": "لبنان",
+   "name_en": "Lebanon",
+   "aliases": [],
+   "extra": "10,400"
+  },
+  {
+   "rank": 20,
+   "name_ar": "فلسطين",
+   "name_en": "Palestine",
+   "aliases": [],
+   "extra": "6,020"
+  },
+  {
+   "rank": 21,
+   "name_ar": "جزر القمر",
+   "name_en": "Comoros",
+   "aliases": [
+    "القمر"
+   ],
+   "extra": "2,235"
+  },
+  {
+   "rank": 22,
+   "name_ar": "البحرين",
+   "name_en": "Bahrain",
+   "aliases": [],
+   "extra": "760"
+  }
+ ]
+}

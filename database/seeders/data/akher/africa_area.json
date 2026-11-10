@@ -1,0 +1,450 @@
+{
+ "id": "africa_area",
+ "title_ar": "دول أفريقيا من الأكبر للأصغر",
+ "extra_label": "كم²",
+ "unit_hint": "اكتب اسم دولة أفريقية",
+ "source": "CIA World Factbook (المساحة الكلية). المغرب بدون الصحراء الغربية.",
+ "updated": "2026-11",
+ "items": [
+  {
+   "rank": 1,
+   "name_ar": "الجزائر",
+   "name_en": "Algeria",
+   "aliases": [],
+   "extra": "2,381,740"
+  },
+  {
+   "rank": 2,
+   "name_ar": "جمهورية الكونغو الديمقراطية",
+   "name_en": "DR Congo",
+   "aliases": [
+    "الكونغو الديمقراطية",
+    "كونغو الديمقراطية",
+    "DRC",
+    "Democratic Republic of the Congo",
+    "كونغو كينشاسا",
+    "زائير"
+   ],
+   "extra": "2,344,858"
+  },
+  {
+   "rank": 3,
+   "name_ar": "السودان",
+   "name_en": "Sudan",
+   "aliases": [],
+   "extra": "1,861,484"
+  },
+  {
+   "rank": 4,
+   "name_ar": "ليبيا",
+   "name_en": "Libya",
+   "aliases": [],
+   "extra": "1,759,540"
+  },
+  {
+   "rank": 5,
+   "name_ar": "تشاد",
+   "name_en": "Chad",
+   "aliases": [],
+   "extra": "1,284,000"
+  },
+  {
+   "rank": 6,
+   "name_ar": "النيجر",
+   "name_en": "Niger",
+   "aliases": [],
+   "extra": "1,267,000"
+  },
+  {
+   "rank": 7,
+   "name_ar": "أنغولا",
+   "name_en": "Angola",
+   "aliases": [
+    "انغولا",
+    "انجولا"
+   ],
+   "extra": "1,246,700"
+  },
+  {
+   "rank": 8,
+   "name_ar": "مالي",
+   "name_en": "Mali",
+   "aliases": [],
+   "extra": "1,240,192"
+  },
+  {
+   "rank": 9,
+   "name_ar": "جنوب أفريقيا",
+   "name_en": "South Africa",
+   "aliases": [
+    "جنوب افريقيا",
+    "جنوب إفريقيا"
+   ],
+   "extra": "1,219,090"
+  },
+  {
+   "rank": 10,
+   "name_ar": "إثيوبيا",
+   "name_en": "Ethiopia",
+   "aliases": [
+    "اثيوبيا",
+    "الحبشة"
+   ],
+   "extra": "1,104,300"
+  },
+  {
+   "rank": 11,
+   "name_ar": "موريتانيا",
+   "name_en": "Mauritania",
+   "aliases": [],
+   "extra": "1,030,700"
+  },
+  {
+   "rank": 12,
+   "name_ar": "مصر",
+   "name_en": "Egypt",
+   "aliases": [],
+   "extra": "1,001,450"
+  },
+  {
+   "rank": 13,
+   "name_ar": "تنزانيا",
+   "name_en": "Tanzania",
+   "aliases": [],
+   "extra": "947,300"
+  },
+  {
+   "rank": 14,
+   "name_ar": "نيجيريا",
+   "name_en": "Nigeria",
+   "aliases": [],
+   "extra": "923,768"
+  },
+  {
+   "rank": 15,
+   "name_ar": "ناميبيا",
+   "name_en": "Namibia",
+   "aliases": [],
+   "extra": "824,292"
+  },
+  {
+   "rank": 16,
+   "name_ar": "موزمبيق",
+   "name_en": "Mozambique",
+   "aliases": [
+    "موزنبيق"
+   ],
+   "extra": "799,380"
+  },
+  {
+   "rank": 17,
+   "name_ar": "زامبيا",
+   "name_en": "Zambia",
+   "aliases": [],
+   "extra": "752,618"
+  },
+  {
+   "rank": 18,
+   "name_ar": "جنوب السودان",
+   "name_en": "South Sudan",
+   "aliases": [],
+   "extra": "644,329"
+  },
+  {
+   "rank": 19,
+   "name_ar": "الصومال",
+   "name_en": "Somalia",
+   "aliases": [],
+   "extra": "637,657"
+  },
+  {
+   "rank": 20,
+   "name_ar": "جمهورية أفريقيا الوسطى",
+   "name_en": "Central African Republic",
+   "aliases": [
+    "أفريقيا الوسطى",
+    "افريقيا الوسطى",
+    "CAR"
+   ],
+   "extra": "622,984"
+  },
+  {
+   "rank": 21,
+   "name_ar": "مدغشقر",
+   "name_en": "Madagascar",
+   "aliases": [],
+   "extra": "587,041"
+  },
+  {
+   "rank": 22,
+   "name_ar": "بوتسوانا",
+   "name_en": "Botswana",
+   "aliases": [],
+   "extra": "581,730"
+  },
+  {
+   "rank": 23,
+   "name_ar": "كينيا",
+   "name_en": "Kenya",
+   "aliases": [],
+   "extra": "580,367"
+  },
+  {
+   "rank": 24,
+   "name_ar": "الكاميرون",
+   "name_en": "Cameroon",
+   "aliases": [],
+   "extra": "475,440"
+  },
+  {
+   "rank": 25,
+   "name_ar": "المغرب",
+   "name_en": "Morocco",
+   "aliases": [],
+   "extra": "446,550"
+  },
+  {
+   "rank": 26,
+   "name_ar": "زيمبابوي",
+   "name_en": "Zimbabwe",
+   "aliases": [],
+   "extra": "390,757"
+  },
+  {
+   "rank": 27,
+   "name_ar": "جمهورية الكونغو",
+   "name_en": "Republic of the Congo",
+   "aliases": [
+    "كونغو برازافيل",
+    "Congo-Brazzaville"
+   ],
+   "extra": "342,000"
+  },
+  {
+   "rank": 28,
+   "name_ar": "ساحل العاج",
+   "name_en": "Ivory Coast",
+   "aliases": [
+    "كوت ديفوار",
+    "Côte d'Ivoire"
+   ],
+   "extra": "322,463"
+  },
+  {
+   "rank": 29,
+   "name_ar": "بوركينا فاسو",
+   "name_en": "Burkina Faso",
+   "aliases": [
+    "بوركينافاسو"
+   ],
+   "extra": "274,200"
+  },
+  {
+   "rank": 30,
+   "name_ar": "الغابون",
+   "name_en": "Gabon",
+   "aliases": [
+    "غابون"
+   ],
+   "extra": "267,667"
+  },
+  {
+   "rank": 31,
+   "name_ar": "غينيا",
+   "name_en": "Guinea",
+   "aliases": [
+    "غينيا كوناكري"
+   ],
+   "extra": "245,857"
+  },
+  {
+   "rank": 32,
+   "name_ar": "أوغندا",
+   "name_en": "Uganda",
+   "aliases": [
+    "اوغندا"
+   ],
+   "extra": "241,038"
+  },
+  {
+   "rank": 33,
+   "name_ar": "غانا",
+   "name_en": "Ghana",
+   "aliases": [],
+   "extra": "238,533"
+  },
+  {
+   "rank": 34,
+   "name_ar": "السنغال",
+   "name_en": "Senegal",
+   "aliases": [],
+   "extra": "196,722"
+  },
+  {
+   "rank": 35,
+   "name_ar": "تونس",
+   "name_en": "Tunisia",
+   "aliases": [],
+   "extra": "163,610"
+  },
+  {
+   "rank": 36,
+   "name_ar": "مالاوي",
+   "name_en": "Malawi",
+   "aliases": [
+    "ملاوي"
+   ],
+   "extra": "118,484"
+  },
+  {
+   "rank": 37,
+   "name_ar": "إريتريا",
+   "name_en": "Eritrea",
+   "aliases": [
+    "اريتريا",
+    "ارتيريا"
+   ],
+   "extra": "117,600"
+  },
+  {
+   "rank": 38,
+   "name_ar": "بنين",
+   "name_en": "Benin",
+   "aliases": [],
+   "extra": "112,622"
+  },
+  {
+   "rank": 39,
+   "name_ar": "ليبيريا",
+   "name_en": "Liberia",
+   "aliases": [],
+   "extra": "111,369"
+  },
+  {
+   "rank": 40,
+   "name_ar": "سيراليون",
+   "name_en": "Sierra Leone",
+   "aliases": [],
+   "extra": "71,740"
+  },
+  {
+   "rank": 41,
+   "name_ar": "توغو",
+   "name_en": "Togo",
+   "aliases": [
+    "توجو"
+   ],
+   "extra": "56,785"
+  },
+  {
+   "rank": 42,
+   "name_ar": "غينيا بيساو",
+   "name_en": "Guinea-Bissau",
+   "aliases": [
+    "غينيا-بيساو"
+   ],
+   "extra": "36,125"
+  },
+  {
+   "rank": 43,
+   "name_ar": "ليسوتو",
+   "name_en": "Lesotho",
+   "aliases": [],
+   "extra": "30,355"
+  },
+  {
+   "rank": 44,
+   "name_ar": "غينيا الاستوائية",
+   "name_en": "Equatorial Guinea",
+   "aliases": [
+    "غينيا الإستوائية"
+   ],
+   "extra": "28,051"
+  },
+  {
+   "rank": 45,
+   "name_ar": "بوروندي",
+   "name_en": "Burundi",
+   "aliases": [],
+   "extra": "27,830"
+  },
+  {
+   "rank": 46,
+   "name_ar": "رواندا",
+   "name_en": "Rwanda",
+   "aliases": [],
+   "extra": "26,338"
+  },
+  {
+   "rank": 47,
+   "name_ar": "جيبوتي",
+   "name_en": "Djibouti",
+   "aliases": [],
+   "extra": "23,200"
+  },
+  {
+   "rank": 48,
+   "name_ar": "إسواتيني",
+   "name_en": "Eswatini",
+   "aliases": [
+    "سوازيلاند",
+    "Swaziland",
+    "اسواتيني"
+   ],
+   "extra": "17,364"
+  },
+  {
+   "rank": 49,
+   "name_ar": "غامبيا",
+   "name_en": "Gambia",
+   "aliases": [
+    "جامبيا"
+   ],
+   "extra": "11,300"
+  },
+  {
+   "rank": 50,
+   "name_ar": "الرأس الأخضر",
+   "name_en": "Cape Verde",
+   "aliases": [
+    "كاب فيردي",
+    "Cabo Verde"
+   ],
+   "extra": "4,033"
+  },
+  {
+   "rank": 51,
+   "name_ar": "جزر القمر",
+   "name_en": "Comoros",
+   "aliases": [
+    "القمر"
+   ],
+   "extra": "2,235"
+  },
+  {
+   "rank": 52,
+   "name_ar": "موريشيوس",
+   "name_en": "Mauritius",
+   "aliases": [],
+   "extra": "2,040"
+  },
+  {
+   "rank": 53,
+   "name_ar": "ساو تومي وبرينسيب",
+   "name_en": "Sao Tome and Principe",
+   "aliases": [
+    "ساو تومي"
+   ],
+   "extra": "964"
+  },
+  {
+   "rank": 54,
+   "name_ar": "سيشل",
+   "name_en": "Seychelles",
+   "aliases": [
+    "سيشيل"
+   ],
+   "extra": "455"
+  }
+ ]
+}

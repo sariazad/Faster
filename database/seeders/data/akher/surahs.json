@@ -1,0 +1,755 @@
+{
+ "id": "surahs",
+ "title_ar": "أول 100 سورة بالمصحف",
+ "extra_label": "آية",
+ "unit_hint": "اكتب اسم السورة بس (بدون كلمة «سورة»)",
+ "source": "الترتيب = ترتيب المصحف، والرقم = عدد الآيات (رواية حفص). السور من 101 (القارعة) لـ114 (الناس) برّا القائمة.",
+ "updated": "2026-11",
+ "items": [
+  {
+   "rank": 1,
+   "name_ar": "الفاتحة",
+   "name_en": "",
+   "aliases": [
+    "أم الكتاب",
+    "السبع المثاني"
+   ],
+   "extra": "7"
+  },
+  {
+   "rank": 2,
+   "name_ar": "البقرة",
+   "name_en": "",
+   "aliases": [],
+   "extra": "286"
+  },
+  {
+   "rank": 3,
+   "name_ar": "آل عمران",
+   "name_en": "",
+   "aliases": [
+    "ال عمران"
+   ],
+   "extra": "200"
+  },
+  {
+   "rank": 4,
+   "name_ar": "النساء",
+   "name_en": "",
+   "aliases": [],
+   "extra": "176"
+  },
+  {
+   "rank": 5,
+   "name_ar": "المائدة",
+   "name_en": "",
+   "aliases": [],
+   "extra": "120"
+  },
+  {
+   "rank": 6,
+   "name_ar": "الأنعام",
+   "name_en": "",
+   "aliases": [],
+   "extra": "165"
+  },
+  {
+   "rank": 7,
+   "name_ar": "الأعراف",
+   "name_en": "",
+   "aliases": [],
+   "extra": "206"
+  },
+  {
+   "rank": 8,
+   "name_ar": "الأنفال",
+   "name_en": "",
+   "aliases": [],
+   "extra": "75"
+  },
+  {
+   "rank": 9,
+   "name_ar": "التوبة",
+   "name_en": "",
+   "aliases": [
+    "براءة"
+   ],
+   "extra": "129"
+  },
+  {
+   "rank": 10,
+   "name_ar": "يونس",
+   "name_en": "",
+   "aliases": [],
+   "extra": "109"
+  },
+  {
+   "rank": 11,
+   "name_ar": "هود",
+   "name_en": "",
+   "aliases": [],
+   "extra": "123"
+  },
+  {
+   "rank": 12,
+   "name_ar": "يوسف",
+   "name_en": "",
+   "aliases": [],
+   "extra": "111"
+  },
+  {
+   "rank": 13,
+   "name_ar": "الرعد",
+   "name_en": "",
+   "aliases": [],
+   "extra": "43"
+  },
+  {
+   "rank": 14,
+   "name_ar": "إبراهيم",
+   "name_en": "",
+   "aliases": [],
+   "extra": "52"
+  },
+  {
+   "rank": 15,
+   "name_ar": "الحجر",
+   "name_en": "",
+   "aliases": [],
+   "extra": "99"
+  },
+  {
+   "rank": 16,
+   "name_ar": "النحل",
+   "name_en": "",
+   "aliases": [],
+   "extra": "128"
+  },
+  {
+   "rank": 17,
+   "name_ar": "الإسراء",
+   "name_en": "",
+   "aliases": [
+    "بني إسرائيل"
+   ],
+   "extra": "111"
+  },
+  {
+   "rank": 18,
+   "name_ar": "الكهف",
+   "name_en": "",
+   "aliases": [],
+   "extra": "110"
+  },
+  {
+   "rank": 19,
+   "name_ar": "مريم",
+   "name_en": "",
+   "aliases": [],
+   "extra": "98"
+  },
+  {
+   "rank": 20,
+   "name_ar": "طه",
+   "name_en": "",
+   "aliases": [
+    "طاها"
+   ],
+   "extra": "135"
+  },
+  {
+   "rank": 21,
+   "name_ar": "الأنبياء",
+   "name_en": "",
+   "aliases": [],
+   "extra": "112"
+  },
+  {
+   "rank": 22,
+   "name_ar": "الحج",
+   "name_en": "",
+   "aliases": [],
+   "extra": "78"
+  },
+  {
+   "rank": 23,
+   "name_ar": "المؤمنون",
+   "name_en": "",
+   "aliases": [],
+   "extra": "118"
+  },
+  {
+   "rank": 24,
+   "name_ar": "النور",
+   "name_en": "",
+   "aliases": [],
+   "extra": "64"
+  },
+  {
+   "rank": 25,
+   "name_ar": "الفرقان",
+   "name_en": "",
+   "aliases": [],
+   "extra": "77"
+  },
+  {
+   "rank": 26,
+   "name_ar": "الشعراء",
+   "name_en": "",
+   "aliases": [],
+   "extra": "227"
+  },
+  {
+   "rank": 27,
+   "name_ar": "النمل",
+   "name_en": "",
+   "aliases": [],
+   "extra": "93"
+  },
+  {
+   "rank": 28,
+   "name_ar": "القصص",
+   "name_en": "",
+   "aliases": [],
+   "extra": "88"
+  },
+  {
+   "rank": 29,
+   "name_ar": "العنكبوت",
+   "name_en": "",
+   "aliases": [],
+   "extra": "69"
+  },
+  {
+   "rank": 30,
+   "name_ar": "الروم",
+   "name_en": "",
+   "aliases": [],
+   "extra": "60"
+  },
+  {
+   "rank": 31,
+   "name_ar": "لقمان",
+   "name_en": "",
+   "aliases": [],
+   "extra": "34"
+  },
+  {
+   "rank": 32,
+   "name_ar": "السجدة",
+   "name_en": "",
+   "aliases": [
+    "الم السجدة"
+   ],
+   "extra": "30"
+  },
+  {
+   "rank": 33,
+   "name_ar": "الأحزاب",
+   "name_en": "",
+   "aliases": [],
+   "extra": "73"
+  },
+  {
+   "rank": 34,
+   "name_ar": "سبأ",
+   "name_en": "",
+   "aliases": [],
+   "extra": "54"
+  },
+  {
+   "rank": 35,
+   "name_ar": "فاطر",
+   "name_en": "",
+   "aliases": [
+    "الملائكة"
+   ],
+   "extra": "45"
+  },
+  {
+   "rank": 36,
+   "name_ar": "يس",
+   "name_en": "",
+   "aliases": [
+    "ياسين"
+   ],
+   "extra": "83"
+  },
+  {
+   "rank": 37,
+   "name_ar": "الصافات",
+   "name_en": "",
+   "aliases": [],
+   "extra": "182"
+  },
+  {
+   "rank": 38,
+   "name_ar": "ص",
+   "name_en": "",
+   "aliases": [
+    "صاد"
+   ],
+   "extra": "88"
+  },
+  {
+   "rank": 39,
+   "name_ar": "الزمر",
+   "name_en": "",
+   "aliases": [],
+   "extra": "75"
+  },
+  {
+   "rank": 40,
+   "name_ar": "غافر",
+   "name_en": "",
+   "aliases": [],
+   "extra": "85"
+  },
+  {
+   "rank": 41,
+   "name_ar": "فصلت",
+   "name_en": "",
+   "aliases": [
+    "حم السجدة"
+   ],
+   "extra": "54"
+  },
+  {
+   "rank": 42,
+   "name_ar": "الشورى",
+   "name_en": "",
+   "aliases": [
+    "الشورا"
+   ],
+   "extra": "53"
+  },
+  {
+   "rank": 43,
+   "name_ar": "الزخرف",
+   "name_en": "",
+   "aliases": [],
+   "extra": "89"
+  },
+  {
+   "rank": 44,
+   "name_ar": "الدخان",
+   "name_en": "",
+   "aliases": [],
+   "extra": "59"
+  },
+  {
+   "rank": 45,
+   "name_ar": "الجاثية",
+   "name_en": "",
+   "aliases": [],
+   "extra": "37"
+  },
+  {
+   "rank": 46,
+   "name_ar": "الأحقاف",
+   "name_en": "",
+   "aliases": [],
+   "extra": "35"
+  },
+  {
+   "rank": 47,
+   "name_ar": "محمد",
+   "name_en": "",
+   "aliases": [
+    "القتال"
+   ],
+   "extra": "38"
+  },
+  {
+   "rank": 48,
+   "name_ar": "الفتح",
+   "name_en": "",
+   "aliases": [],
+   "extra": "29"
+  },
+  {
+   "rank": 49,
+   "name_ar": "الحجرات",
+   "name_en": "",
+   "aliases": [],
+   "extra": "18"
+  },
+  {
+   "rank": 50,
+   "name_ar": "ق",
+   "name_en": "",
+   "aliases": [
+    "قاف"
+   ],
+   "extra": "45"
+  },
+  {
+   "rank": 51,
+   "name_ar": "الذاريات",
+   "name_en": "",
+   "aliases": [],
+   "extra": "60"
+  },
+  {
+   "rank": 52,
+   "name_ar": "الطور",
+   "name_en": "",
+   "aliases": [],
+   "extra": "49"
+  },
+  {
+   "rank": 53,
+   "name_ar": "النجم",
+   "name_en": "",
+   "aliases": [],
+   "extra": "62"
+  },
+  {
+   "rank": 54,
+   "name_ar": "القمر",
+   "name_en": "",
+   "aliases": [],
+   "extra": "55"
+  },
+  {
+   "rank": 55,
+   "name_ar": "الرحمن",
+   "name_en": "",
+   "aliases": [],
+   "extra": "78"
+  },
+  {
+   "rank": 56,
+   "name_ar": "الواقعة",
+   "name_en": "",
+   "aliases": [],
+   "extra": "96"
+  },
+  {
+   "rank": 57,
+   "name_ar": "الحديد",
+   "name_en": "",
+   "aliases": [],
+   "extra": "29"
+  },
+  {
+   "rank": 58,
+   "name_ar": "المجادلة",
+   "name_en": "",
+   "aliases": [],
+   "extra": "22"
+  },
+  {
+   "rank": 59,
+   "name_ar": "الحشر",
+   "name_en": "",
+   "aliases": [],
+   "extra": "24"
+  },
+  {
+   "rank": 60,
+   "name_ar": "الممتحنة",
+   "name_en": "",
+   "aliases": [],
+   "extra": "13"
+  },
+  {
+   "rank": 61,
+   "name_ar": "الصف",
+   "name_en": "",
+   "aliases": [],
+   "extra": "14"
+  },
+  {
+   "rank": 62,
+   "name_ar": "الجمعة",
+   "name_en": "",
+   "aliases": [],
+   "extra": "11"
+  },
+  {
+   "rank": 63,
+   "name_ar": "المنافقون",
+   "name_en": "",
+   "aliases": [],
+   "extra": "11"
+  },
+  {
+   "rank": 64,
+   "name_ar": "التغابن",
+   "name_en": "",
+   "aliases": [],
+   "extra": "18"
+  },
+  {
+   "rank": 65,
+   "name_ar": "الطلاق",
+   "name_en": "",
+   "aliases": [],
+   "extra": "12"
+  },
+  {
+   "rank": 66,
+   "name_ar": "التحريم",
+   "name_en": "",
+   "aliases": [],
+   "extra": "12"
+  },
+  {
+   "rank": 67,
+   "name_ar": "الملك",
+   "name_en": "",
+   "aliases": [
+    "تبارك"
+   ],
+   "extra": "30"
+  },
+  {
+   "rank": 68,
+   "name_ar": "القلم",
+   "name_en": "",
+   "aliases": [
+    "ن"
+   ],
+   "extra": "52"
+  },
+  {
+   "rank": 69,
+   "name_ar": "الحاقة",
+   "name_en": "",
+   "aliases": [],
+   "extra": "52"
+  },
+  {
+   "rank": 70,
+   "name_ar": "المعارج",
+   "name_en": "",
+   "aliases": [],
+   "extra": "44"
+  },
+  {
+   "rank": 71,
+   "name_ar": "نوح",
+   "name_en": "",
+   "aliases": [],
+   "extra": "28"
+  },
+  {
+   "rank": 72,
+   "name_ar": "الجن",
+   "name_en": "",
+   "aliases": [],
+   "extra": "28"
+  },
+  {
+   "rank": 73,
+   "name_ar": "المزمل",
+   "name_en": "",
+   "aliases": [],
+   "extra": "20"
+  },
+  {
+   "rank": 74,
+   "name_ar": "المدثر",
+   "name_en": "",
+   "aliases": [],
+   "extra": "56"
+  },
+  {
+   "rank": 75,
+   "name_ar": "القيامة",
+   "name_en": "",
+   "aliases": [],
+   "extra": "40"
+  },
+  {
+   "rank": 76,
+   "name_ar": "الإنسان",
+   "name_en": "",
+   "aliases": [
+    "الدهر"
+   ],
+   "extra": "31"
+  },
+  {
+   "rank": 77,
+   "name_ar": "المرسلات",
+   "name_en": "",
+   "aliases": [],
+   "extra": "50"
+  },
+  {
+   "rank": 78,
+   "name_ar": "النبأ",
+   "name_en": "",
+   "aliases": [
+    "عم"
+   ],
+   "extra": "40"
+  },
+  {
+   "rank": 79,
+   "name_ar": "النازعات",
+   "name_en": "",
+   "aliases": [],
+   "extra": "46"
+  },
+  {
+   "rank": 80,
+   "name_ar": "عبس",
+   "name_en": "",
+   "aliases": [],
+   "extra": "42"
+  },
+  {
+   "rank": 81,
+   "name_ar": "التكوير",
+   "name_en": "",
+   "aliases": [],
+   "extra": "29"
+  },
+  {
+   "rank": 82,
+   "name_ar": "الانفطار",
+   "name_en": "",
+   "aliases": [],
+   "extra": "19"
+  },
+  {
+   "rank": 83,
+   "name_ar": "المطففين",
+   "name_en": "",
+   "aliases": [
+    "التطفيف"
+   ],
+   "extra": "36"
+  },
+  {
+   "rank": 84,
+   "name_ar": "الانشقاق",
+   "name_en": "",
+   "aliases": [],
+   "extra": "25"
+  },
+  {
+   "rank": 85,
+   "name_ar": "البروج",
+   "name_en": "",
+   "aliases": [],
+   "extra": "22"
+  },
+  {
+   "rank": 86,
+   "name_ar": "الطارق",
+   "name_en": "",
+   "aliases": [],
+   "extra": "17"
+  },
+  {
+   "rank": 87,
+   "name_ar": "الأعلى",
+   "name_en": "",
+   "aliases": [
+    "سبح"
+   ],
+   "extra": "19"
+  },
+  {
+   "rank": 88,
+   "name_ar": "الغاشية",
+   "name_en": "",
+   "aliases": [],
+   "extra": "26"
+  },
+  {
+   "rank": 89,
+   "name_ar": "الفجر",
+   "name_en": "",
+   "aliases": [],
+   "extra": "30"
+  },
+  {
+   "rank": 90,
+   "name_ar": "البلد",
+   "name_en": "",
+   "aliases": [],
+   "extra": "20"
+  },
+  {
+   "rank": 91,
+   "name_ar": "الشمس",
+   "name_en": "",
+   "aliases": [],
+   "extra": "15"
+  },
+  {
+   "rank": 92,
+   "name_ar": "الليل",
+   "name_en": "",
+   "aliases": [],
+   "extra": "21"
+  },
+  {
+   "rank": 93,
+   "name_ar": "الضحى",
+   "name_en": "",
+   "aliases": [],
+   "extra": "11"
+  },
+  {
+   "rank": 94,
+   "name_ar": "الشرح",
+   "name_en": "",
+   "aliases": [
+    "الانشراح"
+   ],
+   "extra": "8"
+  },
+  {
+   "rank": 95,
+   "name_ar": "التين",
+   "name_en": "",
+   "aliases": [],
+   "extra": "8"
+  },
+  {
+   "rank": 96,
+   "name_ar": "العلق",
+   "name_en": "",
+   "aliases": [
+    "اقرأ"
+   ],
+   "extra": "19"
+  },
+  {
+   "rank": 97,
+   "name_ar": "القدر",
+   "name_en": "",
+   "aliases": [],
+   "extra": "5"
+  },
+  {
+   "rank": 98,
+   "name_ar": "البينة",
+   "name_en": "",
+   "aliases": [],
+   "extra": "8"
+  },
+  {
+   "rank": 99,
+   "name_ar": "الزلزلة",
+   "name_en": "",
+   "aliases": [
+    "الزلزال"
+   ],
+   "extra": "8"
+  },
+  {
+   "rank": 100,
+   "name_ar": "العاديات",
+   "name_en": "",
+   "aliases": [],
+   "extra": "11"
+  }
+ ]
+}
