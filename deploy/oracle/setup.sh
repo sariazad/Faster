@@ -4,6 +4,7 @@
 #
 #   curl -fsSL https://raw.githubusercontent.com/sariazad/Faster/main/deploy/oracle/setup.sh -o setup.sh
 #   sudo bash setup.sh your-name.duckdns.org you@example.com
+#   sudo bash setup.sh 84.8.118.201          (no domain yet: plain HTTP on the IP)
 #
 # Installs PHP 8.3 + Composer + Node 22 + Caddy (automatic HTTPS), opens ports 80/443,
 # clones the game, builds it, creates both SQLite databases, loads the question banks,
@@ -24,7 +25,13 @@ die()  { printf '\033[1;31m✘ %s\033[0m\n' "$*" >&2; exit 1; }
 
 [[ $EUID -eq 0 ]] || die "شغّله بـ sudo:  sudo bash setup.sh your-name.duckdns.org you@example.com"
 [[ -n "$DOMAIN" ]] || die "اكتب الدومين:  sudo bash setup.sh your-name.duckdns.org you@example.com"
-[[ -n "$EMAIL" ]] || die "اكتب إيميلك (لشهادة HTTPS):  sudo bash setup.sh $DOMAIN you@example.com"
+# A bare IPv4 address works too (plain HTTP, no certificate): handy when Dynamic-DNS domains are blocked.
+if [[ "$DOMAIN" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ ]]; then
+    SCHEME="http"; SITE="http://${DOMAIN}"
+else
+    SCHEME="https"; SITE="${DOMAIN}"
+    [[ -n "$EMAIL" ]] || die "اكتب إيميلك (لشهادة HTTPS):  sudo bash setup.sh $DOMAIN you@example.com"
+fi
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -111,12 +118,12 @@ if [[ ! -f "$APP_DIR/.env" ]]; then
     sed -i \
         -e "s|^APP_ENV=.*|APP_ENV=production|" \
         -e "s|^APP_DEBUG=.*|APP_DEBUG=false|" \
-        -e "s|^APP_URL=.*|APP_URL=https://${DOMAIN}|" \
+        -e "s|^APP_URL=.*|APP_URL=${SCHEME}://${DOMAIN}|" \
         -e "s|^LOG_LEVEL=.*|LOG_LEVEL=warning|" \
         "$APP_DIR/.env"
     NEW_ENV=1
 else
-    sed -i -e "s|^APP_URL=.*|APP_URL=https://${DOMAIN}|" "$APP_DIR/.env"
+    sed -i -e "s|^APP_URL=.*|APP_URL=${SCHEME}://${DOMAIN}|" "$APP_DIR/.env"
     NEW_ENV=0
 fi
 
@@ -158,13 +165,15 @@ chmod -R ug+rwX "$APP_DIR/storage" "$APP_DIR/bootstrap/cache" "$APP_DIR/database
 find "$APP_DIR/storage" "$APP_DIR/bootstrap/cache" "$APP_DIR/database" -type d -exec chmod g+s {} +
 
 # ── 8. Caddy site ────────────────────────────────────────────────────────────
-say "إعداد Caddy و HTTPS لـ ${DOMAIN}"
-cat > /etc/caddy/Caddyfile <<CADDY
-{
+say "إعداد Caddy لـ ${SITE}"
+GLOBAL=""
+[[ -n "$EMAIL" ]] && GLOBAL="{
     email ${EMAIL}
 }
-
-${DOMAIN} {
+"
+cat > /etc/caddy/Caddyfile <<CADDY
+${GLOBAL}
+${SITE} {
     root * ${APP_DIR}/public
     encode zstd gzip
     request_body {
@@ -198,10 +207,10 @@ chmod 644 /etc/cron.d/faster
 
 echo
 ok "خلصنا! 🎉"
-echo "   اللعبة:        https://${DOMAIN}"
-echo "   آخر القائمة:   https://${DOMAIN}/akher"
-echo "   ألف ياء:       https://${DOMAIN}/alefya"
-echo "   لوحة التحكم:   https://${DOMAIN}/admin"
+echo "   اللعبة:        ${SCHEME}://${DOMAIN}"
+echo "   آخر القائمة:   ${SCHEME}://${DOMAIN}/akher"
+echo "   ألف ياء:       ${SCHEME}://${DOMAIN}/alefya"
+echo "   لوحة التحكم:   ${SCHEME}://${DOMAIN}/admin"
 echo "   للتحديث لاحقاً: sudo bash ${APP_DIR}/deploy/oracle/deploy.sh"
 echo
 echo "   إذا ما فتح الموقع: تأكد إن الدومين بيأشر على IP السيرفر، وإن المنفذين 80 و443 مفتوحين بـ Security List."
