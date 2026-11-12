@@ -147,7 +147,9 @@ as_app "touch database/database.sqlite database/alefya.sqlite database/akher.sql
 as_app "php artisan migrate --force"
 
 # ── 7. Admin + question banks ────────────────────────────────────────────────
-if [[ $NEW_ENV -eq 1 ]]; then
+# Ask for the admin whenever there is no user yet (not only on a fresh .env: a run that stopped halfway must still create one).
+USERS="$(as_app "php artisan tinker --execute='echo \\App\\Models\\User::count();'" 2>/dev/null | tail -n1 | tr -dc '0-9')"
+if [[ $NEW_ENV -eq 1 || "${USERS:-0}" == "0" ]]; then
     echo
     read -rp "إيميل المشرف (لدخول لوحة التحكم): " ADMIN_EMAIL </dev/tty
     while true; do
