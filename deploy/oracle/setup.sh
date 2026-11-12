@@ -34,6 +34,7 @@ else
 fi
 
 export DEBIAN_FRONTEND=noninteractive
+export COMPOSER_ALLOW_SUPERUSER=1   # otherwise "composer --version" as root waits for a hidden yes/no prompt
 
 # ── 1. Packages ──────────────────────────────────────────────────────────────
 say "تثبيت PHP ${PHP_V} والأدوات (أول مرة بتاخد كم دقيقة)"
@@ -59,7 +60,7 @@ if ! command -v composer >/dev/null; then
     php /tmp/composer-setup.php --quiet --install-dir=/usr/local/bin --filename=composer
     rm -f /tmp/composer-setup.php
 fi
-ok "Composer $(composer --version 2>/dev/null | awk '{print $3}')"
+ok "Composer $(composer --version --no-interaction 2>/dev/null | awk '{print $3}')"
 
 if ! command -v node >/dev/null || [[ "$(node -v | cut -d. -f1 | tr -d v)" -lt 20 ]]; then
     say "تثبيت Node.js 22"
