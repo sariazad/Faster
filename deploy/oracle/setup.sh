@@ -92,9 +92,15 @@ cp "/etc/php/${PHP_V}/fpm/conf.d/99-faster.ini" "/etc/php/${PHP_V}/cli/conf.d/99
 
 # ── 3. Firewall: Oracle's Ubuntu image blocks everything except SSH ──────────
 say "فتح المنفذين 80 و443"
+# Oracle's Ubuntu image ends INPUT with a catch-all REJECT, so our rules must sit *above* it.
 for PORT in 80 443; do
-    iptables -C INPUT -p tcp --dport "$PORT" -m state --state NEW -j ACCEPT 2>/dev/null \
-        || iptables -I INPUT 6 -p tcp --dport "$PORT" -m state --state NEW -j ACCEPT
+    while iptables -D INPUT -p tcp --dport "$PORT" -m state --state NEW -j ACCEPT 2>/dev/null; do :; done
+    REJECT_AT="$(iptables -L INPUT --line-numbers -n | awk '$2=="REJECT"{print $1; exit}')"
+    if [[ -n "$REJECT_AT" ]]; then
+        iptables -I INPUT "$REJECT_AT" -p tcp --dport "$PORT" -m state --state NEW -j ACCEPT
+    else
+        iptables -A INPUT -p tcp --dport "$PORT" -m state --state NEW -j ACCEPT
+    fi
 done
 netfilter-persistent save >/dev/null
 ok "المنافذ مفتوحة على السيرفر (لا تنسى قواعد Security List بلوحة Oracle)"
