@@ -199,6 +199,7 @@ chmod 644 /etc/cron.d/faster
 echo
 ok "خلصنا! 🎉"
 echo "   اللعبة:        https://${DOMAIN}"
+echo "   آخر القائمة:   https://${DOMAIN}/akher"
 echo "   ألف ياء:       https://${DOMAIN}/alefya"
 echo "   لوحة التحكم:   https://${DOMAIN}/admin"
 echo "   للتحديث لاحقاً: sudo bash ${APP_DIR}/deploy/oracle/deploy.sh"

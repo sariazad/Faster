@@ -60,6 +60,7 @@ sudo bash setup.sh meen-alasbaq.duckdns.org your@email.com
 بعدها:
 - اللعبة: `https://الدومين`
 - ألف ياء: `https://الدومين/alefya`
+- آخر القائمة: `https://الدومين/akher`
 - لوحة التحكم: `https://الدومين/admin`
 
 ## 7) التحديث بعد كل تعديل على GitHub
