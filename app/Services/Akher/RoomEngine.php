@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
  */
 class RoomEngine
 {
-    public const TURN_OPTIONS = [1, 2, 3, 4];
+    public const TURN_OPTIONS = [1, 2, 3, 4, 6, 8];
     public const SECONDS_OPTIONS = [20, 30, 45, 60];
     public const PENALTY = 10;
     public const ROOM_HOURS = 6;
@@ -482,12 +482,23 @@ class RoomEngine
     private function advance(Room $room): void
     {
         $room->turn_idx++;
-        if ($room->turn_idx >= count($room->order ?? [])) {
+        if ($room->turn_idx >= count($room->order ?? []) || $this->listCleared($room)) {
             $room->status = Room::DONE;
             $room->turn_deadline = null;
         } else {
             $room->turn_deadline = $this->deadline($room);
         }
+    }
+
+    /** With many turns a short list can run out: once every item is found the round ends. */
+    private function listCleared(Room $room): bool
+    {
+        if (! $room->list_id) {
+            return false;
+        }
+        $found = Guess::where('room_code', $room->code)->where('round', $room->round)->where('result', self::MATCH)->count();
+
+        return $found > 0 && $found >= ListItem::where('list_id', $room->list_id)->count();
     }
 
     private function deadline(Room $room): Carbon

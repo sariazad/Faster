@@ -160,7 +160,7 @@ function renderLobby() {
                     onclick: () => act(api.saveSettings, { list_id: l.id }),
                 }, [l.title, el('small', { text: `${l.count} ${S('lobby.items')}` })]))),
             ]),
-            opt('turns_per_player', [1, 2, 3, 4].map((n) => [n, String(n)]), S('lobby.turns')),
+            opt('turns_per_player', [1, 2, 3, 4, 6, 8].map((n) => [n, String(n)]), S('lobby.turns')),
             opt('turn_seconds', [20, 30, 45, 60].map((n) => [n, `${n} ${S('lobby.sec')}`]), S('lobby.seconds')),
             opt('wrong_penalty', [[false, S('lobby.no_penalty')], [true, S('lobby.minus10')]], S('lobby.penalty')),
             el('p', { class: 'muted', text: S(solo() ? 'lobby.calc_solo' : 'lobby.calc', { n: nTurns }) }),

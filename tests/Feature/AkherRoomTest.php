@@ -131,6 +131,24 @@ class AkherRoomTest extends TestCase
         $this->assertFalse($this->state($code)['players'][0]['spectator']);
     }
 
+    public function test_more_turns_and_a_cleared_list_ends_the_round(): void
+    {
+        \App\Models\Akher\GameList::fromFile(['id' => 'tiny', 'title_ar' => 'قائمة صغيرة', 'items' => [
+            ['rank' => 1, 'name_ar' => 'روسيا', 'name_en' => 'Russia', 'aliases' => []],
+            ['rank' => 2, 'name_ar' => 'كندا', 'name_en' => 'Canada', 'aliases' => []],
+        ]]);
+        $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->json('code');
+        $this->api('POST', "/rooms/$code/settings", ['device' => self::HOST, 'turns_per_player' => 8, 'list_id' => 'tiny'])->assertOk();
+        $this->api('POST', "/rooms/$code/join", ['name' => 'خالد', 'device' => self::PHONE])->assertOk();
+        $this->api('POST', "/rooms/$code/start", ['device' => self::HOST])->assertOk();
+        $this->assertSame(16, $this->state($code)['turns_total']);
+
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 0, 'text' => 'روسيا'])->assertOk();
+        $this->assertSame('playing', $this->state($code)['status']);
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::PHONE, 'turn_idx' => 1, 'text' => 'كندا'])->assertOk();
+        $this->assertSame('done', $this->state($code)['status'], 'nothing left to find, so the round is over');
+    }
+
     public function test_room_flow_lobby_to_end(): void
     {
         $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->assertOk()->json('code');
