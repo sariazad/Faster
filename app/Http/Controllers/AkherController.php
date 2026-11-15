@@ -109,6 +109,8 @@ class AkherController extends Controller
     {
         $data = $this->validated($request, [
             'list_id' => 'nullable|string|max:40',
+            'list_ids' => 'nullable|array|max:'.RoomEngine::MAX_LISTS,
+            'list_ids.*' => 'string|max:40',
             'turns_per_player' => 'nullable|integer',
             'turn_seconds' => 'nullable|integer',
             'wrong_penalty' => 'nullable|boolean',
@@ -116,7 +118,7 @@ class AkherController extends Controller
             'host_plays' => 'nullable|boolean',
         ]);
 
-        return $this->run(fn () => $this->engine->settings($this->room($code), $data['device'], $request->only(['list_id', 'turns_per_player', 'turn_seconds', 'wrong_penalty', 'mode', 'host_plays'])));
+        return $this->run(fn () => $this->engine->settings($this->room($code), $data['device'], $request->only(['list_id', 'list_ids', 'turns_per_player', 'turn_seconds', 'wrong_penalty', 'mode', 'host_plays'])));
     }
 
     public function guess(Request $request, string $code): JsonResponse
@@ -135,7 +137,7 @@ class AkherController extends Controller
 
     public function hostAction(Request $request, string $code, string $action): JsonResponse
     {
-        abort_unless(in_array($action, ['start', 'skip', 'end', 'reset', 'leave'], true), 404);
+        abort_unless(in_array($action, ['start', 'skip', 'end', 'next', 'reset', 'leave'], true), 404);
         $data = $this->validated($request);
 
         return $this->run(fn () => $this->engine->{$action}($this->room($code), $data['device']));

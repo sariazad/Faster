@@ -150,6 +150,76 @@ class AkherRoomTest extends TestCase
         $this->assertSame('done', $this->state($code)['status'], 'nothing left to find, so the round is over (10 of 16 turns)');
     }
 
+    private function smallList(string $id, array $names): void
+    {
+        \App\Models\Akher\GameList::fromFile(['id' => $id, 'title_ar' => "قائمة {$id}", 'items' => array_map(
+            fn ($name, $i) => ['rank' => $i + 1, 'name_ar' => $name, 'aliases' => []], $names, array_keys($names))]);
+    }
+
+    public function test_series_of_lists_adds_up_and_the_other_side_starts_the_next_list(): void
+    {
+        $this->smallList('fruit', ['تفاح', 'موز', 'برتقال', 'عنب', 'رمان', 'مشمش', 'خوخ', 'كرز', 'تين', 'ليمون']);
+        $this->smallList('veg', ['بطاطا', 'جزر', 'خيار', 'بندورة', 'بصل', 'ثوم', 'كوسا', 'باذنجان', 'فلفل', 'ملفوف']);
+
+        $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->json('code');
+        $this->api('POST', "/rooms/$code/settings", ['device' => self::HOST, 'list_ids' => ['fruit', 'nope']])->assertStatus(422);
+        $this->api('POST', "/rooms/$code/settings", ['device' => self::HOST, 'list_ids' => ['fruit', 'veg'], 'turns_per_player' => 1])->assertOk();
+        $this->assertSame(['fruit', 'veg'], $this->state($code)['settings']['list_ids']);
+        $this->api('POST', "/rooms/$code/join", ['name' => 'خالد', 'device' => self::PHONE])->assertOk();
+        $this->api('POST', "/rooms/$code/start", ['device' => self::HOST])->assertOk();
+
+        // List 1: سارة (A) finds rank 10, خالد (B) finds rank 2.
+        $s = $this->state($code);
+        [$sara, $khalid] = [$s['players'][0]['id'], $s['players'][1]['id']];
+        $this->assertSame('fruit', $s['list']['id']);
+        $this->assertSame($sara, $s['current_player']);
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 0, 'text' => 'ليمون'])->assertOk();
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::PHONE, 'turn_idx' => 1, 'text' => 'موز'])->assertOk();
+
+        $s = $this->state($code);
+        $this->assertSame('break', $s['status']);
+        $this->assertCount(10, $s['full_list'], 'the finished list is shown in full during the break');
+        $this->assertSame(['A' => 10, 'B' => 2], (array) $s['series']['totals']);
+        $this->api('POST', "/rooms/$code/next", ['device' => self::PHONE])->assertStatus(422)->assertJsonPath('message', 'host_only');
+
+        // List 2: the other side starts.
+        $this->api('POST', "/rooms/$code/next", ['device' => self::HOST])->assertOk();
+        $s = $this->state($code);
+        $this->assertSame(['playing', 'veg', $khalid, 1], [$s['status'], $s['list']['id'], $s['current_player'], $s['series']['idx']]);
+        $this->assertSame([], $s['revealed']);
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::PHONE, 'turn_idx' => 0, 'text' => 'ملفوف'])->assertOk();
+        $this->assertSame(['A' => 10, 'B' => 12], (array) $this->state($code)['series']['totals'], 'running total while playing');
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 1, 'text' => 'جزر'])->assertOk();
+
+        $s = $this->state($code);
+        $this->assertSame('done', $s['status']);
+        $this->assertSame(['A' => 12, 'B' => 12], (array) $s['series']['totals']);
+        $this->assertSame(['قائمة fruit', 'قائمة veg'], array_column($s['series']['results'], 'title'));
+
+        // A new round starts the series again from the first list.
+        $this->api('POST', "/rooms/$code/reset", ['device' => self::HOST])->assertOk();
+        $s = $this->state($code);
+        $this->assertSame(['lobby', 'fruit', []], [$s['status'], $s['list']['id'], $s['series']['results']]);
+    }
+
+    public function test_host_can_stop_a_series_during_the_break(): void
+    {
+        $this->smallList('fruit', ['تفاح', 'موز', 'برتقال', 'عنب', 'رمان', 'مشمش', 'خوخ', 'كرز', 'تين', 'ليمون']);
+        $this->smallList('veg', ['بطاطا', 'جزر', 'خيار', 'بندورة', 'بصل', 'ثوم', 'كوسا', 'باذنجان', 'فلفل', 'ملفوف']);
+        $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->json('code');
+        $this->api('POST', "/rooms/$code/settings", ['device' => self::HOST, 'list_ids' => ['fruit', 'veg'], 'turns_per_player' => 1])->assertOk();
+        $this->api('POST', "/rooms/$code/join", ['name' => 'خالد', 'device' => self::PHONE])->assertOk();
+        $this->api('POST', "/rooms/$code/start", ['device' => self::HOST])->assertOk();
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 0, 'text' => 'خوخ'])->assertOk();
+        $this->api('POST', "/rooms/$code/guess", ['device' => self::PHONE, 'turn_idx' => 1, 'text' => 'شي غلط'])->assertOk();
+        $this->assertSame('break', $this->state($code)['status']);
+
+        $this->api('POST', "/rooms/$code/end", ['device' => self::HOST])->assertOk();
+        $s = $this->state($code);
+        $this->assertSame('done', $s['status']);
+        $this->assertSame(['A' => 7, 'B' => 0], (array) $s['series']['totals']);
+    }
+
     public function test_room_flow_lobby_to_end(): void
     {
         $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->assertOk()->json('code');

@@ -9,6 +9,7 @@ class Room extends Model
 {
     public const LOBBY = 'lobby';
     public const PLAYING = 'playing';
+    public const BREAK = 'break';   // between two lists of a series
     public const DONE = 'done';
 
     protected $primaryKey = 'code';
@@ -20,6 +21,9 @@ class Room extends Model
     protected $casts = [
         'order' => 'array',
         'scores' => 'array',
+        'list_queue' => 'array',
+        'series_results' => 'array',
+        'list_idx' => 'integer',
         'wrong_penalty' => 'boolean',
         'host_plays' => 'boolean',
         'turn_deadline' => 'datetime',

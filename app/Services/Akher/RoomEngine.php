@@ -24,6 +24,7 @@ class RoomEngine
     public const ROOM_HOURS = 6;
     public const MAX_PLAYERS = 30;
     public const GRACE_SECONDS = 1.5;
+    public const MAX_LISTS = 8;
 
     // Modes
     public const TEAMS = 'teams';   // two teams with the same number of players
@@ -144,11 +145,20 @@ class RoomEngine
             $this->mustBeHost($room, $device);
             $this->mustBe($room, Room::LOBBY);
 
-            if (isset($data['list_id'])) {
+            if (isset($data['list_ids']) && is_array($data['list_ids'])) {
+                $ids = array_values(array_unique(array_map('strval', $data['list_ids'])));
+                if (! $ids || count($ids) > self::MAX_LISTS
+                    || GameList::playable()->whereKey($ids)->count() !== count($ids)) {
+                    throw new DomainException('bad_list');
+                }
+                $room->list_queue = $ids;
+                $room->list_id = $ids[0];
+            } elseif (isset($data['list_id'])) {
                 if (! GameList::playable()->whereKey($data['list_id'])->exists()) {
                     throw new DomainException('bad_list');
                 }
                 $room->list_id = $data['list_id'];
+                $room->list_queue = [$data['list_id']];
             }
             if (isset($data['turns_per_player']) && in_array((int) $data['turns_per_player'], self::TURN_OPTIONS, true)) {
                 $room->turns_per_player = (int) $data['turns_per_player'];
@@ -231,9 +241,15 @@ class RoomEngine
                 $scores = ['A' => 0, 'B' => 0];
             }
 
-            if (! $room->list_id || ! GameList::playable()->whereKey($room->list_id)->exists()) {
+            $queue = $room->list_queue ?: array_filter([$room->list_id]);
+            $queue = array_values(array_filter($queue, fn ($id) => GameList::playable()->whereKey($id)->exists()));
+            if (! $queue) {
                 throw new DomainException('bad_list');
             }
+            $room->list_queue = $queue;
+            $room->list_idx = 0;
+            $room->list_id = $queue[0];
+            $room->series_results = [];
 
             $room->order = $order;
             $room->status = Room::PLAYING;
@@ -351,9 +367,51 @@ class RoomEngine
         $this->tx(function () use ($room, $device) {
             $room = $this->fresh($room);
             $this->mustBeHost($room, $device);
-            $this->mustBe($room, Room::PLAYING);
-            $room->status = Room::DONE;
+            if ($room->status === Room::PLAYING) {
+                $this->recordList($room);
+            } else {
+                $this->mustBe($room, Room::BREAK);
+            }
+            $room->status = Room::DONE; // stops the whole series; the totals so far decide
             $room->turn_deadline = null;
+            $this->bump($room);
+        });
+    }
+
+    /** Series: from the break after a list to the next list (same players, the other side starts). */
+    public function next(Room $room, string $device): void
+    {
+        $this->tx(function () use ($room, $device) {
+            $room = $this->fresh($room);
+            $this->mustBeHost($room, $device);
+            $this->mustBe($room, Room::BREAK);
+
+            $queue = $room->list_queue ?? [];
+            $idx = $room->list_idx + 1;
+            while ($idx < count($queue) && ! GameList::playable()->whereKey($queue[$idx])->exists()) {
+                $idx++; // a list removed meanwhile is skipped
+            }
+            if ($idx >= count($queue)) {
+                $room->status = Room::DONE;
+                $this->bump($room);
+
+                return;
+            }
+
+            $order = $room->order ?? [];
+            if ($order) {
+                $order[] = array_shift($order); // fairness: whoever went second now goes first
+            }
+
+            $room->list_idx = $idx;
+            $room->list_id = $queue[$idx];
+            $room->round++;
+            $room->order = $order;
+            $room->turn_idx = 0;
+            $room->scores = array_map(fn () => 0, $room->scores ?? ['A' => 0, 'B' => 0]);
+            $room->status = Room::PLAYING;
+            $room->turn_deadline = $this->deadline($room);
+            $room->expires_at = now()->addHours(self::ROOM_HOURS);
             $this->bump($room);
         });
     }
@@ -370,6 +428,9 @@ class RoomEngine
             $room->turn_idx = 0;
             $room->turn_deadline = null;
             $room->scores = ['A' => 0, 'B' => 0];
+            $room->series_results = null;
+            $room->list_idx = 0;
+            $room->list_id = ($room->list_queue ?? [])[0] ?? $room->list_id;
             $room->expires_at = now()->addHours(self::ROOM_HOURS);
             $room->players()->update(['spectator' => false]);
             $this->syncHostSeat($room);
@@ -396,8 +457,9 @@ class RoomEngine
         $list = $room->list_id ? GameList::withCount('items')->find($room->list_id) : null;
         $guesses = Guess::where('room_code', $room->code)->where('round', $room->round)->orderBy('id')->get();
         $matched = $guesses->where('result', self::MATCH);
-        $items = $list && ($matched->isNotEmpty() || $room->status === Room::DONE)
-            ? ListItem::where('list_id', $list->id)->when($room->status !== Room::DONE, fn ($q) => $q->whereIn('rank', $matched->pluck('item_rank')))->get()->keyBy('rank')
+        $over = in_array($room->status, [Room::DONE, Room::BREAK], true); // this list is finished: show it all
+        $items = $list && ($matched->isNotEmpty() || $over)
+            ? ListItem::where('list_id', $list->id)->when(! $over, fn ($q) => $q->whereIn('rank', $matched->pluck('item_rank')))->get()->keyBy('rank')
             : collect();
 
         $isHost = $device === $room->host_device;
@@ -413,12 +475,13 @@ class RoomEngine
             'is_host' => $isHost,
             'my_players' => $mine,
             'list' => $list ? ['id' => $list->id, 'title' => $list->title_ar, 'extra_label' => $list->extra_label, 'hint' => $list->unit_hint, 'count' => $list->items_count] : null,
-            'settings' => ['turns_per_player' => $room->turns_per_player, 'turn_seconds' => $room->turn_seconds, 'wrong_penalty' => $room->wrong_penalty, 'host_plays' => $room->host_plays !== false],
+            'settings' => ['turns_per_player' => $room->turns_per_player, 'turn_seconds' => $room->turn_seconds, 'wrong_penalty' => $room->wrong_penalty, 'host_plays' => $room->host_plays !== false, 'list_ids' => array_values($room->list_queue ?: array_filter([$room->list_id]))],
             'turn_idx' => $room->turn_idx,
             'turns_total' => count($room->order ?? []),
             'current_player' => $room->currentPlayerId(),
             'deadline' => $room->turn_deadline ? (int) round($room->turn_deadline->getPreciseTimestamp(3)) : null,
             'scores' => (object) ($room->scores ?? ['A' => 0, 'B' => 0]),
+            'series' => $this->seriesState($room),
             'players' => $room->players->map(fn (Player $p) => [
                 'id' => $p->id,
                 'name' => $p->name,
@@ -447,7 +510,7 @@ class RoomEngine
                 'name' => $items->get($g->item_rank)?->name_ar,
                 'extra' => $items->get($g->item_rank)?->extra,
             ])->sortBy('rank')->values(),
-            'full_list' => $room->status === Room::DONE
+            'full_list' => $over
                 ? $items->sortBy('rank')->map(fn (ListItem $i) => ['rank' => $i->rank, 'name' => $i->name_ar, 'extra' => $i->extra])->values()
                 : null,
         ];
@@ -460,6 +523,19 @@ class RoomEngine
     }
 
     // ───────────────────────────── Helpers ─────────────────────────────
+
+    private function seriesState(Room $room): array
+    {
+        $queue = $room->list_queue ?: array_filter([$room->list_id]);
+        $titles = GameList::whereKey($queue)->pluck('title_ar', 'id');
+
+        return [
+            'lists' => array_map(fn ($id) => ['id' => $id, 'title' => $titles[$id] ?? $id], array_values($queue)),
+            'idx' => $room->list_idx ?? 0,
+            'results' => array_values($room->series_results ?? []),
+            'totals' => (object) self::seriesTotals($room),
+        ];
+    }
 
     private function closeTurn(Room $room, string $result): void
     {
@@ -483,11 +559,47 @@ class RoomEngine
     {
         $room->turn_idx++;
         if ($room->turn_idx >= count($room->order ?? []) || $this->listCleared($room)) {
-            $room->status = Room::DONE;
+            $this->recordList($room);
+            $more = $room->list_idx + 1 < count($room->list_queue ?? []);
+            $room->status = $more ? Room::BREAK : Room::DONE;
             $room->turn_deadline = null;
         } else {
             $room->turn_deadline = $this->deadline($room);
         }
+    }
+
+    /** Keeps this list's scores in the series history (once per list). */
+    private function recordList(Room $room): void
+    {
+        $results = $room->series_results ?? [];
+        if (isset($results[$room->list_idx])) {
+            return;
+        }
+        $results[$room->list_idx] = [
+            'list_id' => $room->list_id,
+            'title' => GameList::whereKey($room->list_id)->value('title_ar'),
+            'scores' => $room->scores ?? [],
+        ];
+        $room->series_results = $results;
+    }
+
+    /** Grand total per side over the finished lists (plus the list in play). */
+    public static function seriesTotals(Room $room): array
+    {
+        $totals = array_map(fn () => 0, $room->scores ?? ['A' => 0, 'B' => 0]);
+        $results = $room->series_results ?? [];
+        foreach ($results as $r) {
+            foreach ($r['scores'] ?? [] as $k => $v) {
+                $totals[$k] = ($totals[$k] ?? 0) + $v;
+            }
+        }
+        if ($room->status === Room::PLAYING && ! isset($results[$room->list_idx])) {
+            foreach ($room->scores ?? [] as $k => $v) {
+                $totals[$k] = ($totals[$k] ?? 0) + $v;
+            }
+        }
+
+        return $totals;
     }
 
     /** With many turns a short list can run out: once every item is found the round ends. */

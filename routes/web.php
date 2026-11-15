@@ -64,7 +64,7 @@ Route::prefix('akher')->name('akher.')->controller(AkherController::class)->grou
         Route::post('/rooms/{code}/settings', 'settings')->name('settings');
         Route::post('/rooms/{code}/guess', 'guess')->middleware('throttle:90,1')->name('guess');
         Route::post('/rooms/{code}/expire', 'expire')->name('expire');
-        Route::post('/rooms/{code}/{action}', 'hostAction')->whereIn('action', ['start', 'skip', 'end', 'reset', 'leave'])->name('action');
+        Route::post('/rooms/{code}/{action}', 'hostAction')->whereIn('action', ['start', 'skip', 'end', 'next', 'reset', 'leave'])->name('action');
     });
 
     Route::get('/{page}', 'page')->whereIn('page', AkherController::PAGES)->name('page');

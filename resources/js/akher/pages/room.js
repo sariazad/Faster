@@ -154,11 +154,22 @@ function renderLobby() {
             opt('mode', [['teams', S('lobby.mode_teams')], ['solo', S('lobby.mode_solo')]], S('lobby.mode')),
             opt('host_plays', [[true, S('lobby.host_plays')], [false, S('lobby.host_only')]], S('lobby.host_role')),
             el('div', {}, [
-                el('div', { class: 'lbl', text: S('lobby.list') }),
-                el('div', { class: 'list-cards' }, (s.lists || []).map((l) => el('button', {
-                    class: 'list-card' + (s.list?.id === l.id ? ' on' : ''), 'aria-pressed': String(s.list?.id === l.id),
-                    onclick: () => act(api.saveSettings, { list_id: l.id }),
-                }, [l.title, el('small', { text: `${l.count} ${S('lobby.items')}` })]))),
+                el('div', { class: 'lbl', text: S('lobby.lists') }),
+                el('p', { class: 'muted small', text: S('lobby.lists_hint') }),
+                el('div', { class: 'list-cards' }, (s.lists || []).map((l) => {
+                    const queue = s.settings.list_ids || [];
+                    const pos = queue.indexOf(l.id);
+                    const toggle = () => {
+                        const next = pos >= 0 ? queue.filter((id) => id !== l.id) : [...queue, l.id];
+                        if (next.length) act(api.saveSettings, { list_ids: next });
+                    };
+                    return el('button', { class: 'list-card' + (pos >= 0 ? ' on' : ''), 'aria-pressed': String(pos >= 0), onclick: toggle }, [
+                        pos >= 0 && queue.length > 1 ? el('span', { class: 'qpos num', text: String(pos + 1) }) : null,
+                        l.title, el('small', { text: `${l.count} ${S('lobby.items')}` }),
+                    ]);
+                })),
+                (s.settings.list_ids || []).length > 1
+                    ? el('p', { class: 'series-note', text: S('lobby.series', { n: s.settings.list_ids.length }) }) : null,
             ]),
             opt('turns_per_player', [1, 2, 3, 4, 6, 8].map((n) => [n, String(n)]), S('lobby.turns')),
             opt('turn_seconds', [20, 30, 45, 60].map((n) => [n, `${n} ${S('lobby.sec')}`]), S('lobby.seconds')),
@@ -308,7 +319,7 @@ function renderGame(prev) {
         ]);
         app.replaceChildren(
             header([el('span', { class: 'muted small', text: s.list?.title })]),
-            scorebar, turnCard, lastLine,
+            seriesLine(), scorebar, turnCard, lastLine,
             el('div', { class: 'stage' }, [
                 el('div', {}, [board(), el('div', { class: 'board-legend' }, [el('span', { text: S('play.first') }), el('span', { text: S('play.last') })])]),
                 side,
@@ -316,7 +327,7 @@ function renderGame(prev) {
         );
     } else {
         // ── Phone ──
-        const kids = [header(), scorebar];
+        const kids = [header(), seriesLine(), scorebar];
         if (!amPlaying) kids.push(el('p', { class: 'center muted', text: S('play.spectating') }));
         if (myTurn) {
             kids.push(el('section', { class: `phone-turn ${cs.cls}`, style: cs.style, id: 'turnCard' }, [
@@ -362,24 +373,75 @@ function tick() {
 
 // ───────── End ─────────
 
+// ───────── Series (several lists back to back) ─────────
+
+const isSeries = () => (state.series?.lists || []).length > 1;
+
+/** "القائمة 2 من 3 · المجموع: …" while a series is being played. */
+function seriesLine() {
+    if (!isSeries()) return null;
+    const { idx, lists, totals } = state.series;
+    return el('div', { class: 'series-line', role: 'status' }, [
+        el('b', { text: S('series.progress', { i: idx + 1, n: lists.length }) }),
+        el('span', { text: `${S('series.total')}: ${sidesText(totals)}` }),
+    ]);
+}
+
+function sidesText(scores) {
+    if (solo()) {
+        return state.players.filter((p) => scores[p.id] !== undefined)
+            .sort((x, y) => scores[y.id] - scores[x.id]).map((p) => `${p.name} ${scores[p.id]}`).join(' · ');
+    }
+    return `${teamName('A')} ${scores.A ?? 0} · ${teamName('B')} ${scores.B ?? 0}`;
+}
+
+/** Winner banner for a score set; confetti only when asked (first view of a final result). */
+function winnerBanner(scores, { celebrate, prefix = '' }) {
+    const s = state;
+    if (solo()) {
+        const ranked = s.players.filter((p) => scores[p.id] !== undefined).sort((x, y) => scores[y.id] - scores[x.id]);
+        const top = ranked.length ? scores[ranked[0].id] : 0;
+        const winners = ranked.filter((p) => scores[p.id] === top);
+        const sd = winners.length === 1 ? ownerOf(winners[0].id) : null;
+        if (celebrate && sd) { sfx.win(); confetti(SOLO_COLORS[Math.max(0, s.players.findIndex((p) => p.id === winners[0].id)) % SOLO_COLORS.length]); }
+        return el('div', { class: `banner ${sd ? sd.cls : 'tie'}`, style: sd?.style, role: 'status' },
+            prefix + (sd ? S('end.win_solo', { name: winners[0].name, n: top }) : S('end.tie_solo', { names: winners.map((p) => p.name).join(' و'), n: top })));
+    }
+    const A = scores.A ?? 0;
+    const B = scores.B ?? 0;
+    const winner = A === B ? null : (A > B ? 'A' : 'B');
+    if (celebrate && winner) { sfx.win(); confetti(getComputedStyle(document.documentElement).getPropertyValue(`--${winner}`).trim()); }
+    return el('div', { class: `banner ${winner || 'tie'}`, role: 'status' },
+        prefix + (winner ? S('end.win', { team: teamName(winner), a: Math.max(A, B), b: Math.min(A, B) }) : S('end.tie', { a: A, b: B })));
+}
+
+/** Table: one row per list of the series, one column per side, grand total at the bottom. */
+function seriesTable() {
+    const s = state;
+    const sides = solo() ? s.players.filter((p) => s.series.totals[p.id] !== undefined).map((p) => [String(p.id), p.name])
+        : [['A', teamName('A')], ['B', teamName('B')]];
+    return el('section', { class: 'card', style: 'overflow-x:auto' }, [
+        el('h3', { text: S('series.results') }),
+        el('table', { class: 'stats' }, [
+            el('thead', {}, el('tr', {}, [el('th', { text: S('series.list') }), ...sides.map(([, n]) => el('th', { text: n }))])),
+            el('tbody', {}, [
+                ...s.series.results.map((r) => el('tr', {}, [el('td', { text: r.title || '' }), ...sides.map(([k]) => el('td', { class: 'num', text: String(r.scores?.[k] ?? 0) }))])),
+                el('tr', { class: 'total' }, [el('td', {}, el('b', { text: S('series.total') })), ...sides.map(([k]) => el('td', { class: 'num' }, el('b', { text: String(s.series.totals[k] ?? 0) })))]),
+            ]),
+        ]),
+    ]);
+}
+
 function renderEnd(prev) {
     const s = state;
-    const firstTime = !prev || prev.status !== 'done';
+    const firstTime = !prev || prev.status !== s.status || prev.series?.idx !== s.series?.idx;
+    const isBreak = s.status === 'break';
+    if (firstTime) revealDone = false;
     let banner;
-    if (solo()) {
-        const ranked = s.players.filter((p) => s.scores[p.id] !== undefined).sort((x, y) => s.scores[y.id] - s.scores[x.id]);
-        const top = ranked.length ? s.scores[ranked[0].id] : 0;
-        const winners = ranked.filter((p) => s.scores[p.id] === top);
-        const sd = winners.length === 1 ? ownerOf(winners[0].id) : null;
-        if (firstTime && sd) { sfx.win(); confetti(SOLO_COLORS[Math.max(0, s.players.findIndex((p) => p.id === winners[0].id)) % SOLO_COLORS.length]); }
-        banner = el('div', { class: `banner ${sd ? sd.cls : 'tie'}`, style: sd?.style, role: 'status' },
-            sd ? S('end.win_solo', { name: winners[0].name, n: top }) : S('end.tie_solo', { names: winners.map((p) => p.name).join(' و'), n: top }));
+    if (isSeries() && !isBreak) {
+        banner = winnerBanner(s.series.totals, { celebrate: firstTime, prefix: S('series.final') + ' ' });
     } else {
-        const { A, B } = s.scores;
-        const winner = A === B ? null : (A > B ? 'A' : 'B');
-        if (firstTime && winner) { sfx.win(); confetti(getComputedStyle(document.documentElement).getPropertyValue(`--${winner}`).trim()); }
-        banner = el('div', { class: `banner ${winner || 'tie'}`, role: 'status' },
-            winner ? S('end.win', { team: teamName(winner), a: Math.max(A, B), b: Math.min(A, B) }) : S('end.tie', { a: A, b: B }));
+        banner = winnerBanner(s.scores, { celebrate: firstTime && !isBreak, prefix: isBreak ? `${s.list?.title || ''}: ` : '' });
     }
 
     // Per-player stats
@@ -433,21 +495,30 @@ function renderEnd(prev) {
 
     const forgotten = full.filter((it) => !taken.has(it.rank));
 
-    const hostBtns = s.is_host ? el('div', { class: 'row', style: 'flex-wrap:wrap' }, [
-        el('button', { class: 'btn lantern grow', text: S('end.new_round'), onclick: () => act(api.action, 'reset') }),
-        el('button', { class: 'btn ghost grow', text: S('end.other_list'), onclick: () => act(api.action, 'reset') }),
-    ]) : null;
+    const nextList = isBreak ? s.series.lists[s.series.idx + 1] : null;
+    const hostBtns = !s.is_host
+        ? (isBreak ? el('p', { class: 'center muted', role: 'status', text: S('series.waiting') }) : null)
+        : isBreak ? el('div', { class: 'row', style: 'flex-wrap:wrap' }, [
+            el('button', { class: 'btn lantern grow', text: S('series.next', { title: nextList?.title || '' }), onclick: () => act(api.action, 'next') }),
+            el('button', { class: 'btn ghost grow', text: S('series.stop'), onclick: () => { if (confirm(S('series.stop_confirm'))) act(api.action, 'end'); } }),
+        ]) : el('div', { class: 'row', style: 'flex-wrap:wrap' }, [
+            el('button', { class: 'btn lantern grow', text: S('end.new_round'), onclick: () => act(api.action, 'reset') }),
+            el('button', { class: 'btn ghost grow', text: S('end.other_list'), onclick: () => act(api.action, 'reset') }),
+        ]);
 
     app.replaceChildren(
         header([el('button', { class: 'btn ghost sm', text: S('end.leave'), onclick: leave })]),
         el('div', { class: 'stack' }, [
+            isSeries() ? seriesLine() : null,
             banner,
-            el('section', { class: 'card', style: 'overflow-x:auto' }, table),
+            isBreak ? hostBtns : null,
+            isSeries() ? seriesTable() : null,
+            el('section', { class: 'card', style: 'overflow-x:auto' }, [isSeries() ? el('h3', { text: s.list?.title || '' }) : null, table]),
             titles.length ? el('section', { class: 'card' }, [el('h3', { text: S('end.titles') }), el('div', { class: 'titles' }, titles.map(([t, n, d]) => el('div', { class: 'title-card' }, [el('b', { text: `🏅 ${t}` }), el('span', { text: `${n} — ${d}` })])))]) : null,
             el('section', { class: 'card' }, [el('h3', { text: `${S('end.full_list')}: ${s.list?.title || ''}` }), grid,
                 el('div', { class: 'board-legend' }, [el('span', { text: S('play.first') }), el('span', { text: S('play.last') })])]),
             forgotten.length ? el('section', { class: 'card' }, [el('h3', { text: `${S('end.forgotten')} (${forgotten.length})` }), el('div', { class: 'forgotten' }, forgotten.map((it) => el('span', { text: `${it.rank}. ${it.name}` })))]) : null,
-            hostBtns,
+            isBreak ? null : hostBtns,
         ]),
     );
 }
