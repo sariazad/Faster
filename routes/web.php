@@ -37,6 +37,7 @@ Route::prefix('alefya')->name('alefya.')->controller(AlefYaController::class)->g
         Route::post('/logout', 'logout')->name('logout');
         Route::post('/scores', 'storeScore')->middleware('throttle:30,1')->name('scores');
         Route::post('/rate', 'rate')->middleware('throttle:60,1')->name('rate');
+        Route::post('/play', 'play')->middleware('throttle:60,1')->name('play');
 
         Route::middleware('throttle:10,1')->group(function () {
             Route::post('/login', 'login')->name('login');

@@ -56,4 +56,6 @@ export const sendNote = (id, body) => post('/note', { id, body });
 export const contribute = (name, items) => post('/contribute', { name, items });
 export const notifications = () => get('/notifications');
 export const saveScore = (score) => post('/scores', score);
+// Statistics only: never blocks or breaks the game.
+export const logPlay = (data) => post('/play', data).catch(() => {});
 export const leaderboard = (code) => get('/leaderboard' + (code ? '?code=' + encodeURIComponent(code) : ''));

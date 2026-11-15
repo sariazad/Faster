@@ -7,6 +7,7 @@ use App\Models\Akher\Guess;
 use App\Models\Akher\ListItem;
 use App\Models\Akher\Player;
 use App\Models\Akher\Room;
+use App\Models\PlayLog;
 use DomainException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -257,6 +258,7 @@ class RoomEngine
             $room->scores = $scores;
             $room->turn_deadline = $this->deadline($room);
             $room->expires_at = now()->addHours(self::ROOM_HOURS);
+            $room->log_id = $this->openLog($room, count($players));
             $this->bump($room);
         });
     }
@@ -429,6 +431,7 @@ class RoomEngine
             $room->turn_deadline = null;
             $room->scores = ['A' => 0, 'B' => 0];
             $room->series_results = null;
+            $room->log_id = null; // the next start opens a new statistics row
             $room->list_idx = 0;
             $room->list_id = ($room->list_queue ?? [])[0] ?? $room->list_id;
             $room->expires_at = now()->addHours(self::ROOM_HOURS);
@@ -622,6 +625,89 @@ class RoomEngine
     {
         $room->touchVersion();
         $room->save();
+        $this->syncLog($room);
+    }
+
+    /** Statistics row for a game that just started (never allowed to break the game). */
+    private function openLog(Room $room, int $players): ?int
+    {
+        try {
+            return PlayLog::create([
+                'game' => PlayLog::AKHER,
+                'started_at' => now(),
+                'last_at' => now(),
+                'players' => $players,
+                'rounds' => 0,
+                'meta' => [
+                    'mode' => $room->mode ?? self::TEAMS,
+                    'lists' => array_values($room->list_queue ?? []),
+                    'turns' => $room->turns_per_player,
+                    'seconds' => $room->turn_seconds,
+                    'first_round' => $room->round,
+                ],
+            ])->id;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return null;
+        }
+    }
+
+    /** Keeps the statistics row up to date: lists played, last activity, and the result at the end. */
+    private function syncLog(Room $room): void
+    {
+        if (! $room->log_id || $room->status === Room::LOBBY) {
+            return;
+        }
+
+        try {
+            $log = PlayLog::find($room->log_id);
+            if (! $log || $log->finished) {
+                return;
+            }
+
+            $log->last_at = now();
+            $log->rounds = count($room->series_results ?? []);
+
+            if ($room->status === Room::DONE) {
+                $meta = $log->meta ?? [];
+                $totals = self::seriesTotals($room);
+                $guesses = Guess::where('room_code', $room->code)->where('round', '>=', $meta['first_round'] ?? $room->round);
+
+                $log->finished = true;
+                $log->ended_at = now();
+                $log->winner = $this->winnerName($room, $totals);
+                $log->meta = $meta + [
+                    'played' => array_values(array_map(fn ($r) => $r['list_id'] ?? null, $room->series_results ?? [])),
+                    'totals' => $totals,
+                    'guesses' => (clone $guesses)->whereNotIn('result', [self::TIMEOUT, self::SKIP])->count(),
+                    'matches' => (clone $guesses)->where('result', self::MATCH)->count(),
+                ];
+            }
+
+            $log->save();
+        } catch (\Throwable $e) {
+            report($e);
+        }
+    }
+
+    private function winnerName(Room $room, array $totals): ?string
+    {
+        if (! $totals) {
+            return null;
+        }
+        $best = max($totals);
+        $top = array_keys($totals, $best);
+        if (count($top) !== 1) {
+            return 'تعادل';
+        }
+        $key = (string) $top[0];
+
+        if ($room->mode === self::SOLO) {
+            return Player::whereKey((int) $key)->value('name') ?? '—';
+        }
+
+        return ['A' => 'الفريق الأحمر', 'B' => 'الفريق الأزرق'][$key] ?? $key;
     }
 
     private function fresh(Room $room): Room

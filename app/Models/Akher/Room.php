@@ -31,6 +31,7 @@ class Room extends Model
         'turn_idx' => 'integer',
         'version' => 'integer',
         'round' => 'integer',
+        'log_id' => 'integer',
     ];
 
     public function players(): HasMany

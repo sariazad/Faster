@@ -1,7 +1,7 @@
 // ألف ياء — the main board: two teams, hex letters, connect your two sides to win the round.
 import { $, $$, S, el, store, toast, openModal, closeModal, isModalOpen, sfx, confetti, config } from '../core.js';
 import { buildBoard, findPath, randomLetters, shade } from '../hex.js';
-import { getQuestion } from '../api.js';
+import { getQuestion, logPlay } from '../api.js';
 import { loadSettings, colorPair } from '../settings.js';
 import { listen } from '../sync.js';
 
@@ -16,6 +16,25 @@ let questionToken = 0;
 const N = () => game.size;
 const save = () => store.set('game', game);
 const roundName = (i) => S('play.round_names')[i] || String(i + 1);
+const newSid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+
+/** Statistics beacon (admin «الإحصائيات»): start, every round won, and the end. */
+function track(event) {
+    if (!game.sid) game.sid = newSid();
+    if (!game.startedAt) game.startedAt = Date.now();
+    logPlay({
+        sid: game.sid,
+        event,
+        mode: game.mode,
+        size: game.size,
+        rounds: game.rounds,
+        mystery: !!game.mystery,
+        elapsed: Math.max(0, Math.round((Date.now() - game.startedAt) / 1000)),
+        wins: game.wins,
+        correct: game.correct,
+        names: game.names,
+    });
+}
 
 function newGame(mode, mystery, sync) {
     const s = loadSettings();
@@ -31,9 +50,12 @@ function newGame(mode, mystery, sync) {
         wins: [0, 0],
         correct: [0, 0],
         finished: false,
+        sid: newSid(),
+        startedAt: Date.now(),
         ...freshBoard(s.size),
     };
     save();
+    track('start');
 }
 
 function freshBoard(size) {
@@ -245,6 +267,7 @@ function roundWon(team, path = []) {
         if (game.wins[team] >= game.rounds) {
             game.finished = true;
             save();
+            track('end');
             busy = false;
             renderTeams();
             showResults();
@@ -253,6 +276,7 @@ function roundWon(team, path = []) {
         game.round++;
         Object.assign(game, freshBoard(N()));
         save();
+        track('round');
         transition(() => {
             busy = false;
             renderBoard();

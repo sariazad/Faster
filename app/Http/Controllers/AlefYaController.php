@@ -8,6 +8,7 @@ use App\Models\AlefYa\Note;
 use App\Models\AlefYa\Notification;
 use App\Models\AlefYa\Question;
 use App\Models\AlefYa\Score;
+use App\Models\PlayLog;
 use App\Support\AlefYaLetters;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -201,6 +202,63 @@ class AlefYaController extends Controller
         $score = Score::create($data + ['account_id' => $account?->id]);
 
         return response()->json(['ok' => true, 'id' => $score->id, 'guest' => ! $account]);
+    }
+
+    /** Statistics beacon of a team game (the game itself runs in the browser). */
+    public function play(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'sid' => ['required', 'string', 'regex:/^[A-Za-z0-9]{8,40}$/'],
+            'event' => ['required', Rule::in(['start', 'round', 'end'])],
+            'mode' => ['nullable', 'string', 'max:20'],
+            'size' => ['nullable', 'integer', 'min:2', 'max:12'],
+            'rounds' => ['nullable', 'integer', 'min:1', 'max:20'],
+            'mystery' => ['nullable', 'boolean'],
+            'elapsed' => ['nullable', 'integer', 'min:0'],
+            'wins' => ['nullable', 'array', 'size:2'],
+            'wins.*' => ['integer', 'min:0', 'max:50'],
+            'correct' => ['nullable', 'array', 'size:2'],
+            'correct.*' => ['integer', 'min:0', 'max:2000'],
+            'names' => ['nullable', 'array', 'size:2'],
+            'names.*' => ['nullable', 'string', 'max:40'],
+        ]);
+
+        $log = PlayLog::firstOrNew(['game' => PlayLog::ALEFYA, 'ref' => $data['sid']]);
+
+        if ($log->finished) {
+            return response()->json(['ok' => true]);
+        }
+
+        if (! $log->exists) {
+            $elapsed = min((int) ($data['elapsed'] ?? 0), 6 * 3600);
+            $log->started_at = now()->subSeconds($elapsed);
+            $log->players = 2;
+        }
+
+        $wins = array_map('intval', $data['wins'] ?? [0, 0]);
+        $names = $data['names'] ?? [null, null];
+
+        $log->last_at = now();
+        $log->rounds = array_sum($wins);
+        $log->meta = [
+            'mode' => $data['mode'] ?? null,
+            'size' => $data['size'] ?? null,
+            'target' => $data['rounds'] ?? null,
+            'mystery' => (bool) ($data['mystery'] ?? false),
+            'wins' => $wins,
+            'correct' => array_map('intval', $data['correct'] ?? [0, 0]),
+            'names' => $names,
+        ];
+
+        if ($data['event'] === 'end') {
+            $log->finished = true;
+            $log->ended_at = now();
+            $log->winner = $wins[0] === $wins[1] ? 'تعادل' : (($wins[0] > $wins[1] ? $names[0] : $names[1]) ?: '—');
+        }
+
+        $log->save();
+
+        return response()->json(['ok' => true]);
     }
 
     public function leaderboard(Request $request): JsonResponse
