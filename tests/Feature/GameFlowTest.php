@@ -43,6 +43,44 @@ class GameFlowTest extends TestCase
         $this->assertSame($questions, \App\Models\Question::count());
     }
 
+    public function test_played_out_categories_are_marked_and_avoided_by_shuffle(): void
+    {
+        $ids = Category::orderBy('id')->pluck('id');
+        $first = Category::find($ids[0]);
+        $this->assertGreaterThan(0, Category::playable()->firstWhere('id', $first->id)->freshGames());
+
+        // Everything in the first category has been played.
+        $first->questions()->update(['times_used' => 1]);
+        $card = Category::playable()->firstWhere('id', $first->id);
+        $this->assertTrue($card->isPlayedOut());
+        $this->assertSame(0, $card->freshQuestionsCount());
+
+        $this->get('/play/new')->assertOk()->assertSee('🔁 انلعبت')->assertSee('🆕');
+
+        // Picking it warns; the random pick skips it while fresh categories exist.
+        Livewire::test(GameSetup::class)->call('toggle', $first->id)->assertSee('انلعبت كل أسئلتها');
+        for ($i = 0; $i < 5; $i++) {
+            $c = Livewire::test(GameSetup::class)->call('shuffle');
+            $this->assertNotContains($first->id, [...$c->get('selectedA'), ...$c->get('selectedB')]);
+        }
+    }
+
+    public function test_a_category_does_not_repeat_until_all_its_questions_are_played(): void
+    {
+        $ids = Category::orderBy('id')->pluck('id')->take(6)->all();
+        $target = Category::withLevelCounts()->find($ids[0]);
+        $games = intdiv(min($target->q200_count, $target->q400_count, $target->q600_count), Game::QUESTIONS_PER_LEVEL);
+
+        $seen = [];
+        for ($g = 0; $g < $games; $g++) {
+            $game = Game::start('أ'.$g, 'ب'.$g, array_slice($ids, 0, 3), array_slice($ids, 3, 3));
+            foreach ($game->gameQuestions()->where('category_id', $ids[0])->pluck('question_id') as $qid) {
+                $this->assertNotContains($qid, $seen, 'a question came back before the category ran out');
+                $seen[] = $qid;
+            }
+        }
+    }
+
     public function test_pages_load(): void
     {
         $this->get('/')->assertOk()->assertSee('مين');

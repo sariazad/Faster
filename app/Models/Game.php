@@ -289,10 +289,19 @@ class Game extends Model
         $answers = $usedAnswers;
         $bodies = $usedBodies;
 
-        // Pass 1: fresh question and fresh answer. Pass 2: allow a repeated answer.
-        // Pass 3: allow a repeated question text, so the board is always full.
-        foreach ([[true, true], [false, true], [false, false]] as [$strictAnswers, $strictBodies]) {
-            foreach ($candidates as $question) {
+        // Freshness comes first: a question nobody has played beats an old one even if its answer
+        // already sits on this board. So, tier by tier (least used first):
+        //   pass 1 — new answer, new text;  pass 2 — repeated answer allowed.
+        // Last resort over everything: repeated text allowed, so the board is always full.
+        $passes = [];
+        foreach ($candidates->groupBy('times_used', preserveKeys: false) as $tier) {
+            $passes[] = [$tier, true, true];
+            $passes[] = [$tier, false, true];
+        }
+        $passes[] = [$candidates, false, false];
+
+        foreach ($passes as [$pool, $strictAnswers, $strictBodies]) {
+            foreach ($pool as $question) {
                 if ($chosen->count() >= self::QUESTIONS_PER_LEVEL) {
                     break 2;
                 }

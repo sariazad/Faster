@@ -71,6 +71,17 @@ class ManageQuestions extends ManageRecords
                     Notification::make()->title('تم الاستبدال')->body(trim(\Illuminate\Support\Facades\Artisan::output()))->success()->persistent()->send();
                 }),
 
+            Actions\Action::make('resetUsage')
+                ->label('تصفير عدّاد الظهور')
+                ->icon('heroicon-o-arrow-path-rounded-square')
+                ->color('gray')
+                ->requiresConfirmation()
+                ->modalDescription('كل أسئلة الحروف بترجع كأنها ما انلعبت أبداً، وبتبلّش دورة جديدة. مفيد قبل مسابقة مع جمهور جديد.')
+                ->action(function () {
+                    Question::query()->update(['times_used' => 0]);
+                    Notification::make()->title('تم تصفير عدّاد الظهور')->success()->send();
+                }),
+
             Actions\Action::make('play')
                 ->label('افتح اللعبة')
                 ->icon('heroicon-o-play')

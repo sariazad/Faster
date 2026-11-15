@@ -115,7 +115,9 @@ class GameSetup extends Component
             }
         }
 
-        if (! $this->categories->contains('id', $categoryId)) {
+        $category = $this->categories->firstWhere('id', $categoryId);
+
+        if (! $category) {
             return;
         }
 
@@ -135,6 +137,10 @@ class GameSetup extends Component
 
         $this->setSelection($team, [...$this->selection($team), $categoryId]);
 
+        if ($category->isPlayedOut($this->mode)) {
+            $this->notice = "«{$category->name}» انلعبت كل أسئلتها، فرح تتكرر أسئلة منها. اختار فئة فيها أسئلة جديدة 🆕 إذا بتحب.";
+        }
+
         // Move on to the other team once this one is full.
         if (count($this->selection($team)) === $this->perTeam()
             && count($this->selection(Game::other($team))) < $this->perTeam()) {
@@ -152,7 +158,10 @@ class GameSetup extends Component
 
     public function shuffle(): void
     {
-        $ids = $this->categories->pluck('id')->shuffle()->take($this->perTeam() * 2)->values();
+        // Categories with unplayed questions first, so a random pick doesn't bring back old questions.
+        $ids = $this->categories->shuffle()
+            ->sortBy(fn (Category $c) => $c->isPlayedOut($this->mode) ? 1 : 0)
+            ->pluck('id')->take($this->perTeam() * 2)->values();
 
         if ($ids->count() < $this->perTeam() * 2) {
             $this->notice = 'ما فيه فئات كافية.';

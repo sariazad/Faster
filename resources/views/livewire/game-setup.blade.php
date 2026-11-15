@@ -157,6 +157,9 @@
         </p>
 
         {{-- ============ Category cards ============ --}}
+        <p class="mb-3 text-center text-sm font-bold text-night/55">
+            🆕 الرقم = أسئلة ما انلعبت لسا. الأسئلة ما بتتكرر لحتى تخلص أسئلة الفئة، وبعدها بتطلع الفئة باهتة 🔁.
+        </p>
         @if ($this->categories->count() < $perTeam * 2)
             <div class="rounded-3xl bg-white p-10 text-center text-night/70 shadow-sm">
                 ما فيه فئات كافية للعب. لازم {{ $perTeam * 2 }} فئات على الأقل، وكل فئة فيها سؤالين لكل مستوى.
@@ -169,6 +172,8 @@
                 @foreach ($this->visibleCategories as $category)
                     @php
                         $owner = in_array($category->id, $selectedA, true) ? 'a' : (in_array($category->id, $selectedB, true) ? 'b' : null);
+                        $playedOut = $category->isPlayedOut($mode);
+                        $fresh = $category->freshQuestionsCount();
                     @endphp
                     <div wire:key="cat-{{ $category->id }}"
                          x-data="{ info: false }"
@@ -180,6 +185,7 @@
                              'ring-4 ring-teamA' => $owner === 'a',
                              'ring-4 ring-teamB' => $owner === 'b',
                              'hover:-translate-y-1 hover:shadow-xl hover:shadow-night/10' => ! $owner,
+                             'opacity-60 grayscale-[40%]' => $playedOut && ! $owner,
                          ])>
 
                         {{-- Badges --}}
@@ -191,8 +197,13 @@
                                     'bg-teamB-dark' => $owner === 'b',
                                 ])>{{ $owner === 'a' ? $teamA : $teamB }} ✓</span>
                             @else
-                                <span class="rounded-full bg-night/80 px-2.5 py-1 text-xs font-black tabular-nums text-white"
-                                      title="عدد الأسئلة">{{ $category->playableQuestionsCount() }}</span>
+                                @if ($playedOut)
+                                    <span class="rounded-full bg-lantern-dark px-2.5 py-1 text-xs font-black text-white shadow"
+                                          title="كل أسئلة هالفئة انلعبت، فرح تتكرر">🔁 انلعبت</span>
+                                @else
+                                    <span class="rounded-full bg-night/80 px-2.5 py-1 text-xs font-black tabular-nums text-white"
+                                          title="أسئلة ما انلعبت لسا (من أصل {{ $category->playableQuestionsCount() }})">🆕 {{ $fresh }}</span>
+                                @endif
                             @endif
 
                             @if ($category->description)

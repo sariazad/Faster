@@ -3,6 +3,7 @@
 namespace App\Models\AlefYa;
 
 use App\Support\AlefYaLetters;
+use App\Support\TextKey;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
@@ -46,7 +47,12 @@ class Question extends Model
     {
         $base = static::active()->when($letter, fn ($q) => $q->where('letter', $letter));
 
-        $question = (clone $base)->whereNotIn('id', $exclude)->orderBy('times_used')->inRandomOrder()->first();
+        // Least-played first; among those, skip answers this contest already had (same answer, other wording).
+        $usedAnswers = $exclude
+            ? static::query()->whereIn('id', $exclude)->pluck('answer')->map(fn ($a) => TextKey::make($a))->flip()
+            : collect();
+        $candidates = (clone $base)->whereNotIn('id', $exclude)->orderBy('times_used')->inRandomOrder()->limit(40)->get();
+        $question = $candidates->first(fn (Question $q) => ! isset($usedAnswers[TextKey::make($q->answer)])) ?? $candidates->first();
         $reset = false;
 
         if (! $question) {

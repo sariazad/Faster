@@ -93,6 +93,19 @@ class AlefYaTest extends TestCase
         $this->getJson('/alefya/api/question?letter=x')->assertStatus(422);
     }
 
+    public function test_a_contest_avoids_a_second_question_with_the_same_answer(): void
+    {
+        Question::query()->update(['is_active' => false]);
+        $first = Question::create(['letter' => 'ص', 'question' => 'أكبر دولة بآسيا بالسكان؟', 'answer' => 'الصين', 'is_active' => true]);
+        Question::create(['letter' => 'ص', 'question' => 'بلد سور عظيم؟', 'answer' => 'الصّين', 'is_active' => true]);
+        $other = Question::create(['letter' => 'ص', 'question' => 'عكس الكبير؟', 'answer' => 'صغير', 'is_active' => true]);
+
+        for ($i = 0; $i < 10; $i++) {
+            [$q] = Question::pick('ص', [$first->id]);
+            $this->assertSame($other->id, $q->id);
+        }
+    }
+
     public function test_solo_board_gets_fifteen_questions_with_options(): void
     {
         $res = $this->getJson('/alefya/api/solo')->assertOk();

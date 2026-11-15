@@ -56,6 +56,47 @@ class Category extends Model
         return $query->withCount($counts);
     }
 
+    /** Adds fq{points}_count / fresh_questions_count: active questions no game has used yet. */
+    public function scopeWithFreshCounts(Builder $query): Builder
+    {
+        $counts = ['questions as fresh_questions_count' => fn (Builder $q) => $q->where('is_active', true)->where('times_used', 0)];
+
+        foreach (Game::LEVELS as $points) {
+            $counts["questions as fq{$points}_count"] = fn (Builder $q) => $q
+                ->where('is_active', true)
+                ->where('times_used', 0)
+                ->where('points', $points);
+        }
+
+        return $query->withCount($counts);
+    }
+
+    /** How many more classic games this category can fill with questions nobody has played yet. */
+    public function freshGames(): int
+    {
+        $games = PHP_INT_MAX;
+
+        foreach (Game::LEVELS as $points) {
+            $fresh = (int) ($this->getAttribute("fq{$points}_count") ?? $this->questions()
+                ->where('is_active', true)->where('times_used', 0)->where('points', $points)->count());
+            $games = min($games, intdiv($fresh, Game::QUESTIONS_PER_LEVEL));
+        }
+
+        return $games;
+    }
+
+    public function freshQuestionsCount(): int
+    {
+        return (int) ($this->getAttribute('fresh_questions_count')
+            ?? $this->questions()->where('is_active', true)->where('times_used', 0)->count());
+    }
+
+    /** True when every question of the category has already been played (so the next game repeats). */
+    public function isPlayedOut(string $mode = Game::CLASSIC): bool
+    {
+        return $mode === Game::TAQTAQ ? $this->freshQuestionsCount() === 0 : $this->freshGames() === 0;
+    }
+
     /**
      * Active categories that have enough active questions for every level.
      *
@@ -66,6 +107,7 @@ class Category extends Model
         return static::query()
             ->active()
             ->withLevelCounts()
+            ->withFreshCounts()
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get()

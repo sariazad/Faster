@@ -66,6 +66,7 @@ class Taqtaq
         return Category::query()
             ->active()
             ->withCount(['questions as active_questions_count' => fn ($q) => $q->where('is_active', true)])
+            ->withFreshCounts()
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get()
@@ -446,12 +447,19 @@ class Taqtaq
             ->sortBy(fn (Question $q) => [$q->times_used, $q->last_used_at?->getTimestamp() ?? 0])
             ->values();
 
-        $pick = $candidates->first(fn (Question $q) => ! isset($shownIds[$q->id])
-                && ! isset($shownKeys[$q->identityKey()])
-                && ! isset($shownAnswers[TextKey::make($q->answer)]))
-            ?? $candidates->first(fn (Question $q) => ! isset($shownIds[$q->id]) && ! isset($shownKeys[$q->identityKey()]))
-            ?? $candidates->first(fn (Question $q) => ! isset($shownIds[$q->id]))
-            ?? $candidates->first();
+        // Least-played tier first (a never-played question beats an old one even if its answer
+        // was already on the board); inside a tier, prefer a new answer, then any new text.
+        $pick = null;
+        foreach ($candidates->groupBy('times_used', preserveKeys: false) as $tier) {
+            $pick = $tier->first(fn (Question $q) => ! isset($shownIds[$q->id])
+                    && ! isset($shownKeys[$q->identityKey()])
+                    && ! isset($shownAnswers[TextKey::make($q->answer)]))
+                ?? $tier->first(fn (Question $q) => ! isset($shownIds[$q->id]) && ! isset($shownKeys[$q->identityKey()]));
+            if ($pick) {
+                break;
+            }
+        }
+        $pick ??= $candidates->first(fn (Question $q) => ! isset($shownIds[$q->id])) ?? $candidates->first();
 
         if (! $pick) {
             throw new DomainException('ما فيه أسئلة مفعّلة بهالفئة.');
