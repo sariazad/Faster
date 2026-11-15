@@ -106,6 +106,38 @@ class AlefYaTest extends TestCase
         }
     }
 
+    public function test_an_answer_does_not_come_back_until_the_letter_went_round_across_contests(): void
+    {
+        Question::query()->update(['is_active' => false]);
+        $china = ['الصين', 'الصّين', 'جمهورية الصين'];
+        $ids = [];
+        foreach (['الصين', 'الصّين'] as $i => $answer) {
+            $ids[] = Question::create(['letter' => 'ص', 'question' => "سؤال الصين {$i}؟", 'answer' => $answer, 'is_active' => true])->id;
+        }
+        foreach (['صغير', 'صقر', 'صنعاء'] as $answer) {
+            Question::create(['letter' => 'ص', 'question' => "سؤال {$answer}؟", 'answer' => $answer, 'is_active' => true]);
+        }
+
+        // Five separate contests (no shared exclude list): «الصين» comes once in the first four picks,
+        // the round's two «الصين» questions are never back to back while other answers are left.
+        $answers = [];
+        for ($i = 0; $i < 5; $i++) {
+            [$q] = Question::pick('ص', []);
+            $answers[] = \App\Support\TextKey::make($q->answer);
+        }
+        $this->assertSame(5, count(array_unique(array_map(fn ($a) => $a, $answers))) + 1, 'only «الصين» repeats, once');
+        $this->assertSame(\App\Support\TextKey::make('الصين'), end($answers), 'the second «الصين» waits for the end of the round');
+
+        // A new round starts: every question is served again before any repeats.
+        $next = [];
+        for ($i = 0; $i < 5; $i++) {
+            [$q] = Question::pick('ص', []);
+            $next[] = $q->id;
+        }
+        $this->assertCount(5, array_unique($next));
+        $this->assertSame(2, (int) Question::where('letter', 'ص')->where('is_active', true)->min('times_used'));
+    }
+
     public function test_solo_board_gets_fifteen_questions_with_options(): void
     {
         $res = $this->getJson('/alefya/api/solo')->assertOk();

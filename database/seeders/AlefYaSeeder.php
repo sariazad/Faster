@@ -46,6 +46,7 @@ class AlefYaSeeder extends Seeder
                 'letter' => $item['letter'],
                 'question' => $item['question'],
                 'answer' => $item['answer'],
+                'answer_key' => \App\Support\TextKey::make($item['answer']),
                 'options' => isset($item['options']) ? json_encode($item['options'], JSON_UNESCAPED_UNICODE) : null,
                 'category' => $item['category'] ?? null,
                 'contributor' => $item['contributor'] ?? null,

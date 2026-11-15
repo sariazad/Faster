@@ -23,6 +23,7 @@ class Question extends Model
             if (! $q->letter || $q->isDirty('answer') && ! $q->isDirty('letter')) {
                 $q->letter = AlefYaLetters::of($q->answer) ?? $q->letter;
             }
+            $q->answer_key = TextKey::make($q->answer);
         });
     }
 
@@ -47,7 +48,27 @@ class Question extends Model
     {
         $base = static::active()->when($letter, fn ($q) => $q->where('letter', $letter));
 
-        // Least-played first; among those, skip answers this contest already had (same answer, other wording).
+        // 1) Bank-wide rounds: the letter's round is its lowest times_used. Serve a question of this
+        //    round whose *answer* hasn't come up anywhere this round (any contest, any device), so
+        //    «الصين» shows up once, and only comes back after the letter's whole bank went round.
+        $round = (clone $base)->min('times_used');
+        if ($round !== null) {
+            $question = (clone $base)->where('times_used', $round)->whereNotIn('id', $exclude)
+                ->whereNotIn('answer_key', static::active()->select('answer_key')
+                    ->when($letter, fn ($q) => $q->where('letter', $letter))
+                    ->where('times_used', '>', $round)->whereNotNull('answer_key'))
+                ->when($exclude, fn ($q) => $q->whereNotIn('answer_key', static::query()->select('answer_key')
+                    ->whereIn('id', $exclude)->whereNotNull('answer_key')))
+                ->inRandomOrder()->first();
+
+            if ($question) {
+                $question->increment('times_used');
+
+                return [$question, false];
+            }
+        }
+
+        // 2) Otherwise least-played first; among those, skip answers this contest already had.
         $usedAnswers = $exclude
             ? static::query()->whereIn('id', $exclude)->pluck('answer')->map(fn ($a) => TextKey::make($a))->flip()
             : collect();
