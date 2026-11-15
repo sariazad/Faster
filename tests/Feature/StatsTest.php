@@ -20,10 +20,10 @@ class StatsTest extends TestCase
     private function akherGame(): string
     {
         $this->seed(AkherSeeder::class);
-        $code = $this->json('POST', '/akher/api/rooms', ['name' => 'سارة', 'device' => 'host-1'])->assertOk()->json('code');
-        $this->json('POST', "/akher/api/rooms/$code/join", ['name' => 'خالد', 'device' => 'phone-2'])->assertOk();
-        $this->json('POST', "/akher/api/rooms/$code/settings", ['device' => 'host-1', 'list_id' => 'area'])->assertOk();
-        $this->json('POST', "/akher/api/rooms/$code/start", ['device' => 'host-1'])->assertOk();
+        $code = $this->json('POST', '/akher/api/rooms', ['name' => 'سارة', 'device' => 'host-device-1'])->assertOk()->json('code');
+        $this->json('POST', "/akher/api/rooms/$code/join", ['name' => 'خالد', 'device' => 'phone-device-2'])->assertOk();
+        $this->json('POST', "/akher/api/rooms/$code/settings", ['device' => 'host-device-1', 'list_id' => 'area'])->assertOk();
+        $this->json('POST', "/akher/api/rooms/$code/start", ['device' => 'host-device-1'])->assertOk();
 
         return $code;
     }
@@ -38,7 +38,7 @@ class StatsTest extends TestCase
         $this->assertSame(2, $log->players);
         $this->assertSame(['area'], $log->meta['lists']);
 
-        $this->json('POST', "/akher/api/rooms/$code/end", ['device' => 'host-1'])->assertOk();
+        $this->json('POST', "/akher/api/rooms/$code/end", ['device' => 'host-device-1'])->assertOk();
 
         $log->refresh();
         $this->assertTrue($log->finished);
@@ -48,8 +48,8 @@ class StatsTest extends TestCase
         $this->assertSame(['area'], $log->meta['played']);
 
         // a new round with the same room opens a new row
-        $this->json('POST', "/akher/api/rooms/$code/reset", ['device' => 'host-1'])->assertOk();
-        $this->json('POST', "/akher/api/rooms/$code/start", ['device' => 'host-1'])->assertOk();
+        $this->json('POST', "/akher/api/rooms/$code/reset", ['device' => 'host-device-1'])->assertOk();
+        $this->json('POST', "/akher/api/rooms/$code/start", ['device' => 'host-device-1'])->assertOk();
         $this->assertSame(2, PlayLog::count());
         $this->assertSame(1, PlayLog::where('finished', true)->count());
     }
