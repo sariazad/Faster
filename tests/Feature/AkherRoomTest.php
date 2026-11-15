@@ -133,20 +133,21 @@ class AkherRoomTest extends TestCase
 
     public function test_more_turns_and_a_cleared_list_ends_the_round(): void
     {
-        \App\Models\Akher\GameList::fromFile(['id' => 'tiny', 'title_ar' => 'قائمة صغيرة', 'items' => [
-            ['rank' => 1, 'name_ar' => 'روسيا', 'name_en' => 'Russia', 'aliases' => []],
-            ['rank' => 2, 'name_ar' => 'كندا', 'name_en' => 'Canada', 'aliases' => []],
-        ]]);
+        $fruit = ['تفاح', 'موز', 'برتقال', 'عنب', 'رمان', 'مشمش', 'خوخ', 'كرز', 'تين', 'ليمون'];
+        \App\Models\Akher\GameList::fromFile(['id' => 'tiny', 'title_ar' => 'قائمة صغيرة', 'items' => array_map(
+            fn ($name, $i) => ['rank' => $i + 1, 'name_ar' => $name, 'aliases' => []], $fruit, array_keys($fruit))]);
         $code = $this->api('POST', '/rooms', ['name' => 'سارة', 'device' => self::HOST])->json('code');
         $this->api('POST', "/rooms/$code/settings", ['device' => self::HOST, 'turns_per_player' => 8, 'list_id' => 'tiny'])->assertOk();
         $this->api('POST', "/rooms/$code/join", ['name' => 'خالد', 'device' => self::PHONE])->assertOk();
         $this->api('POST', "/rooms/$code/start", ['device' => self::HOST])->assertOk();
         $this->assertSame(16, $this->state($code)['turns_total']);
 
-        $this->api('POST', "/rooms/$code/guess", ['device' => self::HOST, 'turn_idx' => 0, 'text' => 'روسيا'])->assertOk();
-        $this->assertSame('playing', $this->state($code)['status']);
-        $this->api('POST', "/rooms/$code/guess", ['device' => self::PHONE, 'turn_idx' => 1, 'text' => 'كندا'])->assertOk();
-        $this->assertSame('done', $this->state($code)['status'], 'nothing left to find, so the round is over');
+        foreach ($fruit as $i => $name) {
+            $this->assertSame('playing', $this->state($code)['status']);
+            $this->api('POST', "/rooms/$code/guess", ['device' => $i % 2 ? self::PHONE : self::HOST, 'turn_idx' => $i, 'text' => $name])
+                ->assertOk()->assertJsonPath('result', 'match');
+        }
+        $this->assertSame('done', $this->state($code)['status'], 'nothing left to find, so the round is over (10 of 16 turns)');
     }
 
     public function test_room_flow_lobby_to_end(): void
