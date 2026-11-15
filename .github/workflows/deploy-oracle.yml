@@ -1,0 +1,64 @@
+# مين الأسبق — auto-deploy to the Oracle server after the tests pass on main.
+#
+# One-time setup (repo → Settings → Secrets and variables → Actions → New repository secret):
+#   ORACLE_HOST     the server's public IP, e.g. 84.8.118.201
+#   ORACLE_SSH_KEY  the full contents of the private key file (ssh-key-....key)
+# Until both secrets exist this workflow does nothing (it just reports "skipped").
+name: deploy-oracle
+
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch: # «Run workflow» button: deploy by hand
+
+concurrency:
+  group: deploy-oracle
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Only after green tests on a push to *this* repo's main (never from a fork's pull request).
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HOST: ${{ secrets.ORACLE_HOST }}
+      KEY: ${{ secrets.ORACLE_SSH_KEY }}
+    steps:
+      - name: Check secrets
+        id: check
+        run: |
+          if [ -z "$HOST" ] || [ -z "$KEY" ]; then
+            echo "ORACLE_HOST / ORACLE_SSH_KEY not set yet: skipping deploy."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/oracle
+          chmod 600 ~/.ssh/oracle
+          ssh -i ~/.ssh/oracle -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 -o ServerAliveInterval=30 \
+            "ubuntu@$HOST" 'sudo bash /var/www/faster/deploy/oracle/deploy.sh'
+
+      - name: Smoke test
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          for path in / /alefya /akher /admin/login; do
+            code=$(curl -sL -o /dev/null -w '%{http_code}' --max-time 20 "http://$HOST$path")
+            echo "$path → $code"
+            [ "$code" = "200" ] || exit 1
+          done
+
+      - name: Clean up key
+        if: always()
+        run: rm -f ~/.ssh/oracle
