@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AkherController;
 use App\Http\Controllers\AlefYaController;
+use App\Http\Controllers\QaddahaController;
 use App\Livewire\GamePlay;
 use App\Livewire\GameSetup;
 use App\Livewire\TaqtaqPlay;
@@ -69,4 +70,24 @@ Route::prefix('akher')->name('akher.')->controller(AkherController::class)->grou
     });
 
     Route::get('/{page}', 'page')->whereIn('page', AkherController::PAGES)->name('page');
+});
+
+// قدّها؟ — two-team list auction; rules run in the browser, the server only relays (own database "qaddaha").
+Route::prefix('qaddaha')->name('qaddaha.')->controller(QaddahaController::class)->group(function () {
+    Route::get('/', 'host')->name('home');
+    Route::get('/join/{code}', 'join')->name('join');
+
+    Route::prefix('api')->name('api.')->group(function () {
+        Route::get('/categories', 'categories')->name('categories');
+        Route::post('/questions', 'questions')->middleware('throttle:qaddaha-act')->name('questions');
+        Route::post('/play', 'play')->middleware('throttle:qaddaha-act')->name('play');
+
+        Route::post('/rooms', 'createRoom')->middleware('throttle:qaddaha-act')->name('rooms.create');
+        Route::get('/rooms/{code}', 'publicState')->middleware('throttle:qaddaha-poll')->name('rooms.public');
+        Route::post('/rooms/{code}/join', 'joinRoom')->middleware('throttle:qaddaha-act')->name('rooms.join');
+        Route::post('/rooms/{code}/intent', 'intent')->middleware('throttle:qaddaha-act')->name('rooms.intent');
+        Route::get('/rooms/{code}/host', 'hostState')->middleware('throttle:qaddaha-poll')->name('rooms.host');
+        Route::post('/rooms/{code}/state', 'saveState')->middleware('throttle:qaddaha-poll')->name('rooms.state');
+        Route::post('/rooms/{code}/seats/{team}/free', 'freeSeat')->whereIn('team', ['0', '1'])->middleware('throttle:qaddaha-act')->name('rooms.free');
+    });
 });

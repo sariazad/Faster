@@ -10,7 +10,7 @@ abstract class TestCase extends BaseTestCase
      * ألف ياء and آخر القائمة have their own (in-memory, in tests) databases: keep it migrated between tests
      * and roll it back after each one, just like the default connection.
      */
-    protected $connectionsToTransact = [null, 'alefya', 'akher'];
+    protected $connectionsToTransact = [null, 'alefya', 'akher', 'qaddaha'];
 
     protected function setUp(): void
     {

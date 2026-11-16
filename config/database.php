@@ -68,6 +68,18 @@ return [
             'transaction_mode' => 'IMMEDIATE',
         ],
 
+        // قدّها؟ — question bank, rooms and phone intents in their own database.
+        'qaddaha' => [
+            'driver' => 'sqlite',
+            'database' => env('QADDAHA_DB_DATABASE', database_path('qaddaha.sqlite')),
+            'prefix' => '',
+            'foreign_key_constraints' => true,
+            'busy_timeout' => 5000,
+            'journal_mode' => 'wal',
+            'synchronous' => null,
+            'transaction_mode' => 'IMMEDIATE',
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),

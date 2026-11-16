@@ -16,7 +16,7 @@ echo.
 echo == ملف البيئة ==
 if not exist .env copy .env.example .env >nul
 powershell -NoProfile -Command "(Get-Content .env) -replace '^SESSION_LIFETIME=120$','SESSION_LIFETIME=1440' -replace '^APP_URL=.*','APP_URL=http://localhost:8000' | Set-Content -Encoding UTF8 .env"
-for %%f in (database.sqlite alefya.sqlite akher.sqlite) do if not exist database\%%f type nul > database\%%f
+for %%f in (database.sqlite alefya.sqlite akher.sqlite qaddaha.sqlite) do if not exist database\%%f type nul > database\%%f
 
 echo.
 echo == مكتبات PHP (composer) ==

@@ -33,3 +33,29 @@ jobs:
 
       - name: Run tests
         run: php artisan test
+
+      - name: Game engine tests (JS)
+        run: npx vitest run
+
+      - name: Browser tests — قدّها؟ (one device + host with two phones)
+        env:
+          PHP_CLI_SERVER_WORKERS: 6
+        run: |
+          touch database/database.sqlite database/alefya.sqlite database/akher.sqlite database/qaddaha.sqlite
+          php artisan migrate --force --no-interaction
+          npx playwright install --with-deps chromium
+          (php artisan serve --host=127.0.0.1 --port=8000 > /tmp/serve.log 2>&1 &)
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/qaddaha >/dev/null && break; sleep 1; done
+          E2E_BASE=http://127.0.0.1:8000 npx playwright test
+
+      - name: Browser test screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qaddaha-screens
+          path: |
+            test-results/shots
+            test-results/e2e
+            /tmp/serve.log
+          if-no-files-found: ignore
+          retention-days: 7

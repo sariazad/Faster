@@ -11,6 +11,8 @@ export default defineConfig({
                 'resources/js/alefya/main.js',
                 'resources/css/akher.css',
                 'resources/js/akher/main.js',
+                'resources/css/qaddaha.css',
+                'resources/js/qaddaha/main.js',
             ],
             refresh: true,
         }),

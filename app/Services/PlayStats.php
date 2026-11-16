@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * Statistics for every game, read from where each game keeps its history:
  *   مين الأسبق / طق طق → games table, ألف ياء challenge → alefya scores,
- *   ألف ياء teams + آخر القائمة → play_logs.
+ *   ألف ياء teams + آخر القائمة + قدّها؟ → play_logs.
  * Every session becomes one normalized row (see row()).
  */
 class PlayStats
@@ -32,6 +32,7 @@ class PlayStats
         'alefya' => ['label' => 'ألف ياء (فرق)', 'icon' => '🔤', 'color' => '#8b5cf6'],
         'alefya_solo' => ['label' => 'ألف ياء (التحدي)', 'icon' => '⏱️', 'color' => '#ec4899'],
         'akher' => ['label' => 'آخر القائمة', 'icon' => '📋', 'color' => '#3b82f6'],
+        'qaddaha' => ['label' => 'قدّها؟', 'icon' => '🔨', 'color' => '#f43f5e'],
     ];
 
     public const PERIODS = [
@@ -137,6 +138,12 @@ class PlayStats
                     $detail = ($meta['mode'] ?? 'teams') === 'solo' ? 'فردي' : 'فرق';
                     $detail .= ' · '.count($lists).' '.(count($lists) === 1 ? 'قائمة' : 'قوائم');
                     $questions = $meta['guesses'] ?? null;
+                } elseif ($log->game === 'qaddaha') {
+                    $names = array_filter($meta['names'] ?? []);
+                    $kinds = ['full' => 'كاملة', 'quick' => 'سريعة', 'duel' => 'مواجهة'];
+                    $detail = ($names ? implode(' × ', $names) : 'فريقين').' · '.($kinds[$meta['kind'] ?? ''] ?? 'لعبة')
+                        .(($meta['mode'] ?? '') === 'multi' ? ' · جوالات' : '');
+                    $questions = ($meta['played'] ?? 0) ?: null;
                 } else {
                     $names = array_filter($meta['names'] ?? []);
                     $detail = $names ? implode(' × ', $names) : 'فريقين';

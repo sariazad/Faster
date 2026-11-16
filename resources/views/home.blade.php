@@ -55,6 +55,25 @@
                     ابدأ طق طق ←
                 </span>
             </a>
+            {{-- قدّها؟ --}}
+            <a href="{{ route('qaddaha.home') }}" title="قدّها؟"
+               class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-night-800/80 p-6 transition hover:-translate-y-1 hover:border-lantern/60 sm:p-8">
+                <span class="absolute end-5 top-5 rounded-full bg-lantern px-3 py-1 text-xs font-black text-night">جديد</span>
+                <div class="mb-5 flex h-[3.6rem] items-end gap-1.5" aria-hidden="true" dir="ltr">
+                    @foreach ([[3,'#FF5A5F'],[4,'#22D3C5'],[6,'#FF5A5F'],[7,'#22D3C5'],[9,'#FFC83D']] as [$n, $c])
+                        <span class="grid w-9 place-items-center rounded-lg text-lg font-black text-[#0E1330]" style="background: {{ $c }}; height: {{ 1.1 + $n * 0.25 }}rem">{{ $n }}</span>
+                    @endforeach
+                </div>
+                <h2 class="text-3xl font-black">قدّها؟</h2>
+                <p class="mt-1 font-bold text-lantern">زايد… بس لازم تورّي</p>
+                <p class="mt-2 leading-relaxed text-white/65">
+                    «كم أكلة سعودية تقدر تذكر؟» الفريقين بيتزايدوا، واللي رسى عليه المزاد لازم يذكر العدد قبل ما يخلص الوقت. فيها «ورّني!»، ومساعدات، ورهان سري بالآخر.
+                </p>
+                <span class="mt-6 inline-flex items-center gap-2 rounded-2xl bg-lantern px-6 py-3 text-lg font-extrabold text-night transition group-hover:bg-lantern-light">
+                    يلا نلعب ←
+                </span>
+            </a>
+
             {{-- آخر القائمة --}}
             <a href="{{ route('akher.home') }}" title="آخر القائمة"
                class="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-night-800/80 p-6 transition hover:-translate-y-1 hover:border-lantern/60 sm:p-8">
