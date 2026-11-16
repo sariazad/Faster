@@ -53,7 +53,7 @@ jobs:
       - name: Smoke test
         if: steps.check.outputs.ready == 'true'
         run: |
-          for path in / /alefya /akher /admin/login; do
+          for path in / /alefya /akher /qaddaha /qaddaha/api/categories /admin/login; do
             code=$(curl -sL -o /dev/null -w '%{http_code}' --max-time 20 "http://$HOST$path")
             echo "$path → $code"
             [ "$code" = "200" ] || exit 1
