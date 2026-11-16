@@ -43,7 +43,7 @@ class QuestionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($q) => $q->with('category'))
+            ->modifyQueryUsing(fn ($query) => $query->with('category'))
             ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('text')->label('السؤال')->searchable()->wrap()->weight('bold'),

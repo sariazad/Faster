@@ -41,7 +41,7 @@ class CategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($q) => $q->withLevelCounts())
+            ->modifyQueryUsing(fn ($query) => $query->withLevelCounts())
             ->defaultSort('sort')
             ->reorderable('sort')
             ->columns([
