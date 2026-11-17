@@ -74,6 +74,8 @@ if [ ! -L "$BASE/public_html" ]; then
     [ -e "$BASE/public_html" ] && mv "$BASE/public_html" "$BASE/public_html.orig"
     ln -s "$APP/public" "$BASE/public_html"
 fi
+# PHP may only read inside public_html by default: open the whole site folder (app/ lives next to it)
+devil www options "$DOMAIN" php_openbasedir "$BASE" >/dev/null 2>&1 || echo "⚠ غيّر Open Basedir من DevilWEB لـ $BASE"
 php artisan storage:link --quiet 2>/dev/null || true
 php artisan optimize --quiet
 php artisan filament:optimize --quiet 2>/dev/null || true
