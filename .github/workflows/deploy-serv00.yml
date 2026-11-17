@@ -1,0 +1,77 @@
+# مين الأسبق — auto-deploy to the Serv00 copy (https://sari221.serv00.net) after the tests pass on main.
+#
+# One-time setup:
+#   1) on the server run deploy/serv00/install.sh (see README)
+#   2) repo → Settings → Secrets and variables → Actions → New repository secret:
+#        SERV00_SSH_KEY   the private key generated on the server for GitHub (see README)
+# Until the secret exists this workflow does nothing.
+name: deploy-serv00
+
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-serv00
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TARGET: sari221@s16.serv00.com
+      DOMAIN: sari221.serv00.net
+      KEY: ${{ secrets.SERV00_SSH_KEY }}
+    steps:
+      - name: Check secret
+        id: check
+        run: |
+          if [ -z "$KEY" ]; then echo "SERV00_SSH_KEY not set yet: skipping."; echo "ready=false" >> "$GITHUB_OUTPUT"; else echo "ready=true" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build the front end here (the server has 512MB of RAM)
+        if: steps.check.outputs.ready == 'true'
+        run: npm ci --no-audit --no-fund && npm run build
+
+      - name: Upload build and deploy
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/serv00
+          chmod 600 ~/.ssh/serv00
+          SSH="ssh -i $HOME/.ssh/serv00 -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o ServerAliveInterval=30"
+          APP="domains/$DOMAIN/app"
+          tar czf - -C public build | $SSH "$TARGET" "cd $APP/public && rm -rf build.new && mkdir build.new && tar xzf - -C build.new --strip-components=1"
+          $SSH "$TARGET" "sh $APP/deploy/serv00/deploy.sh"
+
+      - name: Smoke test
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          for path in / /alefya /akher /qaddaha /qaddaha/api/categories /admin/login; do
+            code=$(curl -sL -o /dev/null -w '%{http_code}' --max-time 30 "https://$DOMAIN$path")
+            echo "$path → $code"
+            [ "$code" = "200" ] || exit 1
+          done
+
+      - name: Clean up key
+        if: always()
+        run: rm -f ~/.ssh/serv00

@@ -112,6 +112,8 @@
 ## الرفع على الإنترنت (مجاناً)
 بتلاقي الدليل الكامل لسيرفر Oracle Cloud المجاني بـ [`deploy/oracle/README.md`](deploy/oracle/README.md). فيه سكربت تثبيت واحد، وتحديث بأمر واحد، ونسخ احتياطي يومي.
 
+ونسخة تانية مستقلة على Serv00 (مع HTTPS): [`deploy/serv00/README.md`](deploy/serv00/README.md).
+
 ## التشغيل
 
 ### على GitHub Codespaces (الأسهل)
