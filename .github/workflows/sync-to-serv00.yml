@@ -3,13 +3,9 @@
 # Serv00's previous content is saved first in ~/backups/before-sync-* on Serv00.
 name: sync-to-serv00
 
+# Manual only («Run workflow» button). Serv00's current content is backed up before anything is replaced.
 on:
   workflow_dispatch:
-    inputs:
-      confirm:
-        description: 'اكتب «نعم» لاستبدال محتوى Serv00 بمحتوى أوراكل'
-        required: true
-        default: ''
 
 concurrency:
   group: deploy-serv00
@@ -17,7 +13,6 @@ concurrency:
 
 jobs:
   sync:
-    if: github.event.inputs.confirm == 'نعم'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
