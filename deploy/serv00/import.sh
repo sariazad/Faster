@@ -7,7 +7,7 @@ set -eu
 IN="${1:?folder with the bundle}"
 DOMAIN="${DOMAIN:-$(whoami).serv00.net}"
 APP="$HOME/domains/$DOMAIN/app"
-KEEP="$HOME/backups/before-sync-$(date +%Y%m%d-%H%M)"
+KEEP="$HOME/domains/$DOMAIN/sync-backups/$(date +%Y%m%d-%H%M)"   # ~/backups belongs to Serv00 itself (read-only)
 cd "$APP"
 
 [ -f "$IN/database.sqlite" ] || { echo "ما في database.sqlite بالحزمة — ما غيّرت شي."; exit 1; }
@@ -45,6 +45,6 @@ php artisan filament:optimize --quiet 2>/dev/null || true
 rm -rf "$IN"
 
 # keep only the last 5 pre-sync backups (3GB quota)
-ls -dt "$HOME"/backups/before-sync-* 2>/dev/null | tail -n +6 | xargs rm -rf 2>/dev/null || true
+ls -dt "$HOME/domains/$DOMAIN"/sync-backups/* 2>/dev/null | tail -n +6 | xargs rm -rf 2>/dev/null || true
 
 echo "✔ تم النقل. النسخة القديمة محفوظة بـ $KEEP"

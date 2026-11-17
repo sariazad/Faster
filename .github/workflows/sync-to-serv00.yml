@@ -1,6 +1,6 @@
 # مين الأسبق — copy ALL content from the Oracle server to the Serv00 copy (by hand only):
 # the four SQLite databases (questions, lists, admin accounts, stats…) and uploaded images.
-# Serv00's previous content is saved first in ~/backups/before-sync-* on Serv00.
+# Serv00's previous content is saved first in ~/domains/<domain>/sync-backups/ on Serv00.
 name: sync-to-serv00
 
 # Manual only («Run workflow» button). Serv00's current content is backed up before anything is replaced.
