@@ -1,0 +1,69 @@
+# مين الأسبق — copy ALL content from the Oracle server to the Serv00 copy (by hand only):
+# the four SQLite databases (questions, lists, admin accounts, stats…) and uploaded images.
+# Serv00's previous content is saved first in ~/backups/before-sync-* on Serv00.
+name: sync-to-serv00
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'اكتب «نعم» لاستبدال محتوى Serv00 بمحتوى أوراكل'
+        required: true
+        default: ''
+
+concurrency:
+  group: deploy-serv00
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.event.inputs.confirm == 'نعم'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ORACLE: ubuntu@${{ secrets.ORACLE_HOST }}
+      SERV00: sari221@s16.serv00.com
+      DOMAIN: sari221.serv00.net
+      ORACLE_KEY: ${{ secrets.ORACLE_SSH_KEY }}
+      SERV00_KEY: ${{ secrets.SERV00_SSH_KEY }}
+    steps:
+      - name: Keys
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$ORACLE_KEY" > ~/.ssh/oracle
+          printf '%s\n' "$SERV00_KEY" > ~/.ssh/serv00
+          chmod 600 ~/.ssh/oracle ~/.ssh/serv00
+
+      - name: Consistent copy from Oracle
+        run: |
+          ssh -i ~/.ssh/oracle -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 "$ORACLE" 'sudo bash -s' > bundle.tgz <<'REMOTE'
+          set -euo pipefail
+          A=/var/www/faster
+          T=$(mktemp -d)
+          for DB in database alefya akher qaddaha; do
+            [ -f "$A/database/$DB.sqlite" ] && sqlite3 "$A/database/$DB.sqlite" ".backup '$T/$DB.sqlite'"
+          done
+          [ -d "$A/storage/app/public" ] && tar -czf "$T/media.tar.gz" -C "$A/storage/app" public
+          tar -czf - -C "$T" .
+          rm -rf "$T"
+          REMOTE
+          tar -tzvf bundle.tgz
+          tar -tzf bundle.tgz | grep -q 'database.sqlite' || { echo "no database in bundle"; exit 1; }
+
+      - name: Install on Serv00
+        run: |
+          SSH="ssh -i $HOME/.ssh/serv00 -o StrictHostKeyChecking=accept-new -o ConnectTimeout=30 -o ServerAliveInterval=30"
+          $SSH "$SERV00" 'rm -rf ~/sync-in && mkdir -p ~/sync-in && tar -xzf - -C ~/sync-in' < bundle.tgz
+          $SSH "$SERV00" "sh domains/$DOMAIN/app/deploy/serv00/import.sh ~/sync-in"
+
+      - name: Smoke test
+        run: |
+          for path in / /alefya /akher /qaddaha /qaddaha/api/categories /admin/login; do
+            code=$(curl -sL -o /dev/null -w '%{http_code}' --max-time 30 "https://$DOMAIN$path")
+            echo "$path → $code"
+            [ "$code" = "200" ] || exit 1
+          done
+
+      - name: Clean up
+        if: always()
+        run: rm -f ~/.ssh/oracle ~/.ssh/serv00 bundle.tgz
